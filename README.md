@@ -1,6 +1,8 @@
 # Logging Alert Plugin for Graylog
 
+[![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
+[![GitHub Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
 
 #### Alert notification plugin for Graylog to generate log messages from alerts
 
@@ -39,7 +41,15 @@ Then, in the popup that occurs, you can configure the **Title** of the notificat
 
 You can configure the **Alert Severity**. You have the choice between 4 levels of severity.  
 
-You can also configure the **Log Content** to log the information you want.
+You can also configure the **Log Content** to log the information you want. Some plugin-specific fields values can be added to the log content.  
+
+| Plugin-specific Fields     | Description                                             |
+| -------------------------- | ------------------------------------------------------- |
+| logging_alert.id           | ID of the alert                                         |
+| logging_alert.severity     | Severity of the alert                                   |
+| logging_alert.detect_time  | Timestamp of the first message that triggered the alert |
+| logging_alert.alert_url    | URI of the Graylog alert                                |
+| logging_alert.messages_url | URI to the retrieve messages that triggered the alert   |
 
 The parameter **Split Fields** allow you to split the alert based on message field values. Thus, a different alert id is generated for each value of one or more message fields.
 
@@ -55,7 +65,7 @@ Make sure you also configured alert conditions for the stream so that the alerts
 
 Click on **Configure** in the **System / Configurations** section to update the plugin configuration.  
  
-In the popup that occurs, you can configure the default value of the parameters that are set when adding a new notification : **Default Alert Severity**, **Default Log Content** and **Default Aggregation Time Range**.  
+In the popup that occurs, you can configure the default value of the parameters that are set when adding a new notification: **Default Alert Severity**, **Default Log Content** and **Default Aggregation Time Range**.  
 
 You can define a **Line Break Substitution** of the log content in order to help parsing log fields and their values. Thus a separator can be inserted between the fields of the log content.  
 
