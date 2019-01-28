@@ -16,9 +16,37 @@
 	<artifactId>graylog-plugin-logging-alert</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
+
 	<name>${project.artifactId}</name>
 	<description>Graylog ${project.artifactId} plugin.</description>
-	<url>https://www.graylog.org</url>
+	<url>https://github.com/airbus-cyber/graylog-plugin-logging-alert</url>
+
+	<licenses>
+        	<license>
+            		<name>GNU General Public License (GPL) version 3.0</name>
+		        <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>Airbus CyberSecurity</name>
+		<url>https://www.airbus-cyber-security.com</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>${project.organization.name}</name>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:airbus-cyber/graylog-plugin-logging-alert.git</connection>
+		<developerConnection>scm:git:git@github.com:airbus-cyber/graylog-plugin-logging-alert.git</developerConnection>
+		<url>https://github.com/airbus-cyber/graylog-plugin-logging-alert</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
