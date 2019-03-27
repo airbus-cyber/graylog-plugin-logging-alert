@@ -14,7 +14,7 @@
 
 	<groupId>com.airbus-cyber-security.graylog</groupId>
 	<artifactId>graylog-plugin-logging-alert</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>${project.artifactId}</name>
@@ -28,16 +28,11 @@
 		</license>
 	</licenses>
 
-	<organization>
-		<name>Airbus CyberSecurity</name>
-		<url>https://www.airbus-cyber-security.com</url>
-	</organization>
-
 	<developers>
 		<developer>
-			<name>${project.organization.name}</name>
-			<organization>${project.organization.name}</organization>
-			<organizationUrl>${project.organization.url}</organizationUrl>
+			<name>Airbus CyberSecurity</name>
+			<organization>Airbus CyberSecurity</organization>
+			<organizationUrl>https://www.airbus-cyber-security.com</organizationUrl>
 		</developer>
 	</developers>
 

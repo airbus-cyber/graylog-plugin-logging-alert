@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/1.0.0...1.0.1) (2019-03-27)
+
+### Bug Fixes
+* Fix a notification error when aggregating alerts
+
 ## [1.0.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/tree/1.0.0) (2018-12-19)
 
 * First release
