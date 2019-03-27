@@ -199,11 +199,14 @@ public class LoggingAlert implements AlarmCallback{
 		final AbsoluteRange range = AbsoluteRange.create(timeBegin, timeEnd);
     	final SearchResult backlogResult = searches.search("*", filter,
 				range, 10, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
-    	
-    	if(!backlogResult.getResults().isEmpty()) {
-    		return backlogResult.getResults().get(0).getMessage().getField("messages_url").toString();
-    	}
-    	
+
+		if(!backlogResult.getResults().isEmpty()) {
+			Object fieldMsgUrl = backlogResult.getResults().get(0).getMessage().getField("messages_url");
+			if (fieldMsgUrl != null) {
+				return fieldMsgUrl.toString();
+			}
+		}
+
     	return null;
     }
     
