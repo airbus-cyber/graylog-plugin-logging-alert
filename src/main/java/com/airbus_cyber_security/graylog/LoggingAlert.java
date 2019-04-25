@@ -111,7 +111,7 @@ public class LoggingAlert implements AlarmCallback{
         return model;
     }
     
-    String buildBody(Stream stream, AlertCondition.CheckResult checkResult, Message message, LoggingAlertFields loggingAlertFields) {
+    private String buildBody(Stream stream, AlertCondition.CheckResult checkResult, Message message, LoggingAlertFields loggingAlertFields) {
         Map<String, Object> model = getModel(stream, checkResult, message, loggingAlertFields);
         return this.templateEngine.transform(configs.getString(FIELD_BODY).replace(SEPARATOR_TEMPLATE, separator), model);
     }
