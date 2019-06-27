@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import { Button } from 'react-bootstrap';
 import { BootstrapModalForm, Input } from 'components/bootstrap';
 import { IfPermitted, Select, Spinner } from 'components/common';
@@ -9,7 +10,9 @@ import StoreProvider from 'injection/StoreProvider';
 
 const StreamsStore = StoreProvider.getStore('Streams');
 
-const LoggingAlertConfig = React.createClass({
+const LoggingAlertConfig = createReactClass({
+  displayName: 'LoggingAlertConfig',
+
   propTypes: {
     config: PropTypes.object,
     updateConfig: PropTypes.func.isRequired,

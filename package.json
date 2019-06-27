@@ -16,10 +16,10 @@
   "license": "GPL-3.0",
   "dependencies": {},
   "devDependencies": {
-    "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
-    "react": "^0.14.9",
-    "react-addons-test-utils": "^0.14.8",
-    "react-dom": "^0.14.9",
-    "webpack": "^3.4.1"
+    "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin"
+  },
+  "resolutions": {
+    "upath": "1.1.1"
   }
+
 }
