@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
-[![GitHub Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
+[![GitHub Release](https://img.shields.io/badge/release-v1.2.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
 
 #### Alert notification plugin for Graylog to generate log messages from alerts
 
@@ -14,7 +14,7 @@ Also perfect for example to forward alerts via log messages to a Security Incide
 
 Please also take note that if message field values are included in the log message template and these values vary based on the messages that triggered the alert, then multiple log messages may be generated per alert.  
 
-**Required Graylog version:** 2.5.0 and later
+**Required Graylog version:** 3.0.0 and later
 
 Alert example recorded as an internal log message:
 
