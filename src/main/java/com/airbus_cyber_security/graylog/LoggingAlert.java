@@ -236,12 +236,20 @@ public class LoggingAlert implements AlarmCallback{
     	
     	return query.toString();
     }
-    
+
+	private String getStreamSearchUrl(Stream stream, CheckResult result, DateTime timeBeginSearch){
+		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
+		return MSGS_URL_BEGIN
+				+ timeBeginSearch.minusMinutes(1).toString(timeFormatter) + MSGS_URL_TO
+				+ result.getTriggeredAt().plusMinutes(1).toString(timeFormatter)
+				+ "&q=streams%3A" + stream.getId();
+	}
+
     private String getMessagesUrl(Stream stream, CheckResult result, MessageSummary messageSummary, DateTime timeBeginSearch)
-    { 
+    {
+    	DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
     	Optional<Alert> optionalAlert = alertService.getLastTriggeredAlert(stream.getId(), result.getTriggeredCondition().getId());
     	if(optionalAlert.isPresent()) {
-    		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
 
     		DateTime endTime;
     		/* If the alert is interval and resolved */
@@ -256,7 +264,7 @@ public class LoggingAlert implements AlarmCallback{
 	    	if(endTime.isBefore(timeBeginSearch.plusMinutes(timeRange))) {
 	    		endTime = timeBeginSearch.plusMinutes(timeRange);
 	    	}
-    		
+
     		DateTime beginTime = timeBeginSearch;
 
     		String search = "&q=streams%3A" + stream.getId();
@@ -264,7 +272,7 @@ public class LoggingAlert implements AlarmCallback{
     		if(conditionParameters.containsKey("additional_stream")) {
     			String additionalStreamID = (String) conditionParameters.get("additional_stream");
 
-    			String previousMsgsURL =  getPreviousMessagesURL(additionalStreamID, beginTime, endTime);    			
+    			String previousMsgsURL =  getPreviousMessagesURL(additionalStreamID, beginTime, endTime);
     			if(previousMsgsURL!= null && !previousMsgsURL.isEmpty()) {
     				DateTime timeFromMsgsUrl = getTimeFrom(previousMsgsURL, timeFormatter);
     				if(timeFromMsgsUrl != null && timeFromMsgsUrl.isBefore(beginTime)){
@@ -289,7 +297,7 @@ public class LoggingAlert implements AlarmCallback{
     		+ searchFields.toString();
     	}
 
-    	return "";		
+		return getStreamSearchUrl(stream, result, timeBeginSearch);
     }
     
     private String getHashFromString(String value) {
@@ -346,7 +354,7 @@ public class LoggingAlert implements AlarmCallback{
 		Set<String> listMessagesToLog= new LinkedHashSet<>();
 		if(listMsgSummary.isEmpty()) {
 			LoggingAlertFields loggingAlertFields= new LoggingAlertFields( getAlertID(stream, result, ""), 
-					getGraylogID(stream, result), configs.getString(FIELD_SEVERITY), date, getAlertUrl(stream, result), "");
+					getGraylogID(stream, result), configs.getString(FIELD_SEVERITY), date, getAlertUrl(stream, result), getStreamSearchUrl(stream, result, date));
 			String messageToLog=buildBody(stream, result, new Message("Empty message", "LoggingAlert", date), loggingAlertFields);
 			listMessagesToLog.add(messageToLog);
 		}else {

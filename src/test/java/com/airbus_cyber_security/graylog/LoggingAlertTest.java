@@ -57,7 +57,6 @@ import static uk.org.lidalia.slf4jext.Level.INFO;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -212,6 +211,7 @@ public class LoggingAlertTest {
 		UUID uuid = UUID.randomUUID();
 		mockStatic(UUID.class);
 		when(UUID.randomUUID()).thenReturn(uuid);
+		when(stream.getId()).thenReturn("001");
 
 		alarmCallback.call(stream,checkResult);
 
@@ -225,7 +225,8 @@ public class LoggingAlertTest {
 						+ "target_host_name:  | target_ip_address:  | target_mac_address:  | target_port:  | target_process:  | "
 						+ "target_service_name:  | target_tool:  | target_url:  | target_user_name:  | target_user_privileges:  | "
 						+ "target_user_unique_identifier:  | file_name:  | file_hash:  | file_size:  | file_type:  | "
-						+ "alert_url: http://localhost:8080 | messages_url: http://localhost:8080"));
+						+ "alert_url: http://localhost:8080 | messages_url: http://localhost:8080"
+						+ "/search?rangetype=absolute&from=2017-09-06T16%3A59%3A00.000Z&to=2017-09-06T17%3A01%3A00.000Z&q=streams%3A001"));
 	}
 
 	@Test
@@ -291,6 +292,7 @@ public class LoggingAlertTest {
 		UUID uuid = UUID.randomUUID();
 		mockStatic(UUID.class);
 		when(UUID.randomUUID()).thenReturn(uuid);
+		when(stream.getId()).thenReturn("001");
 
 		alarmCallback.call(stream,checkResult);
 
@@ -306,7 +308,9 @@ public class LoggingAlertTest {
 						+ "target_process: process_dst | target_service_name: service_dst | target_tool: tool_dst | target_url: url_dst | "
 						+ "target_user_name: user_dst | target_user_privileges: user_role_dst | target_user_unique_identifier: uid_dst | "
 						+ "file_name: filename | file_hash: filehash | file_size: filesize | file_type: filetype | "
-						+ "alert_url: http://localhost:8080 | messages_url: http://localhost:8080"));
+						+ "alert_url: http://localhost:8080 | messages_url: http://localhost:8080"
+						+ "/search?rangetype=absolute&from=2017-09-06T16%3A59%3A00.000Z&to=2017-09-06T17%3A01%3A00.000Z&q=streams%3A001"));
+
 
 	}
 
@@ -1070,6 +1074,60 @@ public class LoggingAlertTest {
 						+ "&from=2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A03%3A27.000Z&q=streams%3A001+AND+user%3A\"user1\""));
 
 
+	}
+
+	@Test
+	public void callWithListMsgEmpty() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+		initializeSimpleConfiguration();
+
+		Stream stream = mock(Stream.class);
+
+		final AlertCondition alertCondition = new DummyAlertCondition(
+				stream,
+				CONDITION_ID,
+				new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC),
+				USER,
+				ImmutableMap.of(),
+				CONDITION_TITLE
+		);
+
+		final AlertCondition.CheckResult checkResult = new AbstractAlertCondition.CheckResult(
+				true,
+				alertCondition,
+				"Result Description",
+				new DateTime(2018, 4, 19, 14, 0, DateTimeZone.UTC),
+				Collections.emptyList()
+		);
+
+		UUID uuid = UUID.randomUUID();
+		mockStatic(UUID.class);
+		when(UUID.randomUUID()).thenReturn(uuid);
+
+		Alert alert = mock(Alert.class);
+		when(alert.getId()).thenReturn("002");
+		when(alert.isInterval()).thenReturn(false);
+		when(alert.getTriggeredAt()).thenReturn(new DateTime(2018, 04, 19, 14, 01, 27, DateTimeZone.UTC));
+		when(alert.getResolvedAt()).thenReturn(new DateTime(2018, 04, 19, 14, 02, 27, DateTimeZone.UTC));
+		Optional<Alert> optAlert = Optional.of(alert);
+
+		when(stream.getId()).thenReturn("001");
+		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
+
+		alarmCallback.call(stream,checkResult);
+
+		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
+				tuple(INFO, "alert_id: 002 | alert_title: Alert Condition Title | alert_description: Result Description | "
+						+ "severity: info | create_time: 2018-04-19T14:00:00.000Z | detect_time: 2018-04-19T14:00:00.000Z | "
+						+ "analyzer: Graylog | analyzer_time: 2018-04-19T14:00:00.000Z | sensor:  | classification:  | "
+						+ "source_command:  | source_file_name:  | source_host_name:  | source_ip_address:  | source_mac_address:  | "
+						+ "source_port:  | source_process:  | source_service_name:  | source_tool:  | source_url:  | source_user_name:  | "
+						+ "source_user_privileges:  | source_user_unique_identifier:  | target_command:  | target_file_name:  | "
+						+ "target_host_name:  | target_ip_address:  | target_mac_address:  | target_port:  | target_process:  | "
+						+ "target_service_name:  | target_tool:  | target_url:  | target_user_name:  | target_user_privileges:  | "
+						+ "target_user_unique_identifier:  | file_name:  | file_hash:  | file_size:  | file_type:  | "
+						+ "alert_url: http://localhost:8080/alerts/002 | messages_url: http://localhost:8080"
+						+ "/search?rangetype=absolute&from="
+						+ "2018-04-19T13%3A59%3A00.000Z&to=2018-04-19T14%3A01%3A00.000Z&q=streams%3A001"));
 	}
 	
 	@After
