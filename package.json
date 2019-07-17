@@ -19,7 +19,7 @@
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin"
   },
   "resolutions": {
-    "upath": "1.1.1"
+    "upath": "1.1.2"
   }
 
 }
