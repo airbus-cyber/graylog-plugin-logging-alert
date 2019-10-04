@@ -38,6 +38,7 @@ import com.airbus_cyber_security.graylog.config.SeverityType;
 import com.floreysoft.jmte.Engine;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import scala.xml.Null;
 
 /**
  * This is the plugin. Your class should implement one of the existing plugin
@@ -54,6 +55,7 @@ public class LoggingAlert implements AlarmCallback{
 	private static final String FIELD_COMMENT = "comment";
 	private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
 	private static final String FIELD_SINGLE_MESSAGE = "single_notification";
+	private static final String FIELD_TAG = "alert_tag";
 	
 	private static final String SEPARATOR_TEMPLATE = "\n";
 	
@@ -391,12 +393,19 @@ public class LoggingAlert implements AlarmCallback{
 				}
 			}
 		}
+
+		Logger localLogger;
+		if(configs.getString(FIELD_TAG) != null && !configs.getString(FIELD_TAG).isEmpty()){
+			localLogger = LoggerFactory.getLogger(configs.getString(FIELD_TAG));
+		}else{
+			localLogger = LOGGER;
+		}
 		
 		/* Log each messages */
 		int iter = 0;
 		for (String message : listMessagesToLog) {
 			if(limitOverflow <= 0 || iter < limitOverflow) {
-				LOGGER.info(message);
+				localLogger.info(message);
 			} else {
 				LOGGER_OVERFLOW.info(message);
 			}
@@ -463,6 +472,12 @@ public class LoggingAlert implements AlarmCallback{
         		"Aggregate alerts received in the given number of minutes by logging alerts with the same alert id", 
         		ConfigurationField.Optional.OPTIONAL,
         		NumberField.Attribute.ONLY_POSITIVE));
+
+		configurationRequest.addField(new TextField(FIELD_TAG,
+				"Alert Tag",
+				configGeneral.accessAlertTag(),
+				"The tag of the generated logs",
+				ConfigurationField.Optional.OPTIONAL));
 
 		configurationRequest.addField(new BooleanField(FIELD_SINGLE_MESSAGE,
 				"Single message",

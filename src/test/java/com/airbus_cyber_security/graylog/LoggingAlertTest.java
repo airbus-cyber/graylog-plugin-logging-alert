@@ -149,13 +149,15 @@ public class LoggingAlertTest {
 	}
 
 	private Map<String, Object> getConfigMap(String severity, String body, 
-			List<String> aggregationField, int aggregationTime, int limitOverflow) {
+			List<String> aggregationField, int aggregationTime, int limitOverflow, String alertTag, boolean singleNotification) {
 		Map<String, Object> parameters = Maps.newHashMap();
 		parameters.put("severity", severity);
 		parameters.put("content", body);
 		parameters.put("split_fields", aggregationField);
 		parameters.put("aggregation_time", aggregationTime);
 		parameters.put("limit_overflow", limitOverflow);
+		parameters.put("alert_tag", alertTag);
+		parameters.put("single_notification", singleNotification);
 		return parameters;
 	}
 
@@ -172,7 +174,7 @@ public class LoggingAlertTest {
 	}
 
 	private void initializeSimpleConfiguration() throws AlarmCallbackConfigurationException {
-		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, Collections.emptyList(), 0, 0));
+		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, Collections.emptyList(), 0, 0, null, false));
 	}
 
 	@Test
@@ -318,7 +320,7 @@ public class LoggingAlertTest {
 	public void testAggregationWith1Field() throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 0));
+				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -376,7 +378,7 @@ public class LoggingAlertTest {
 	public void testDeduped()  throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-				"user: ${message.fields.user}", listAggegationFields, 0, 0));
+				"user: ${message.fields.user}", listAggegationFields, 0, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -430,7 +432,7 @@ public class LoggingAlertTest {
 	public void testAggregationWithMultipleField() throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Arrays.asList(USER,"ip_src");
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-				"user: ${message.fields.user}" +SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 0));
+				"user: ${message.fields.user}" +SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -490,7 +492,7 @@ public class LoggingAlertTest {
 	public void testWithAggregationTime() throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 15, 0));
+				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 15, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -558,7 +560,7 @@ public class LoggingAlertTest {
 	public void testWithFieldAlerId() throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList("user");
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}",listAggegationFields, 0, 0));		 
+				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}",listAggegationFields, 0, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -732,7 +734,7 @@ public class LoggingAlertTest {
 
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 2));
+				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 2,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -790,7 +792,7 @@ public class LoggingAlertTest {
 	@Test
 	public void callWithSplitFieldTestMessageUrl() throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
-		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, listAggegationFields, 0, 0));
+		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, listAggegationFields, 0, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -887,7 +889,7 @@ public class LoggingAlertTest {
 	@Test
 	public void testMsgURLWithPreviousMsgsURL() throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
-		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE_MSG_URL, listAggegationFields, 15, 0));
+		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE_MSG_URL, listAggegationFields, 15, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -983,7 +985,7 @@ public class LoggingAlertTest {
 	@Test
 	public void callWithSplitFieldNotPresent() throws AlarmCallbackException, AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
-		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, listAggegationFields, 0, 0));
+		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, listAggegationFields, 0, 0,null, false));
 
 		Stream stream = mock(Stream.class);
 
@@ -1129,6 +1131,75 @@ public class LoggingAlertTest {
 						+ "/search?rangetype=absolute&from="
 						+ "2018-04-19T13%3A59%3A00.000Z&to=2018-04-19T14%3A01%3A00.000Z&q=streams%3A001"));
 	}
+
+	@Test
+	public void callWithSpecificTagAndSingleNotification() throws AlarmCallbackConfigurationException, AlarmCallbackException {
+		String template = "type: alert\n" +
+							"id: ${logging_alert.id}\n" +
+							"severity: ${logging_alert.severity}\n" +
+							"app: graylog\n" +
+							"subject: ${alertCondition.title}\n" +
+							"body: ${check_result.resultDescription}\n" +
+							"ip_srcs: [${foreach messages message}${message.fields.ip_src},${end}]";
+
+		initializeConfiguration(getConfigMap("info", template, Collections.emptyList(), 0, 0,"SpecificTag", true));
+
+		Stream stream = mock(Stream.class);
+
+		final AlertCondition alertCondition = new DummyAlertCondition(
+				stream,
+				CONDITION_ID,
+				new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC),
+				USER,
+				ImmutableMap.of(),
+				CONDITION_TITLE
+		);
+
+		Message message1 = new Message("Test message 1", "source1", new DateTime(2018, 4, 19, 14, 0, DateTimeZone.UTC));
+		message1.addField(USER, "admin");
+		message1.addField("ip_src", "127.0.0.1");
+		Message message2 = new Message("Test message 2", "source2", new DateTime(2018, 4, 19, 14, 1, DateTimeZone.UTC));
+		message2.addField("ip_src", "127.0.0.2");
+		Message message3 = new Message("Test message 3", "source3", new DateTime(2018, 4, 19, 14, 2, DateTimeZone.UTC));
+		message3.addField(USER, "user1");
+		message3.addField("ip_src", "127.0.0.3");
+
+		final List<MessageSummary> messageSummaries = ImmutableList.of(
+				new MessageSummary("graylog_1", message1),
+				new MessageSummary("graylog_2", message2),
+				new MessageSummary("graylog_3", message3)
+		);
+
+		final AlertCondition.CheckResult checkResult = new AbstractAlertCondition.CheckResult(
+				true,
+				alertCondition,
+				"Result Description",
+				new DateTime(2018, 4, 19, 14, 0, DateTimeZone.UTC),
+				messageSummaries
+		);
+
+		UUID uuid = UUID.randomUUID();
+		mockStatic(UUID.class);
+		when(UUID.randomUUID()).thenReturn(uuid);
+
+		Alert alert = mock(Alert.class);
+		when(alert.getId()).thenReturn("002");
+		when(alert.isInterval()).thenReturn(true);
+		when(alert.getTriggeredAt()).thenReturn(new DateTime(2018, 04, 19, 14, 01, 27, DateTimeZone.UTC));
+		when(alert.getResolvedAt()).thenReturn(new DateTime(2018, 04, 19, 14, 02, 27, DateTimeZone.UTC));
+		Optional<Alert> optAlert = Optional.of(alert);
+
+		when(stream.getId()).thenReturn("001");
+		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
+
+		alarmCallback.call(stream,checkResult);
+
+		final TestLogger testLogger = TestLoggerFactory.getTestLogger("SpecificTag");
+		assertThat(testLogger.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
+				tuple(INFO, "type: alert | id: 002 | severity: info | app: graylog | subject: Alert Condition Title " +
+						"| body: Result Description | ip_srcs: [127.0.0.1,127.0.0.2,127.0.0.3,]"));
+		
+	}
 	
 	@After
 	public void clearLoggers() {
@@ -1136,4 +1207,3 @@ public class LoggingAlertTest {
 	}
 	
 }
-
