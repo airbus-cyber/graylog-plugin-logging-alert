@@ -55,9 +55,14 @@ The parameter **Split Fields** allow you to split the alert based on message fie
 
 The parameter **Aggregation Time Range** allow you to aggregate alerts received in the given number of minutes. Thus, the alerts are logged with the same alert id during the time range.
 
+![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-logging-alert/master/images/edit_notification.png)
+
+The parameter **Single message** allow you to sent only one notification by alert
+
+![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-logging-alert/master/images/edit_notification2.png)
+
 You can optionally add any **Comment** about the configuration of the notification.  
 
-![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-logging-alert/master/images/edit_notification.png)
 
 Make sure you also configured alert conditions for the stream so that the alerts are actually triggered.  
 
