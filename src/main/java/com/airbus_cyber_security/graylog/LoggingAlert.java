@@ -22,11 +22,7 @@ import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.configuration.Configuration;
 import org.graylog2.plugin.configuration.ConfigurationException;
 import org.graylog2.plugin.configuration.ConfigurationRequest;
-import org.graylog2.plugin.configuration.fields.ConfigurationField;
-import org.graylog2.plugin.configuration.fields.DropdownField;
-import org.graylog2.plugin.configuration.fields.ListField;
-import org.graylog2.plugin.configuration.fields.NumberField;
-import org.graylog2.plugin.configuration.fields.TextField;
+import org.graylog2.plugin.configuration.fields.*;
 import org.graylog2.plugin.indexer.searches.timeranges.AbsoluteRange;
 import org.graylog2.plugin.indexer.searches.timeranges.InvalidRangeParametersException;
 import org.graylog2.plugin.indexer.searches.timeranges.RelativeRange;
@@ -42,6 +38,7 @@ import com.airbus_cyber_security.graylog.config.SeverityType;
 import com.floreysoft.jmte.Engine;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import scala.xml.Null;
 
 /**
  * This is the plugin. Your class should implement one of the existing plugin
@@ -57,6 +54,8 @@ public class LoggingAlert implements AlarmCallback{
 	private static final String FIELD_SPLIT = "split_fields";
 	private static final String FIELD_COMMENT = "comment";
 	private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
+	private static final String FIELD_SINGLE_MESSAGE = "single_notification";
+	private static final String FIELD_TAG = "alert_tag";
 	
 	private static final String SEPARATOR_TEMPLATE = "\n";
 	
@@ -110,11 +109,28 @@ public class LoggingAlert implements AlarmCallback{
         
         return model;
     }
+
+	private Map<String, Object> getModel(Stream stream, AlertCondition.CheckResult checkResult,
+										 ArrayList <Message> messages, LoggingAlertFields loggingAlertFields) {
+		Map<String, Object> model = new HashMap<>();
+		model.put("messages", messages);
+		model.put("stream", stream);
+		model.put("check_result", checkResult);
+		model.put("alertCondition", checkResult.getTriggeredCondition());
+		model.put("logging_alert", loggingAlertFields);
+
+		return model;
+	}
     
     private String buildBody(Stream stream, AlertCondition.CheckResult checkResult, Message message, LoggingAlertFields loggingAlertFields) {
         Map<String, Object> model = getModel(stream, checkResult, message, loggingAlertFields);
         return this.templateEngine.transform(configs.getString(FIELD_BODY).replace(SEPARATOR_TEMPLATE, separator), model);
     }
+
+	private String buildBody(Stream stream, AlertCondition.CheckResult checkResult, ArrayList<Message> messages, LoggingAlertFields loggingAlertFields) {
+		Map<String, Object> model = getModel(stream, checkResult, messages, loggingAlertFields);
+		return this.templateEngine.transform(configs.getString(FIELD_BODY).replace(SEPARATOR_TEMPLATE, separator), model);
+	}
 	
     
     private String getAggregationAlertID(Stream stream, DateTime date, String sufixID) {
@@ -358,20 +374,38 @@ public class LoggingAlert implements AlarmCallback{
 			String messageToLog=buildBody(stream, result, new Message("Empty message", "LoggingAlert", date), loggingAlertFields);
 			listMessagesToLog.add(messageToLog);
 		}else {
-			Map<String, LoggingAlertFields> listOfloggingAlertField = getListOfloggingAlertField(stream, result, date);
-			for (MessageSummary messageSummary : listMsgSummary) {	
-				String valuesAggregationField = getValuesAggregationField(messageSummary);
-				String messageToLog=buildBody(stream, result, messageSummary.getRawMessage(), 
-						listOfloggingAlertField.get(valuesAggregationField));
+			if(configs.getBoolean(FIELD_SINGLE_MESSAGE)){
+				LoggingAlertFields loggingAlertFields= new LoggingAlertFields( getAlertID(stream, result, ""),
+						getGraylogID(stream, result), configs.getString(FIELD_SEVERITY), date, getAlertUrl(stream, result), getStreamSearchUrl(stream, result, date));
+				ArrayList <Message> listMessages = new ArrayList<>();
+				for (MessageSummary messageSummary : listMsgSummary) {
+					listMessages.add(messageSummary.getRawMessage());
+				}
+				String messageToLog = buildBody(stream, result, listMessages, loggingAlertFields);
 				listMessagesToLog.add(messageToLog);
+			}else {
+				Map<String, LoggingAlertFields> listOfloggingAlertField = getListOfloggingAlertField(stream, result, date);
+				for (MessageSummary messageSummary : listMsgSummary) {
+					String valuesAggregationField = getValuesAggregationField(messageSummary);
+					String messageToLog = buildBody(stream, result, messageSummary.getRawMessage(),
+							listOfloggingAlertField.get(valuesAggregationField));
+					listMessagesToLog.add(messageToLog);
+				}
 			}
+		}
+
+		Logger localLogger;
+		if(configs.getString(FIELD_TAG) != null && !configs.getString(FIELD_TAG).isEmpty()){
+			localLogger = LoggerFactory.getLogger(configs.getString(FIELD_TAG));
+		}else{
+			localLogger = LOGGER;
 		}
 		
 		/* Log each messages */
 		int iter = 0;
 		for (String message : listMessagesToLog) {
 			if(limitOverflow <= 0 || iter < limitOverflow) {
-				LOGGER.info(message);
+				localLogger.info(message);
 			} else {
 				LOGGER_OVERFLOW.info(message);
 			}
@@ -438,7 +472,18 @@ public class LoggingAlert implements AlarmCallback{
         		"Aggregate alerts received in the given number of minutes by logging alerts with the same alert id", 
         		ConfigurationField.Optional.OPTIONAL,
         		NumberField.Attribute.ONLY_POSITIVE));
-		
+
+		configurationRequest.addField(new TextField(FIELD_TAG,
+				"Alert Tag",
+				configGeneral.accessAlertTag(),
+				"The tag of the generated logs",
+				ConfigurationField.Optional.OPTIONAL));
+
+		configurationRequest.addField(new BooleanField(FIELD_SINGLE_MESSAGE,
+				"Single message",
+				false,
+				"Check this box to send only one message by alert"));
+
 		configurationRequest.addField(new TextField(FIELD_COMMENT,
                 "Comment",
                 "",

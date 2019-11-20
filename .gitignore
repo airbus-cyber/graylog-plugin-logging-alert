@@ -15,3 +15,5 @@ node_modules/
 node/
 build/
 cache/
+.idea/
+/graylog-plugin-logging-alert.iml
