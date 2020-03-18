@@ -3,6 +3,7 @@ package com.airbus_cyber_security.graylog;
 import org.graylog2.plugin.PluginConfigBean;
 import org.graylog2.plugin.PluginModule;
 
+import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 
 import java.util.Collections;
 import java.util.Set;
@@ -16,6 +17,7 @@ public class LoggingAlertModule extends PluginModule {
      *
      * Implementing this method is optional. The default method returns an empty {@link Set}.
      */
+	
     @Override
     public Set<? extends PluginConfigBean> getConfigBeans() {
         return Collections.emptySet();
@@ -23,6 +25,6 @@ public class LoggingAlertModule extends PluginModule {
 
     @Override
     protected void configure() {
-    	addAlarmCallback(LoggingAlert.class);
+    	addNotificationType(LoggingAlertConfig.TYPE_NAME, LoggingAlertConfig.class, LoggingAlert.class, LoggingAlert.Factory.class);
     }
 }
