@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
 import org.graylog.events.processor.EventDefinitionDto;
@@ -68,29 +69,29 @@ public class LoggingAlertUtils {
 		return templateEngine.transform(alertConfig.logBody(), model);
 	}
 	
-//	public static String getAggregationAlertID(Message message, LoggingAlertConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
-//		try {
-//			RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
-//			final AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
-//			
-//			final String filter = "streams:" + config.aggregationStream();
-//			
-//			if(ctx.eventDefinition().isPresent()) {
-//				StringBuilder bldStringsearchQuery = new StringBuilder(config.fieldAlertId()+": "+ctx.notificationId()+sufixID);
-//				bldStringsearchQuery.append(" OR "+config.fieldAlertId()+": "+ctx.notificationId()+sufixID);
-//				
-//		    	final SearchResult backlogResult = searches.search(bldStringsearchQuery.toString(), filter,
-//						range, 10, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
-//		    	
-//		    	if(!backlogResult.getResults().isEmpty()) {
-//		    		return backlogResult.getResults().get(0).getMessage().getField(config.fieldAlertId()).toString();
-//		    	}
-//			}
-//		} catch (InvalidRangeParametersException e) {
-//			e.printStackTrace();
-//		}
-//    	return null;
-//    }
+	public static String getAggregationAlertID(Message message, LoggingAlertConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
+		try {
+			RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
+			final AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
+
+			final String filter = "streams:" + config.aggregationStream();
+
+			if(ctx.eventDefinition().isPresent()) {
+				StringBuilder bldStringsearchQuery = new StringBuilder(config.fieldAlertId()+": "+ctx.notificationId()+sufixID);
+				bldStringsearchQuery.append(" OR "+config.fieldAlertId()+": "+ctx.notificationId()+sufixID);
+
+		    	final SearchResult backlogResult = searches.search(bldStringsearchQuery.toString(), filter,
+						range, 10, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
+
+		    	if(backlogResult != null && !backlogResult.getResults().isEmpty()) {
+		    		return backlogResult.getResults().get(0).getMessage().getField(config.fieldAlertId()).toString();
+		    	}
+			}
+		} catch (InvalidRangeParametersException e) {
+			e.printStackTrace();
+		}
+    	return null;
+    }
     
 	public static String getGraylogID(EventNotificationContext ctx, Message message) {
     	if (ctx.eventDefinition().isPresent()) {
@@ -113,10 +114,10 @@ public class LoggingAlertUtils {
 	public static String getAlertID(LoggingAlertConfig config, Message message, EventNotificationContext ctx, Searches searches, String sufixID) {
     	String loggingAlertID = null;
     	    	
-//		if(config.aggregationTime() > 0 && 
-//				config.aggregationStream() != null && !config.aggregationStream().isEmpty()) {
-//			loggingAlertID = getAggregationAlertID(message, config, ctx, searches, sufixID);
-//		}
+		if(config.aggregationTime() > 0 &&
+				config.aggregationStream() != null && !config.aggregationStream().isEmpty()) {
+			loggingAlertID = getAggregationAlertID(message, config, ctx, searches, sufixID);
+		}
 		
 		if(loggingAlertID == null || loggingAlertID.isEmpty()) {
 			loggingAlertID = getNewAlertID(message, ctx) + sufixID;
@@ -253,21 +254,21 @@ public class LoggingAlertUtils {
     	return String.valueOf(hash);
     }
     
-	public static Map<String, LoggingAlertFields> getListOfloggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingAlertConfig config, 
-			Map<String, Object> model, DateTime date, Configuration configuration, Searches searches) {
+	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingAlertConfig config,
+							 Map<String, Object> model, DateTime date, Configuration configuration, Searches searches) {
     	String alertUrl = getAlertUrl(ctx);
-    	Map<String, LoggingAlertFields> listOfloggingAlertField = Maps.newHashMap();
+    	Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 
 		for (MessageSummary messageSummary : backlog) {		
 			String valuesAggregationField = getValuesAggregationField(messageSummary, configuration);
 			String messagesUrl = getMessagesUrl(ctx, configuration, model, messageSummary, date, searches);
 			String graylogId = getGraylogID(ctx, messageSummary.getRawMessage());
 	    	
-//			if(messageSummary.hasField(config.fieldAlertId())) {
-//				listOfloggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(config.fieldAlertId()), 
-//						graylogId, config.severity().getType(), date, alertUrl, messagesUrl));
-//			}else {	
-				if(!listOfloggingAlertField.containsKey(valuesAggregationField)) {
+			if(messageSummary.hasField(config.fieldAlertId())) {
+				listOfLoggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(config.fieldAlertId()),
+						graylogId, config.severity().getType(), date, alertUrl, messagesUrl));
+			}else {
+				if(!listOfLoggingAlertField.containsKey(valuesAggregationField)) {
 					/* Add hash code if split field */
 					String alertID = null;
 					Message message = messageSummary.getRawMessage();
@@ -276,14 +277,38 @@ public class LoggingAlertUtils {
 					}else {
 						alertID = getAlertID(config,message, ctx, searches, "-"+getHashFromString(valuesAggregationField));
 					}
-					listOfloggingAlertField.put(valuesAggregationField,
+					listOfLoggingAlertField.put(valuesAggregationField,
 							 new LoggingAlertFields(alertID, graylogId, config.severity().getType(), date, alertUrl, messagesUrl));
 				}	
-//			}
+			}
 		}
 		
-		return listOfloggingAlertField;
+		return listOfLoggingAlertField;
     }
+
+	public static void addLogToListMessages(final LoggingAlertConfig config, Set<String> listMessagesToLog,
+									  final Map<String, Object> model, LoggingAlertFields loggingAlertFields) {
+		model.put("logging_alert", loggingAlertFields);
+		String messageToLog=buildBody(config, model);
+		listMessagesToLog.add(messageToLog);
+	}
+
+	public static Map<String, Object> getModel(final EventNotificationContext context, final ImmutableList<MessageSummary> backlog,
+											   final ObjectMapper objectMapper) {
+		final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
+		final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
+		final EventNotificationModelData modelData = EventNotificationModelData.builder()
+				.eventDefinitionId(definitionDto.map(EventDefinitionDto::id).orElse(UNKNOWN))
+				.eventDefinitionType(definitionDto.map(d -> d.config().type()).orElse(UNKNOWN))
+				.eventDefinitionTitle(definitionDto.map(EventDefinitionDto::title).orElse(UNKNOWN))
+				.eventDefinitionDescription(definitionDto.map(EventDefinitionDto::description).orElse(UNKNOWN))
+				.jobDefinitionId(jobTriggerDto.map(JobTriggerDto::jobDefinitionId).orElse(UNKNOWN))
+				.jobTriggerId(jobTriggerDto.map(JobTriggerDto::id).orElse(UNKNOWN))
+				.event(context.event())
+				.backlog(backlog)
+				.build();
+		return objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
+	}
     
 	private static ConfigurationRequest getRequestedConfiguration(LoggingAlertConfig config, final Indices indices, final IndexSetRegistry indexSetRegistry) {
     	final ConfigurationRequest configurationRequest = new ConfigurationRequest();
@@ -311,7 +336,7 @@ public class LoggingAlertUtils {
                 ConfigurationField.Optional.NOT_OPTIONAL,
                 TextField.Attribute.TEXTAREA));
 		
-		/*configurationRequest.addField(new ListField(FIELD_SPLIT, 
+		configurationRequest.addField(new ListField(FIELD_SPLIT,
 				"Split Fields", 
 				Collections.emptyList(), 
         		mapFields.entrySet().stream().sorted(Map.Entry.comparingByValue()).
@@ -342,7 +367,7 @@ public class LoggingAlertUtils {
                 "Comment",
                 "",
                 "Comment about the configuration",
-                ConfigurationField.Optional.OPTIONAL));*/
+                ConfigurationField.Optional.OPTIONAL));
 		
     	return configurationRequest;
     }

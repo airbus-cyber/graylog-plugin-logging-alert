@@ -40,8 +40,17 @@ public abstract class LoggingAlertConfig implements EventNotificationConfig {
     
 	private static final String FIELD_ALERT_ID = "id";
     private static final String SEPARATOR_TEMPLATE  = "\n";
-    private static final String BODY_TEMPLATE = 
-	    		"severity: ${logging_alert.severity}";
+    private static final String BODY_TEMPLATE =
+            "type: alert" + SEPARATOR_TEMPLATE +
+                    FIELD_ALERT_ID+ ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
+                    "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
+                    "app: graylog" + SEPARATOR_TEMPLATE +
+                    "subject: ${alertCondition.title}" + SEPARATOR_TEMPLATE +
+                    "body: ${check_result.resultDescription}" + SEPARATOR_TEMPLATE +
+                    "src: ${message.fields.src_ip}" + SEPARATOR_TEMPLATE +
+                    "src_category: ${message.fields.src_category}" + SEPARATOR_TEMPLATE +
+                    "dest: ${message.fields.dest_ip}" + SEPARATOR_TEMPLATE +
+                    "dest_category: ${message.fields.dest_category}";
 	
 
     @JsonProperty(FIELD_SEVERITY)
@@ -105,8 +114,13 @@ public abstract class LoggingAlertConfig implements EventNotificationConfig {
         			.severity(SeverityType.LOW)
         			.logBody(BODY_TEMPLATE)
         			.separator(" | ")
+                    .aggregationStream("*")
         			.aggregationTime(0)
-        			.alertTag("LoggingAlert");
+                    .limitOverflow(0)
+                    .fieldAlertId(FIELD_ALERT_ID)
+        			.alertTag("LoggingAlert")
+                    .overflowTag("LoggingOverflow");
+
         }
     	
     	@JsonProperty(FIELD_SEVERITY)
