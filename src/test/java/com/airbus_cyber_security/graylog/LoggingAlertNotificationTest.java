@@ -1,5 +1,6 @@
 package com.airbus_cyber_security.graylog;
 
+import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.graylog.events.contentpack.entities.EventProcessorConfigEntity;
@@ -25,7 +26,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.config.SeverityType;
 import org.junit.rules.ExpectedException;
 import org.mockito.junit.MockitoJUnit;
@@ -126,7 +126,7 @@ public class LoggingAlertNotificationTest {
 		return NotificationDto.builder()
 				.title("")
 				.description("")
-				.config(LoggingAlertConfig.Builder.create()
+				.config(LoggingNotificationConfig.Builder.create()
 						.severity(SeverityType.LOW)
 						.separator("")
 						.logBody("")
@@ -144,7 +144,7 @@ public class LoggingAlertNotificationTest {
 		return NotificationDto.builder()
 				.title("Logging Alert Title")
 				.description("Logging alert")
-				.config(LoggingAlertConfig.Builder.create()
+				.config(LoggingNotificationConfig.Builder.create()
 						.severity(SeverityType.LOW)
 						.separator(" | ")
 						.logBody("body test ")
@@ -181,7 +181,7 @@ public class LoggingAlertNotificationTest {
 
 	@Test
 	public void testExecuteWithContext() throws EventNotificationException {
-		LoggingAlertConfig config = getConfig(BODY_TEMPLATE);
+		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE);
 		//list of MessageSummary
 		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
 				new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))
@@ -237,7 +237,7 @@ public class LoggingAlertNotificationTest {
 		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
 				new MessageSummary("graylog_1", message));
 
-		LoggingAlertConfig config = getConfig(BODY_TEMPLATE_ADDITIONAL_FIELDS);
+		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE_ADDITIONAL_FIELDS);
 
 		EventNotificationContext context = getContext(config);
 		when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
@@ -266,8 +266,8 @@ public class LoggingAlertNotificationTest {
 		return sdf.format(date.toDate());
 	}
 
-	private LoggingAlertConfig getConfig(String bodyTemplate) {
-		return LoggingAlertConfig.builder()
+	private LoggingNotificationConfig getConfig(String bodyTemplate) {
+		return LoggingNotificationConfig.builder()
 				.aggregationStream("aggregation_stream")
 				.aggregationTime(60)
 				.alertTag("LoggingAlert")
@@ -345,7 +345,7 @@ public class LoggingAlertNotificationTest {
 				.build();
 	}
 
-	private EventNotificationContext getContext(LoggingAlertConfig config) {
+	private EventNotificationContext getContext(LoggingNotificationConfig config) {
 		return EventNotificationContext.builder()
 				.notificationConfig(config)
 				.event(getEventDto())

@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
@@ -38,7 +39,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.config.SeverityType;
 import com.floreysoft.jmte.Engine;
 import com.google.common.collect.ImmutableList;
@@ -54,8 +54,6 @@ public class LoggingAlertUtils {
 	private static final String FIELD_SINGLE_MESSAGE = "single_notification";
 	private static final String FIELD_TAG = "alert_tag";
 	
-	private static final String SEPARATOR_TEMPLATE = "\n";
-	
 	private static final String MSGS_URL_BEGIN = "/search?rangetype=absolute&from=";
 	private static final String MSGS_URL_TO = "&to=";
 	private static final String MSGS_URL_STREAM = "streams%3A";
@@ -65,11 +63,11 @@ public class LoggingAlertUtils {
 	
 	private static final Engine templateEngine = new Engine();
 	
-	public static String buildBody(LoggingAlertConfig alertConfig, Map<String, Object> model) {
-		return templateEngine.transform(alertConfig.logBody(), model);
+	public static String buildBody(LoggingNotificationConfig config, Map<String, Object> model) {
+		return templateEngine.transform(config.logBody(), model);
 	}
 	
-	public static String getAggregationAlertID(Message message, LoggingAlertConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
+	public static String getAggregationAlertID(LoggingNotificationConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
 		try {
 			RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
 			final AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
@@ -93,7 +91,7 @@ public class LoggingAlertUtils {
     	return null;
     }
     
-	public static String getGraylogID(EventNotificationContext ctx, Message message) {
+	public static String getGraylogID(EventNotificationContext ctx) {
     	if (ctx.eventDefinition().isPresent()) {
     		return ctx.eventDefinition().get().id();
     	}
@@ -102,8 +100,8 @@ public class LoggingAlertUtils {
     	}
     }
     
-	public static String getNewAlertID(Message message, EventNotificationContext ctx) {
-    	String graylogID = getGraylogID(ctx, message);		
+	public static String getNewAlertID(EventNotificationContext ctx) {
+    	String graylogID = getGraylogID(ctx);
     	if(graylogID != null) {
 			return graylogID;
 		}else {
@@ -111,16 +109,16 @@ public class LoggingAlertUtils {
 		}
     }
     
-	public static String getAlertID(LoggingAlertConfig config, Message message, EventNotificationContext ctx, Searches searches, String sufixID) {
+	public static String getAlertID(LoggingNotificationConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
     	String loggingAlertID = null;
     	    	
 		if(config.aggregationTime() > 0 &&
 				config.aggregationStream() != null && !config.aggregationStream().isEmpty()) {
-			loggingAlertID = getAggregationAlertID(message, config, ctx, searches, sufixID);
+			loggingAlertID = getAggregationAlertID(config, ctx, searches, sufixID);
 		}
 		
 		if(loggingAlertID == null || loggingAlertID.isEmpty()) {
-			loggingAlertID = getNewAlertID(message, ctx) + sufixID;
+			loggingAlertID = getNewAlertID(ctx) + sufixID;
 		}
 		return loggingAlertID;
     }
@@ -254,7 +252,7 @@ public class LoggingAlertUtils {
     	return String.valueOf(hash);
     }
     
-	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingAlertConfig config,
+	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingNotificationConfig config,
 							 Map<String, Object> model, DateTime date, Configuration configuration, Searches searches) {
     	String alertUrl = getAlertUrl(ctx);
     	Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
@@ -262,7 +260,7 @@ public class LoggingAlertUtils {
 		for (MessageSummary messageSummary : backlog) {		
 			String valuesAggregationField = getValuesAggregationField(messageSummary, configuration);
 			String messagesUrl = getMessagesUrl(ctx, configuration, model, messageSummary, date, searches);
-			String graylogId = getGraylogID(ctx, messageSummary.getRawMessage());
+			String graylogId = getGraylogID(ctx);
 	    	
 			if(messageSummary.hasField(config.fieldAlertId())) {
 				listOfLoggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(config.fieldAlertId()),
@@ -273,9 +271,9 @@ public class LoggingAlertUtils {
 					String alertID = null;
 					Message message = messageSummary.getRawMessage();
 					if(valuesAggregationField.equals("")) {
-						alertID = getAlertID(config,message, ctx, searches, "");
+						alertID = getAlertID(config, ctx, searches, "");
 					}else {
-						alertID = getAlertID(config,message, ctx, searches, "-"+getHashFromString(valuesAggregationField));
+						alertID = getAlertID(config, ctx, searches, "-"+getHashFromString(valuesAggregationField));
 					}
 					listOfLoggingAlertField.put(valuesAggregationField,
 							 new LoggingAlertFields(alertID, graylogId, config.severity().getType(), date, alertUrl, messagesUrl));
@@ -286,7 +284,7 @@ public class LoggingAlertUtils {
 		return listOfLoggingAlertField;
     }
 
-	public static void addLogToListMessages(final LoggingAlertConfig config, Set<String> listMessagesToLog,
+	public static void addLogToListMessages(final LoggingNotificationConfig config, Set<String> listMessagesToLog,
 									  final Map<String, Object> model, LoggingAlertFields loggingAlertFields) {
 		model.put("logging_alert", loggingAlertFields);
 		String messageToLog=buildBody(config, model);
@@ -310,7 +308,7 @@ public class LoggingAlertUtils {
 		return objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
 	}
     
-	private static ConfigurationRequest getRequestedConfiguration(LoggingAlertConfig config, final Indices indices, final IndexSetRegistry indexSetRegistry) {
+	private static ConfigurationRequest getRequestedConfiguration(LoggingNotificationConfig config, final Indices indices, final IndexSetRegistry indexSetRegistry) {
     	final ConfigurationRequest configurationRequest = new ConfigurationRequest();
 		final String[] writeIndexWildcards = indexSetRegistry.getIndexWildcards();
         final Set<String> listFields = indices.getAllMessageFields(writeIndexWildcards);    
@@ -372,7 +370,7 @@ public class LoggingAlertUtils {
     	return configurationRequest;
     }
     
-	public static Configuration getConfiguration(final LoggingAlertConfig config, final Indices indices, final IndexSetRegistry indexSetRegistry) {
+	public static Configuration getConfiguration(final LoggingNotificationConfig config, final Indices indices, final IndexSetRegistry indexSetRegistry) {
     	ConfigurationRequest configurationRequest = getRequestedConfiguration(config, indices, indexSetRegistry);
     	Map<String, ConfigurationField> fields = configurationRequest.getFields();
     	Map<String, Object> mapConfigFields = new HashMap<>();

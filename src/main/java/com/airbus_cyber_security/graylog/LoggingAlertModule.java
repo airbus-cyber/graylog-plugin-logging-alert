@@ -1,9 +1,8 @@
 package com.airbus_cyber_security.graylog;
 
+import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import org.graylog2.plugin.PluginConfigBean;
 import org.graylog2.plugin.PluginModule;
-
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 
 import java.util.Collections;
 import java.util.Set;
@@ -25,6 +24,6 @@ public class LoggingAlertModule extends PluginModule {
 
     @Override
     protected void configure() {
-    	addNotificationType(LoggingAlertConfig.TYPE_NAME, LoggingAlertConfig.class, LoggingAlert.class, LoggingAlert.Factory.class);
+    	addNotificationType(LoggingNotificationConfig.TYPE_NAME, LoggingNotificationConfig.class, LoggingAlert.class, LoggingAlert.Factory.class);
     }
 }

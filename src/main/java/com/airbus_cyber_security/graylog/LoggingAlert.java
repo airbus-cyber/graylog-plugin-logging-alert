@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import org.graylog.events.notifications.EventNotification;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationException;
@@ -16,7 +17,6 @@ import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.configuration.Configuration;
 import org.joda.time.DateTime;
 
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -32,7 +32,7 @@ public class LoggingAlert implements EventNotification{
 	
 	private static final String FIELD_SEVERITY = "severity";
 	private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-//	
+
 	private final Indices indices;
 	private final IndexSetRegistry indexSetRegistry;
     
@@ -60,7 +60,7 @@ public class LoggingAlert implements EventNotification{
 	@Override
 	public void execute(EventNotificationContext ctx) throws EventNotificationException {
 		try {
-			final LoggingAlertConfig config = (LoggingAlertConfig) ctx.notificationConfig();
+			final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
 			final ImmutableList<MessageSummary> backlog = notificationCallbackService.getBacklogForEvent(ctx);
 
 			DateTime date = ctx.jobTrigger().get().triggeredAt().get();
@@ -75,9 +75,8 @@ public class LoggingAlert implements EventNotification{
 			final Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
 
 			if (backlog.isEmpty()) {
-				Message message = new Message(model);
-				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, message, ctx, searches, ""),
-						LoggingAlertUtils.getGraylogID(ctx, message),
+				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
+						LoggingAlertUtils.getGraylogID(ctx),
 						config.severity().getType(),
 						date,
 						LoggingAlertUtils.getAlertUrl(ctx),
@@ -86,9 +85,8 @@ public class LoggingAlert implements EventNotification{
 			} else {
 				if (configuration.getBoolean(FIELD_SINGLE_MESSAGE)) {
 					for (MessageSummary messageSummary : backlog) {
-						Message message = messageSummary.getRawMessage();
-						LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, message, ctx, searches, ""),
-								LoggingAlertUtils.getGraylogID(ctx, message), configuration.getString(FIELD_SEVERITY), date,
+						LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
+								LoggingAlertUtils.getGraylogID(ctx), configuration.getString(FIELD_SEVERITY), date,
 								LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
 					}

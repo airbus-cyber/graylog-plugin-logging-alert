@@ -6,6 +6,9 @@ import lodash from 'lodash';
 import { Select, MultiSelect, SourceCodeEditor } from 'components/common';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
+import StoreProvider from 'injection/StoreProvider';
+
+const FieldsStore = StoreProvider.getStore('Fields');
 
 const DEFAULT_BODY_TEMPLATE = 'type: alert'  + '\n' +
 	'id: ${logging_alert.id}'  + '\n' +
@@ -61,23 +64,14 @@ class LoggingAlertForm extends React.Component {
   };
   
   availableSplitFields = () => {
-	  return [
-		  {value: 'vip-vip', label: 'VIP-VIP'},
-		  {value: 'applicationName', label: 'application_name'},
-		  {value: 'Facility', label: 'facility'},
-		  {value: 'FullMessage', label: 'full_message'},
-		  {value: 'GL2_Remote_IP', label: 'gl2_remote_ip'},
-		  {value: 'GL2_Remote_Port', label: 'gl2_remote_port'},
-		  {value: 'GL2_Source_Input', label: 'gl2_source_input'},
-		  {value: 'GL2_Source_Node', label: 'gl2_source_node'},
-		  {value: 'Is-Synced', label: 'isSynced'},
-		  {value: 'Level', label: 'level'},
-		  {value: 'Message', label: 'message'},
-		  {value: 'Source', label: 'source'},
-		  {value: 'Streams', label: 'streams'},
-		  {value: 'Timestamp', label: 'timestamp'},
-		  {value: 'tzknown', label: 'tzKnown'},
-	  ];
+	//s'inspirer de FieldRule
+	  FieldsStore.loadFields().then((fields) => {
+		  //add value to list fields if not present
+		  if (config.separator && config.separator !== '' && fields.indexOf(config.separator) < 0) {
+			  fields.push(config.separator);
+		  }
+		  //this.setState({fields: fields});
+	  });
   };
     
   activeSeverityType = (type) => {

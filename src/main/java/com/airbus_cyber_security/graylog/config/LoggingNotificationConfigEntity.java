@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import org.graylog.events.contentpack.entities.EventNotificationConfigEntity;
-import org.graylog.events.contentpack.entities.EmailEventNotificationConfigEntity.Builder;
 import org.graylog.events.notifications.EventNotificationConfig;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
@@ -17,9 +16,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-@JsonTypeName(LoggingAlertConfig.TYPE_NAME)
-@JsonDeserialize(builder = LoggingAlertConfigEntity.Builder.class)
-public abstract class LoggingAlertConfigEntity implements EventNotificationConfigEntity {
+@JsonTypeName(LoggingNotificationConfig.TYPE_NAME)
+@JsonDeserialize(builder = LoggingNotificationConfigEntity.Builder.class)
+public abstract class LoggingNotificationConfigEntity implements EventNotificationConfigEntity {
 	
 	private static final String FIELD_SEVERITY = "severity";
 	private static final String FIELD_SEPARATOR = "separator";
@@ -69,8 +68,8 @@ public abstract class LoggingAlertConfigEntity implements EventNotificationConfi
     public static abstract class Builder implements EventNotificationConfigEntity.Builder<Builder> {
     	@JsonCreator
         public static Builder create() {
-            return new AutoValue_LoggingAlertConfigEntity.Builder()
-                    .type(LoggingAlertConfig.TYPE_NAME);
+            return new AutoValue_LoggingNotificationConfigEntity.Builder()
+                    .type(LoggingNotificationConfig.TYPE_NAME);
         }
     	
     	@JsonProperty(FIELD_SEVERITY)
@@ -92,13 +91,13 @@ public abstract class LoggingAlertConfigEntity implements EventNotificationConfi
         @JsonProperty(FIELD_OVERFLOW_TAG)
         public abstract Builder overflowTag(ValueReference overflowTag);
         
-        public abstract LoggingAlertConfigEntity build();
+        public abstract LoggingNotificationConfigEntity build();
     }
     
 	@Override
 	public EventNotificationConfig toNativeEntity(Map<String, ValueReference> parameters,
 			Map<EntityDescriptor, Object> nativeEntities) {
-		return LoggingAlertConfig.builder()
+		return LoggingNotificationConfig.builder()
 				.severity(severity())
 				.separator(separator().asString(parameters))
 				.logBody(logBody().asString(parameters))

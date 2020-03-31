@@ -17,7 +17,7 @@ PluginStore.register(new PluginManifest(packageJson, {
       displayName: 'Logging Alert Notification',
       formComponent: LoggingAlertForm,
       summaryComponent: LoggingAlertSummary,
-      defaultConfig: LoggingAlertForm.defaultConfig,
+      defaultConfig: LoggingAlertConfig.props.config,
     }
   ],
 }));
