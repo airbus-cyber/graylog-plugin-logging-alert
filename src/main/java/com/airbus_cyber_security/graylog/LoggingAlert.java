@@ -90,8 +90,6 @@ public class LoggingAlert implements EventNotification{
 						LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, message, ctx, searches, ""),
 								LoggingAlertUtils.getGraylogID(ctx, message), configuration.getString(FIELD_SEVERITY), date,
 								LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
-//					ArrayList <Message> listMessages = new ArrayList<>();
-//					listMessages.add(message);
 						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
 					}
 				} else {
@@ -102,9 +100,6 @@ public class LoggingAlert implements EventNotification{
 					}
 				}
 			}
-
-
-			String messageToLog = LoggingAlertUtils.buildBody(config, model);
 
 			final Logger LOGGER = LoggerFactory.getLogger(config.alertTag());
 			final Logger LOGGER_OVERFLOW = LoggerFactory.getLogger(config.overflowTag());
@@ -127,8 +122,6 @@ public class LoggingAlert implements EventNotification{
 				iter++;
 			}
 
-//		final Logger LOGGER = LoggerFactory.getLogger(config.alertTag());
-//		LOGGER.info(messageToLog);
 		} catch (Exception e) {
 			throw new EventNotificationException();
 		}

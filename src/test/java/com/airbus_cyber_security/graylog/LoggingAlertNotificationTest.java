@@ -95,7 +95,6 @@ public class LoggingAlertNotificationTest {
 					"messages_url: http://localhost:8080${logging_alert.messages_url}";
 
 	private static final TestLogger TEST_LOGGER = TestLoggerFactory.getTestLogger("LoggingAlert");
-	private static final TestLogger TEST_LOGGER_OVERFLOW = TestLoggerFactory.getTestLogger("LoggingOverflow");
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -185,8 +184,7 @@ public class LoggingAlertNotificationTest {
 		LoggingAlertConfig config = getConfig(BODY_TEMPLATE);
 		//list of MessageSummary
 		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
-				new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))/*,
-				new MessageSummary("graylog_2", new Message("Test message 2", "source2", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))*/
+				new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))
 		);
 		EventNotificationContext context = getContext(config);
 		when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
