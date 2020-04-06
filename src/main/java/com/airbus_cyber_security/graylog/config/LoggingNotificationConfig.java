@@ -14,17 +14,23 @@ import org.graylog.scheduler.JobTriggerData;
 import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.plugin.rest.ValidationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Set;
 
 @AutoValue
 @JsonTypeName(LoggingNotificationConfig.TYPE_NAME)
 @JsonDeserialize(builder = LoggingNotificationConfig.Builder.class)
 public abstract class LoggingNotificationConfig implements EventNotificationConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotificationConfig.class);
+
     public static final String TYPE_NAME = "logging-alert-notification";
 
     private static final String FIELD_SEVERITY = "severity";
-    private static final String FIELD_SEPARATOR = "separator";
+    private static final String FIELD_SPLIT_FIELDS = "split_fields";
     private static final String FIELD_LOG_BODY = "log_body";
     private static final String FIELD_AGGREGATION_STREAM = "aggregation_stream";
     private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
@@ -32,6 +38,8 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     private static final String FIELD_FIELD_ALERT_ID = "field_alert_id";
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_OVERFLOW_TAG = "overflow_tag";
+    private static final String FIELD_SINGLE_MESSAGE = "single_notification";
+    private static final String FIELD_COMMENT = "comment";
 
     private static final String FIELD_ALERT_ID = "id";
     private static final String SEPARATOR_TEMPLATE  = "\n";
@@ -51,8 +59,8 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     @JsonProperty(FIELD_SEVERITY)
     public abstract SeverityType severity();
 
-    @JsonProperty(FIELD_SEPARATOR)
-    public abstract String separator();
+    @JsonProperty(FIELD_SPLIT_FIELDS)
+    public abstract Set<String> splitFields();
 
     @JsonProperty(FIELD_LOG_BODY)
     public abstract String logBody();
@@ -76,6 +84,12 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     @JsonProperty(FIELD_OVERFLOW_TAG)
     public abstract String overflowTag();
 
+    @JsonProperty(FIELD_SINGLE_MESSAGE)
+    public abstract boolean singleMessage();
+
+    @JsonProperty(FIELD_COMMENT)
+    public abstract String comment();
+
     @JsonIgnore
     public JobTriggerData toJobTriggerData(EventDto dto) {
         return EventNotificationExecutionJob.Data.builder().eventDto(dto).build();
@@ -84,11 +98,16 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     @JsonIgnore
     public ValidationResult validate() {
         final ValidationResult validation = new ValidationResult();
+        String errorMessage;
         if (!isValidSeverity(severity())) {
-            validation.addError(FIELD_SEVERITY, "Severity is invalid format");
+            errorMessage = "Severity is invalid format";
+            LOGGER.error(errorMessage);
+            validation.addError(FIELD_SEVERITY, errorMessage);
         }
         if(logBody() == null || logBody().isEmpty()) {
-            validation.addError(FIELD_LOG_BODY, "Log Body cannot be empty");
+            errorMessage = "Log Body cannot be empty";
+            LOGGER.error(errorMessage);
+            validation.addError(FIELD_LOG_BODY, errorMessage);
         }
         return validation;
     }
@@ -106,20 +125,22 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
                     .type(TYPE_NAME)
                     .severity(SeverityType.LOW)
                     .logBody(BODY_TEMPLATE)
-                    .separator(" | ")
+                    .splitFields(new HashSet<>())
                     .aggregationStream("*")
                     .aggregationTime(0)
                     .limitOverflow(0)
                     .fieldAlertId(FIELD_ALERT_ID)
                     .alertTag("LoggingAlert")
-                    .overflowTag("LoggingOverflow");
+                    .overflowTag("")
+                    .singleMessage(false)
+                    .comment("");
 
         }
 
         @JsonProperty(FIELD_SEVERITY)
         public abstract Builder severity(SeverityType severity);
-        @JsonProperty(FIELD_SEPARATOR)
-        public abstract Builder separator(String separator);
+        @JsonProperty(FIELD_SPLIT_FIELDS)
+        public abstract Builder splitFields(Set<String> splitFields);
         @JsonProperty(FIELD_LOG_BODY)
         public abstract Builder logBody(String logBody);
         @JsonProperty(FIELD_AGGREGATION_STREAM)
@@ -134,6 +155,10 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
         public abstract Builder alertTag(String alertTag);
         @JsonProperty(FIELD_OVERFLOW_TAG)
         public abstract Builder overflowTag(String overflowTag);
+        @JsonProperty(FIELD_SINGLE_MESSAGE)
+        public abstract Builder singleMessage(boolean singleMessage);
+        @JsonProperty(FIELD_COMMENT)
+        public abstract Builder comment(String comment);
 
         public abstract LoggingNotificationConfig build();
     }
@@ -142,7 +167,7 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     public EventNotificationConfigEntity toContentPackEntity(EntityDescriptorIds entityDescriptorIds) {
         return LoggingNotificationConfigEntity.builder()
                 .severity(severity())
-                .separator(ValueReference.of(separator()))
+                .splitFields(splitFields())
                 .logBody(ValueReference.of(logBody()))
                 .aggregationStream(ValueReference.of(aggregationStream()))
                 .aggregationTime(aggregationTime())
@@ -150,6 +175,8 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
                 .fieldAlertId(ValueReference.of(fieldAlertId()))
                 .alertTag(ValueReference.of(alertTag()))
                 .overflowTag(ValueReference.of(overflowTag()))
+                .singleMessage(singleMessage())
+                .comment(ValueReference.of(comment()))
                 .build();
     }
 

@@ -13,8 +13,6 @@ import org.graylog.scheduler.JobTriggerData;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog.scheduler.JobTriggerLock;
 import org.graylog2.contentpacks.EntityDescriptorIds;
-import org.graylog2.indexer.IndexSetRegistry;
-import org.graylog2.indexer.indices.Indices;
 import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
@@ -115,9 +113,7 @@ public class LoggingAlertNotificationTest {
 		notificationCallbackService = mock(EventNotificationService.class);
 		final ObjectMapper objectMapper = new ObjectMapper();
 		final Searches searches = mock(Searches.class);
-		final Indices indices = mock(Indices.class);
-		final IndexSetRegistry indexSetRegistry = mock(IndexSetRegistry.class);
-		loggingAlert = new LoggingAlert(notificationCallbackService, objectMapper, searches, indices, indexSetRegistry);
+		loggingAlert = new LoggingAlert(notificationCallbackService, objectMapper, searches);
 
 	}
 
@@ -128,7 +124,7 @@ public class LoggingAlertNotificationTest {
 				.description("")
 				.config(LoggingNotificationConfig.Builder.create()
 						.severity(SeverityType.LOW)
-						.separator("")
+						.splitFields(new HashSet<>())
 						.logBody("")
 						.aggregationStream("")
 						.aggregationTime(0)
@@ -146,7 +142,7 @@ public class LoggingAlertNotificationTest {
 				.description("Logging alert")
 				.config(LoggingNotificationConfig.Builder.create()
 						.severity(SeverityType.LOW)
-						.separator(" | ")
+						.splitFields(new HashSet<>())
 						.logBody("body test ")
 						.aggregationStream("Stream test")
 						.aggregationTime(0)
@@ -275,7 +271,7 @@ public class LoggingAlertNotificationTest {
 				.limitOverflow(0)
 				.logBody(bodyTemplate)
 				.overflowTag("overflow_tag")
-				.separator(" | ")
+				.splitFields(new HashSet<>())
 				.severity(SeverityType.LOW)
 				.build();
 	}

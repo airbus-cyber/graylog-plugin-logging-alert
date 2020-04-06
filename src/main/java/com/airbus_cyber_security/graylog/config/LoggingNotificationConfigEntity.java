@@ -1,6 +1,7 @@
 package com.airbus_cyber_security.graylog.config;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -19,33 +20,34 @@ import com.google.auto.value.AutoValue;
 @JsonTypeName(LoggingNotificationConfig.TYPE_NAME)
 @JsonDeserialize(builder = LoggingNotificationConfigEntity.Builder.class)
 public abstract class LoggingNotificationConfigEntity implements EventNotificationConfigEntity {
-	
-	private static final String FIELD_SEVERITY = "severity";
-	private static final String FIELD_SEPARATOR = "separator";
-	private static final String FIELD_LOG_BODY = "log_body";
-	private static final String FIELD_AGGREGATION_STREAM = "aggregation_stream";
-	private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
-	private static final String FIELD_LIMIT_OVERFLOW = "limit_overflow";
-	private static final String FIELD_FIELD_ALERT_ID = "field_alert_id";
-	private static final String FIELD_ALERT_TAG = "alert_tag";
-	private static final String FIELD_OVERFLOW_TAG = "overflow_tag";
+
+    private static final String FIELD_SEVERITY = "severity";
+    private static final String FIELD_SPLIT_FIELDS = "split_fields";
+    private static final String FIELD_LOG_BODY = "log_body";
+    private static final String FIELD_AGGREGATION_STREAM = "aggregation_stream";
+    private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
+    private static final String FIELD_LIMIT_OVERFLOW = "limit_overflow";
+    private static final String FIELD_FIELD_ALERT_ID = "field_alert_id";
+    private static final String FIELD_ALERT_TAG = "alert_tag";
+    private static final String FIELD_OVERFLOW_TAG = "overflow_tag";
+    private static final String FIELD_SINGLE_MESSAGE = "single_notification";
+    private static final String FIELD_COMMENT = "comment";
 	
 	@JsonProperty(FIELD_SEVERITY)
     public abstract SeverityType severity();
     
-    @JsonProperty(FIELD_SEPARATOR)
-    public abstract ValueReference separator();
+    @JsonProperty(FIELD_SPLIT_FIELDS)
+    public abstract Set<String> splitFields();
     
     @JsonProperty(FIELD_LOG_BODY)
     public abstract ValueReference logBody();
-    
+
     @JsonProperty(FIELD_AGGREGATION_STREAM)
-    @Nullable
     public abstract ValueReference aggregationStream();
     
     @JsonProperty(FIELD_AGGREGATION_TIME)
     public abstract int aggregationTime();
-    
+
     @JsonProperty(FIELD_LIMIT_OVERFLOW)
     public abstract int limitOverflow();
 
@@ -54,9 +56,15 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
     
     @JsonProperty(FIELD_ALERT_TAG)
     public abstract ValueReference alertTag();
-    
+
     @JsonProperty(FIELD_OVERFLOW_TAG)
     public abstract ValueReference overflowTag();
+
+    @JsonProperty(FIELD_SINGLE_MESSAGE)
+    public abstract boolean singleMessage();
+
+    @JsonProperty(FIELD_COMMENT)
+    public abstract ValueReference comment();
     
     public static Builder builder() {
         return Builder.create();
@@ -74,8 +82,8 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
     	
     	@JsonProperty(FIELD_SEVERITY)
         public abstract Builder severity(SeverityType severity);
-        @JsonProperty(FIELD_SEPARATOR)
-        public abstract Builder separator(ValueReference separator);
+        @JsonProperty(FIELD_SPLIT_FIELDS)
+        public abstract Builder splitFields(Set<String> splitFields);
         @JsonProperty(FIELD_LOG_BODY)
         public abstract Builder logBody(ValueReference logBody);
         @JsonProperty(FIELD_AGGREGATION_STREAM)
@@ -90,6 +98,10 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
         public abstract Builder alertTag(ValueReference alertTag);
         @JsonProperty(FIELD_OVERFLOW_TAG)
         public abstract Builder overflowTag(ValueReference overflowTag);
+        @JsonProperty(FIELD_SINGLE_MESSAGE)
+        public abstract Builder singleMessage(boolean singleMessage);
+        @JsonProperty(FIELD_COMMENT)
+        public abstract Builder comment(ValueReference comment);
         
         public abstract LoggingNotificationConfigEntity build();
     }
@@ -99,14 +111,16 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 			Map<EntityDescriptor, Object> nativeEntities) {
 		return LoggingNotificationConfig.builder()
 				.severity(severity())
-				.separator(separator().asString(parameters))
+				.splitFields(splitFields())
 				.logBody(logBody().asString(parameters))
-				.aggregationStream(aggregationStream().asString(parameters))
+                .aggregationStream(aggregationStream().asString(parameters))
 				.aggregationTime(aggregationTime())
-				.limitOverflow(limitOverflow())
-				.fieldAlertId(fieldAlertId().asString(parameters))
+                .limitOverflow(limitOverflow())
+                .fieldAlertId(fieldAlertId().asString(parameters))
 				.alertTag(alertTag().asString(parameters))
-				.overflowTag(overflowTag().asString(parameters))
+                .overflowTag(overflowTag().asString(parameters))
+                .singleMessage(singleMessage())
+                .comment(comment().asString(parameters))
 				.build();
 	}
 }

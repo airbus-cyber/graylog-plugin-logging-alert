@@ -9,12 +9,8 @@ import org.graylog.events.notifications.EventNotification;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationException;
 import org.graylog.events.notifications.EventNotificationService;
-import org.graylog2.indexer.IndexSetRegistry;
-import org.graylog2.indexer.indices.Indices;
 import org.graylog2.indexer.searches.Searches;
-import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
-import org.graylog2.plugin.configuration.Configuration;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,13 +26,9 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggingAlert implements EventNotification{
 	
-	private static final String FIELD_SEVERITY = "severity";
-	private static final String FIELD_SINGLE_MESSAGE = "single_notification";
+	private static final Logger LOGGER = LoggerFactory.getLogger(LoggingAlert.class);
 
-	private final Indices indices;
-	private final IndexSetRegistry indexSetRegistry;
-    
-    private final EventNotificationService notificationCallbackService;
+	private final EventNotificationService notificationCallbackService;
     
     private final ObjectMapper objectMapper;
     
@@ -48,33 +40,35 @@ public class LoggingAlert implements EventNotification{
 	}
 	
 	@Inject
-	public LoggingAlert(final EventNotificationService notificationCallbackService, final ObjectMapper objectMapper, final Searches searches,
-						final Indices indices, final IndexSetRegistry indexSetRegistry) {
+	public LoggingAlert(final EventNotificationService notificationCallbackService, final ObjectMapper objectMapper, final Searches searches) {
 		this.notificationCallbackService = notificationCallbackService;
 		this.objectMapper = objectMapper;
 		this.searches = searches;
-		this.indices = indices;
-		this.indexSetRegistry = indexSetRegistry;
 	}
 	
 	@Override
 	public void execute(EventNotificationContext ctx) throws EventNotificationException {
+		LOGGER.info("Start of execute...");
 		try {
 			final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
 			final ImmutableList<MessageSummary> backlog = notificationCallbackService.getBacklogForEvent(ctx);
+			LOGGER.info("GOT config and backlog");
+			LOGGER.info("Config : "+ config.toString());
 
-			DateTime date = ctx.jobTrigger().get().triggeredAt().get();
-
+			LOGGER.info("context : " + ctx.toString());
+			DateTime date = ctx.event().eventTimestamp();
+			LOGGER.info("Got date : " + date.toString());
 			for (MessageSummary messageSummary : backlog) {
+				LOGGER.info("Message : " + messageSummary.toString());
 				if (messageSummary.getTimestamp().isBefore(date))
 					date = messageSummary.getTimestamp();
 			}
-
-			Configuration configuration = LoggingAlertUtils.getConfiguration(config, indices, indexSetRegistry);
+			LOGGER.info("Got date : " + date.toString());
 			Set<String> listMessagesToLog = new LinkedHashSet<>();
 			final Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
 
 			if (backlog.isEmpty()) {
+				LOGGER.info("Add log to list message for empty backlog...");
 				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
 						LoggingAlertUtils.getGraylogID(ctx),
 						config.severity().getType(),
@@ -83,17 +77,19 @@ public class LoggingAlert implements EventNotification{
 						LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
 			} else {
-				if (configuration.getBoolean(FIELD_SINGLE_MESSAGE)) {
+				if (config.singleMessage()) {
+					LOGGER.info("Add log to list message for single message...");
 					for (MessageSummary messageSummary : backlog) {
 						LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
-								LoggingAlertUtils.getGraylogID(ctx), configuration.getString(FIELD_SEVERITY), date,
+								LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
 								LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
 					}
 				} else {
-					Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, configuration, searches);
+					LOGGER.info("Add log to list message for backlog...");
+					Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, searches);
 					for (MessageSummary messageSummary : backlog) {
-						String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, configuration);
+						String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
 						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, listOfloggingAlertField.get(valuesAggregationField));
 					}
 				}
