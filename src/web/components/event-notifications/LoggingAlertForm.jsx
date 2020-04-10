@@ -133,7 +133,7 @@ const LoggingAlertForm = createReactClass({
 		 <SourceCodeEditor id="log_body"
 		                   mode="text"
 		                   theme="light"
-		                   value={alertConfig.log_body || ''}
+		                   value={config.log_body? config.log_body : alertConfig.log_body || ''}
 		                   onChange={this.handleBodyTemplateChange} />
 		 <HelpBlock>
 		   {lodash.get(validation, 'errors.log_body[0]', 'The template to generate the log content form')}
@@ -159,7 +159,7 @@ const LoggingAlertForm = createReactClass({
 	    type="number"
 	    name="aggregation_time"
 	    help="Aggregate alerts received in the given number of minutes by logging alerts with the same alert id"
-	    value={alertConfig.aggregation_time}
+	    value={config.aggregation_time? config.aggregation_time : alertConfig.aggregation_time}
 	    onChange={this.handleChange}
 	  />
 	  <ControlLabel>Alert Tag <small className="text-muted">(Optional)</small></ControlLabel>
@@ -168,7 +168,7 @@ const LoggingAlertForm = createReactClass({
 	    type="text"
 	    name="alert_tag"
 	    help="The tag of the generated logs"
-	    value={alertConfig.alert_tag}
+	    value={config.alert_tag? config.alert_tag : alertConfig.alert_tag}
 	    onChange={this.handleChange}
 	  />
 	  <div>
