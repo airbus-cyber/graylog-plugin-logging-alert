@@ -52,18 +52,14 @@ public class LoggingAlert implements EventNotification{
 		try {
 			final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
 			final ImmutableList<MessageSummary> backlog = notificationCallbackService.getBacklogForEvent(ctx);
-			LOGGER.info("GOT config and backlog");
-			LOGGER.info("Config : "+ config.toString());
 
-			LOGGER.info("context : " + ctx.toString());
 			DateTime date = ctx.event().eventTimestamp();
-			LOGGER.info("Got date : " + date.toString());
+
 			for (MessageSummary messageSummary : backlog) {
-				LOGGER.info("Message : " + messageSummary.toString());
 				if (messageSummary.getTimestamp().isBefore(date))
 					date = messageSummary.getTimestamp();
 			}
-			LOGGER.info("Got date : " + date.toString());
+
 			Set<String> listMessagesToLog = new LinkedHashSet<>();
 			final Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
 
@@ -80,11 +76,12 @@ public class LoggingAlert implements EventNotification{
 				if (config.singleMessage()) {
 					LOGGER.info("Add log to list message for single message...");
 					for (MessageSummary messageSummary : backlog) {
-						LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
-								LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
-								LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
-						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
+						listMessagesToLog.add(messageSummary.getRawMessage().getMessage());
 					}
+					LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
+							LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
+							LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
+					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
 				} else {
 					LOGGER.info("Add log to list message for backlog...");
 					Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, searches);

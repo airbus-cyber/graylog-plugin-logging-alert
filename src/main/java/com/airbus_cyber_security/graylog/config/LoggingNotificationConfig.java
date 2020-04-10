@@ -44,16 +44,14 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     private static final String FIELD_ALERT_ID = "id";
     private static final String SEPARATOR_TEMPLATE  = "\n";
     private static final String BODY_TEMPLATE =
-            "type: alert" + SEPARATOR_TEMPLATE +
-                    FIELD_ALERT_ID+ ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-                    "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
-                    "app: graylog" + SEPARATOR_TEMPLATE +
-                    "subject: ${alertCondition.title}" + SEPARATOR_TEMPLATE +
-                    "body: ${check_result.resultDescription}" + SEPARATOR_TEMPLATE +
-                    "src: ${message.fields.src_ip}" + SEPARATOR_TEMPLATE +
-                    "src_category: ${message.fields.src_category}" + SEPARATOR_TEMPLATE +
-                    "dest: ${message.fields.dest_ip}" + SEPARATOR_TEMPLATE +
-                    "dest_category: ${message.fields.dest_category}";
+            "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
+            "title: ${event_definition_title}" + SEPARATOR_TEMPLATE +
+            "description: ${event_definition_description}" + SEPARATOR_TEMPLATE +
+            "severity: ${logging_alert.severity}"  + SEPARATOR_TEMPLATE +
+            "create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+            "detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+            "alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
+            "messages_url: http://localhost:8080${logging_alert.messages_url}";
 
 
     @JsonProperty(FIELD_SEVERITY)

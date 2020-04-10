@@ -45,52 +45,56 @@ public class LoggingAlertNotificationTest {
 	private static final String SEPARATOR_TEMPLATE = " | ";
 	private static final String BODY_TEMPLATE =
 			"alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-					"severity: ${logging_alert.severity}"  + SEPARATOR_TEMPLATE +
-					"create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
-					"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
-					"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
-					"messages_url: http://localhost:8080${logging_alert.messages_url}";
+			"title: ${event_definition_title}" + SEPARATOR_TEMPLATE +
+			"description: ${event_definition_description}" + SEPARATOR_TEMPLATE +
+			"severity: ${logging_alert.severity}"  + SEPARATOR_TEMPLATE +
+			"create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+			"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+			"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
+			"messages_url: http://localhost:8080${logging_alert.messages_url}";
 
 	private static final String BODY_TEMPLATE_ADDITIONAL_FIELDS =
 			"alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-					"severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
-					"create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
-					"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
-					"analyzer: Graylog" + SEPARATOR_TEMPLATE +
-					"sensor: ${backlog[0].fields.sensor}" + SEPARATOR_TEMPLATE +
-					"classification: ${backlog[0].fields.classification}" + SEPARATOR_TEMPLATE +
-					"source_command: ${backlog[0].fields.cmd_src}" + SEPARATOR_TEMPLATE +
-					"source_file_name: ${backlog[0].fields.file_src}" + SEPARATOR_TEMPLATE +
-					"source_host_name: ${backlog[0].fields.host_src}" + SEPARATOR_TEMPLATE +
-					"source_ip_address: ${backlog[0].fields.ip_src}" + SEPARATOR_TEMPLATE +
-					"source_mac_address: ${backlog[0].fields.mac_src}" + SEPARATOR_TEMPLATE +
-					"source_port: ${backlog[0].fields.port_src}" + SEPARATOR_TEMPLATE +
-					"source_process: ${backlog[0].fields.process_src}" + SEPARATOR_TEMPLATE +
-					"source_service_name: ${backlog[0].fields.service_src}" + SEPARATOR_TEMPLATE +
-					"source_tool: ${backlog[0].fields.tool_src}" + SEPARATOR_TEMPLATE +
-					"source_url: ${backlog[0].fields.url_src}" + SEPARATOR_TEMPLATE +
-					"source_user_name: ${backlog[0].fields.user_src}" + SEPARATOR_TEMPLATE +
-					"source_user_privileges: ${backlog[0].fields.user_role_src}" + SEPARATOR_TEMPLATE +
-					"source_user_unique_identifier: ${backlog[0].fields.uid_src}" + SEPARATOR_TEMPLATE +
-					"target_command: ${backlog[0].fields.cmd_dst}" + SEPARATOR_TEMPLATE +
-					"target_file_name: ${backlog[0].fields.file_dst}" + SEPARATOR_TEMPLATE +
-					"target_host_name: ${backlog[0].fields.host_dst}" + SEPARATOR_TEMPLATE +
-					"target_ip_address: ${backlog[0].fields.ip_dst}" + SEPARATOR_TEMPLATE +
-					"target_mac_address: ${backlog[0].fields.mac_dst}" + SEPARATOR_TEMPLATE +
-					"target_port: ${backlog[0].fields.port_dst}" + SEPARATOR_TEMPLATE +
-					"target_process: ${backlog[0].fields.process_dst}" + SEPARATOR_TEMPLATE +
-					"target_service_name: ${backlog[0].fields.service_dst}" + SEPARATOR_TEMPLATE +
-					"target_tool: ${backlog[0].fields.tool_dst}" + SEPARATOR_TEMPLATE +
-					"target_url: ${backlog[0].fields.url_dst}" + SEPARATOR_TEMPLATE +
-					"target_user_name: ${backlog[0].fields.user_dst}" + SEPARATOR_TEMPLATE +
-					"target_user_privileges: ${backlog[0].fields.user_role_dst}" + SEPARATOR_TEMPLATE +
-					"target_user_unique_identifier: ${backlog[0].fields.uid_dst}" + SEPARATOR_TEMPLATE +
-					"file_name: ${backlog[0].fields.filename}" + SEPARATOR_TEMPLATE +
-					"file_hash: ${backlog[0].fields.filehash}" + SEPARATOR_TEMPLATE +
-					"file_size: ${backlog[0].fields.filesize}" + SEPARATOR_TEMPLATE +
-					"file_type: ${backlog[0].fields.filetype}" + SEPARATOR_TEMPLATE +
-					"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
-					"messages_url: http://localhost:8080${logging_alert.messages_url}";
+			"title: ${event_definition_title}" + SEPARATOR_TEMPLATE +
+			"description: ${event_definition_description}" + SEPARATOR_TEMPLATE +
+			"severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
+			"create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+			"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+			"analyzer: Graylog" + SEPARATOR_TEMPLATE +
+			"sensor: ${backlog[0].fields.sensor}" + SEPARATOR_TEMPLATE +
+			"classification: ${backlog[0].fields.classification}" + SEPARATOR_TEMPLATE +
+			"source_command: ${backlog[0].fields.cmd_src}" + SEPARATOR_TEMPLATE +
+			"source_file_name: ${backlog[0].fields.file_src}" + SEPARATOR_TEMPLATE +
+			"source_host_name: ${backlog[0].fields.host_src}" + SEPARATOR_TEMPLATE +
+			"source_ip_address: ${backlog[0].fields.ip_src}" + SEPARATOR_TEMPLATE +
+			"source_mac_address: ${backlog[0].fields.mac_src}" + SEPARATOR_TEMPLATE +
+			"source_port: ${backlog[0].fields.port_src}" + SEPARATOR_TEMPLATE +
+			"source_process: ${backlog[0].fields.process_src}" + SEPARATOR_TEMPLATE +
+			"source_service_name: ${backlog[0].fields.service_src}" + SEPARATOR_TEMPLATE +
+			"source_tool: ${backlog[0].fields.tool_src}" + SEPARATOR_TEMPLATE +
+			"source_url: ${backlog[0].fields.url_src}" + SEPARATOR_TEMPLATE +
+			"source_user_name: ${backlog[0].fields.user_src}" + SEPARATOR_TEMPLATE +
+			"source_user_privileges: ${backlog[0].fields.user_role_src}" + SEPARATOR_TEMPLATE +
+			"source_user_unique_identifier: ${backlog[0].fields.uid_src}" + SEPARATOR_TEMPLATE +
+			"target_command: ${backlog[0].fields.cmd_dst}" + SEPARATOR_TEMPLATE +
+			"target_file_name: ${backlog[0].fields.file_dst}" + SEPARATOR_TEMPLATE +
+			"target_host_name: ${backlog[0].fields.host_dst}" + SEPARATOR_TEMPLATE +
+			"target_ip_address: ${backlog[0].fields.ip_dst}" + SEPARATOR_TEMPLATE +
+			"target_mac_address: ${backlog[0].fields.mac_dst}" + SEPARATOR_TEMPLATE +
+			"target_port: ${backlog[0].fields.port_dst}" + SEPARATOR_TEMPLATE +
+			"target_process: ${backlog[0].fields.process_dst}" + SEPARATOR_TEMPLATE +
+			"target_service_name: ${backlog[0].fields.service_dst}" + SEPARATOR_TEMPLATE +
+			"target_tool: ${backlog[0].fields.tool_dst}" + SEPARATOR_TEMPLATE +
+			"target_url: ${backlog[0].fields.url_dst}" + SEPARATOR_TEMPLATE +
+			"target_user_name: ${backlog[0].fields.user_dst}" + SEPARATOR_TEMPLATE +
+			"target_user_privileges: ${backlog[0].fields.user_role_dst}" + SEPARATOR_TEMPLATE +
+			"target_user_unique_identifier: ${backlog[0].fields.uid_dst}" + SEPARATOR_TEMPLATE +
+			"file_name: ${backlog[0].fields.filename}" + SEPARATOR_TEMPLATE +
+			"file_hash: ${backlog[0].fields.filehash}" + SEPARATOR_TEMPLATE +
+			"file_size: ${backlog[0].fields.filesize}" + SEPARATOR_TEMPLATE +
+			"file_type: ${backlog[0].fields.filetype}" + SEPARATOR_TEMPLATE +
+			"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
+			"messages_url: http://localhost:8080${logging_alert.messages_url}";
 
 	private static final TestLogger TEST_LOGGER = TestLoggerFactory.getTestLogger("LoggingAlert");
 
@@ -188,6 +192,8 @@ public class LoggingAlertNotificationTest {
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
 				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
+						+ "title: "+context.eventDefinition().get().title() + " | "
+						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
 						+ "alert_url: http://localhost:8080/event/"+ context.event().eventDefinitionId() + " | "
 						+ "messages_url: http://localhost:8080"
@@ -241,6 +247,8 @@ public class LoggingAlertNotificationTest {
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
 				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
+						+ "title: "+context.eventDefinition().get().title() + " | "
+						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
 						+ "analyzer: Graylog | sensor: sensor | classification: classification | "
 						+ "source_command: cmd_src | source_file_name: file_src | source_host_name: host_src | source_ip_address: ip_src | "
