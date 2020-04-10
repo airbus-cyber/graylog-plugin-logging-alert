@@ -39,13 +39,15 @@ public class LoggingAlertUtils {
 	private static final String MSGS_URL_TO = "&to=";
 	private static final String MSGS_URL_STREAM = "streams%3A";
 	private static final int SIZE_STREAM = 24;
+
+	private static final String SEPARATOR_TEMPLATE = "\n";
 	
 	private static final String UNKNOWN = "<unknown>";
 	
 	private static final Engine templateEngine = new Engine();
 	
-	public static String buildBody(LoggingNotificationConfig config, Map<String, Object> model) {
-		return templateEngine.transform(config.logBody(), model);
+	public static String buildBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
+		return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
 	}
 	
 	public static String getAggregationAlertID(LoggingNotificationConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
@@ -269,7 +271,7 @@ public class LoggingAlertUtils {
     }
 
 	public static void addLogToListMessages(final LoggingNotificationConfig config, Set<String> listMessagesToLog,
-									  final Map<String, Object> model, LoggingAlertFields loggingAlertFields) {
+									  final Map<String, Object> model, LoggingAlertFields loggingAlertFields, String separator) {
 		model.put("logging_alert", loggingAlertFields);
 		LOGGER.info("Logging Alert alert_url : " +loggingAlertFields.getAlert_url());
 		LOGGER.info("Logging Alert graylog_id : " +loggingAlertFields.getGraylog_id());
@@ -278,7 +280,7 @@ public class LoggingAlertUtils {
 		LOGGER.info("Logging Alert severity : " +loggingAlertFields.getSeverity());
 		LOGGER.info("Logging Alert detect_time : " +loggingAlertFields.getDetect_time());
 		LOGGER.info("Model : " + model.toString());
-		String messageToLog=buildBody(config, model);
+		String messageToLog=buildBody(config, model, separator);
 		listMessagesToLog.add(messageToLog);
 	}
 

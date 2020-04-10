@@ -3,8 +3,6 @@ package com.airbus_cyber_security.graylog.config;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.graylog.events.contentpack.entities.EventNotificationConfigEntity;
 import org.graylog.events.notifications.EventNotificationConfig;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;

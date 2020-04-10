@@ -68,7 +68,9 @@ const LoggingAlertForm = createReactClass({
   },
 
   handleFieldsChange(key) {
-  	return nextValue => this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
+  	return nextValue => {
+  		this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
+	}
   },
 
   availableSeverityTypes() {
@@ -102,7 +104,7 @@ const LoggingAlertForm = createReactClass({
   },
     
   render() {
-    const { config, validation, fields, configurations } = this.props;
+    const { config, validation, fields } = this.props;
     let formattedOptions = null;
     if(fields) {
     	formattedOptions = Object.keys(fields).map(key => this._formatOption(fields[key], fields[key]))
@@ -128,6 +130,15 @@ const LoggingAlertForm = createReactClass({
 		   {lodash.get(validation, 'errors.severity[0]', 'The severity of logged alerts')}
 		 </HelpBlock>
 	  </FormGroup>
+	  <ControlLabel>Line Break Substitution <small className="text-muted">(Optional)</small></ControlLabel>
+	  <Input
+		  id="separator"
+		  type="text"
+		  name="separator"
+		  help="The tag of the generated logs"
+		  value={config.alert_tag? config.alert_tag : alertConfig.alert_tag}
+		  onChange={this.handleChange}
+	  />
 	  <FormGroup controlId="log_body" validationState={validation.errors.log_body ? 'error' : null}>
 		 <ControlLabel>Body Template</ControlLabel>
 		 <SourceCodeEditor id="log_body"
@@ -196,7 +207,7 @@ const LoggingAlertForm = createReactClass({
 		  />
 	  </React.Fragment>
     );
-  }
-})
+  },
+});
 
 export default LoggingAlertForm;

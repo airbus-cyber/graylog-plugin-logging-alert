@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import org.graylog.events.notifications.EventNotification;
 import org.graylog.events.notifications.EventNotificationContext;
@@ -11,6 +12,7 @@ import org.graylog.events.notifications.EventNotificationException;
 import org.graylog.events.notifications.EventNotificationService;
 import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.MessageSummary;
+import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +35,8 @@ public class LoggingAlert implements EventNotification{
     private final ObjectMapper objectMapper;
     
     private final Searches searches;
+
+	private final String generalConfigSeparator;
     
 	public interface Factory extends EventNotification.Factory{
 		@Override
@@ -40,10 +44,16 @@ public class LoggingAlert implements EventNotification{
 	}
 	
 	@Inject
-	public LoggingAlert(final EventNotificationService notificationCallbackService, final ObjectMapper objectMapper, final Searches searches) {
+	public LoggingAlert(final ClusterConfigService clusterConfigService, final EventNotificationService notificationCallbackService,
+						final ObjectMapper objectMapper, final Searches searches) {
 		this.notificationCallbackService = notificationCallbackService;
 		this.objectMapper = objectMapper;
 		this.searches = searches;
+
+		final LoggingAlertConfig generalConfig = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
+				LoggingAlertConfig.createDefault());
+
+		generalConfigSeparator = generalConfig.accessSeparator();
 	}
 	
 	@Override
@@ -71,7 +81,7 @@ public class LoggingAlert implements EventNotification{
 						date,
 						LoggingAlertUtils.getAlertUrl(ctx),
 						LoggingAlertUtils.getStreamSearchUrl(ctx, date));
-				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
+				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 			} else {
 				if (config.singleMessage()) {
 					LOGGER.info("Add log to list message for single message...");
@@ -81,13 +91,13 @@ public class LoggingAlert implements EventNotification{
 					LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
 							LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
 							LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
-					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields);
+					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 				} else {
 					LOGGER.info("Add log to list message for backlog...");
 					Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, searches);
 					for (MessageSummary messageSummary : backlog) {
 						String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
-						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, listOfloggingAlertField.get(valuesAggregationField));
+						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, listOfloggingAlertField.get(valuesAggregationField), generalConfigSeparator);
 					}
 				}
 			}

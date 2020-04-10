@@ -1,5 +1,6 @@
 package com.airbus_cyber_security.graylog;
 
+import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
@@ -16,6 +17,7 @@ import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
+import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.rest.ValidationResult;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -108,16 +110,22 @@ public class LoggingAlertNotificationTest {
 
 	private LoggingAlert loggingAlert;
 
+	private LoggingAlertConfig configGeneral;
+
 	DateTime dateForTest = new DateTime();
 
 	DateTime jobTriggerEndTime = dateForTest.plusMinutes(5);
 
 	@Before
 	public void setUp() {
+		final ClusterConfigService clusterConfigService= mock(ClusterConfigService.class);
 		notificationCallbackService = mock(EventNotificationService.class);
 		final ObjectMapper objectMapper = new ObjectMapper();
 		final Searches searches = mock(Searches.class);
-		loggingAlert = new LoggingAlert(notificationCallbackService, objectMapper, searches);
+		configGeneral = mock(LoggingAlertConfig.class);
+		when(configGeneral.accessSeparator()).thenReturn(" | ");
+		when(clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault())).thenReturn(configGeneral);
+		loggingAlert = new LoggingAlert(clusterConfigService, notificationCallbackService, objectMapper, searches);
 
 	}
 
