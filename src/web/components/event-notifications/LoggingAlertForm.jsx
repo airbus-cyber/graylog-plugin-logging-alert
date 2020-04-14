@@ -123,22 +123,13 @@ const LoggingAlertForm = createReactClass({
 	         required
 	         options={this.availableSeverityTypes()}
 	         matchProp="value"
-	         value={alertConfig.severity}
+	         value={config.severity? config.severity : alertConfig.severity}
 	         onChange={this.handleSeverityChange}
 	     />
 		 <HelpBlock>
 		   {lodash.get(validation, 'errors.severity[0]', 'The severity of logged alerts')}
 		 </HelpBlock>
 	  </FormGroup>
-	  <ControlLabel>Line Break Substitution <small className="text-muted">(Optional)</small></ControlLabel>
-	  <Input
-		  id="separator"
-		  type="text"
-		  name="separator"
-		  help="The tag of the generated logs"
-		  value={config.alert_tag? config.alert_tag : alertConfig.alert_tag}
-		  onChange={this.handleChange}
-	  />
 	  <FormGroup controlId="log_body" validationState={validation.errors.log_body ? 'error' : null}>
 		 <ControlLabel>Body Template</ControlLabel>
 		 <SourceCodeEditor id="log_body"
@@ -187,7 +178,7 @@ const LoggingAlertForm = createReactClass({
 			  id="single_notification"
 			  type="checkbox"
 			  name="single_notification"
-			  value={config.single_notification}
+			  checked={config.single_notification}
 			  onChange={this.handleChange}
 			  style={{position: 'absolute'}}
 		  />
