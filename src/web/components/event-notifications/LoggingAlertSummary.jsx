@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Well } from 'components/graylog';
 
 import CommonNotificationSummary from "./CommonNotificationSummary";
+import styles from './LoggingAlertSummary.css';
 
 class LoggingAlertSummary extends React.Component {
   static propTypes = {
@@ -22,7 +23,7 @@ class LoggingAlertSummary extends React.Component {
             <React.Fragment>
               <tr>
                 <td>Alert Severity:</td>
-                <td>{notification.config.severity.join(', ') || 'No severity for this notification.'}</td>
+                <td>{notification.config.severity || 'No severity for this notification.'}</td>
               </tr>
               <tr>
                 <td>Log Content:</td>
@@ -44,7 +45,7 @@ class LoggingAlertSummary extends React.Component {
               </tr>
                 <tr>
                     <td>Single Notification</td>
-                    <td>{notification.config.single_notification}</td>
+                    <td>{notification.config.single_notification? 'true' : 'false'}</td>
                 </tr>
                 <tr>
                     <td>Comment:</td>
