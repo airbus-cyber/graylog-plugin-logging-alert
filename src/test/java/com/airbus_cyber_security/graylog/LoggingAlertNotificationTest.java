@@ -203,9 +203,35 @@ public class LoggingAlertNotificationTest {
 						+ "title: "+context.eventDefinition().get().title() + " | "
 						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-						+ "alert_url: http://localhost:8080/event/"+ context.event().eventDefinitionId() + " | "
+						+ "alert_url: http://localhost:8080/alert/" + " | "
 						+ "messages_url: http://localhost:8080"
-						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)) + "&q=streams%3A" + context.notificationId()));
+						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))));
+	}
+
+	@Test
+	public void testExecuteWithContextAndStreams() throws EventNotificationException {
+		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE);
+		//list of MessageSummary
+		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
+				new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))
+		);
+		EventNotificationContext context = getContextWithStream(config);
+		when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
+		loggingAlert.execute(context);
+
+		String concatStream = "";
+		for (String stream : context.event().sourceStreams()) {
+			concatStream = stream.isEmpty() ? concatStream.concat(stream) : concatStream.concat(","+stream);
+		}
+
+		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
+				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
+						+ "title: "+context.eventDefinition().get().title() + " | "
+						+ "description: "+context.eventDefinition().get().description() + " | "
+						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
+						+ "alert_url: http://localhost:8080/alert/" + " | "
+						+ "messages_url: http://localhost:8080"
+						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)) + "&q=streams%3A" + concatStream));
 	}
 
 	@Test
@@ -267,10 +293,9 @@ public class LoggingAlertNotificationTest {
 						+ "target_process: process_dst | target_service_name: service_dst | target_tool: tool_dst | target_url: url_dst | "
 						+ "target_user_name: user_dst | target_user_privileges: user_role_dst | target_user_unique_identifier: uid_dst | "
 						+ "file_name: filename | file_hash: filehash | file_size: filesize | file_type: filetype | "
-						+ "alert_url: http://localhost:8080/event/" + context.event().eventDefinitionId() + " | "
+						+ "alert_url: http://localhost:8080/alert/" + " | "
 						+ "messages_url: http://localhost:8080"
-						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))
-						+ "&q=streams%3A" + context.notificationId()));
+						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))));
 	}
 
 	private String formatDate(DateTime date) {
@@ -307,6 +332,27 @@ public class LoggingAlertNotificationTest {
 				.processingTimestamp(dateForTest)
 				.source("source")
 				.sourceStreams(new HashSet<>())
+				.streams(new HashSet<>())
+				.timerangeEnd(dateForTest)
+				.timerangeStart(dateForTest)
+				.build();
+	}
+
+	private EventDto getEventDtoWithStream() {
+		return EventDto.builder().eventDefinitionId("event_definition_id")
+				.eventDefinitionType("event_definition_type")
+				.eventTimestamp(dateForTest)
+				.alert(true)
+				.fields(new HashMap<>())
+				.id("id")
+				.key("")
+				.keyTuple(new ArrayList<>())
+				.message("message")
+				.originContext("origin_context")
+				.priority(1)
+				.processingTimestamp(dateForTest)
+				.source("source")
+				.sourceStreams(new HashSet<>(Arrays.asList("stream1", "stream2")))
 				.streams(new HashSet<>())
 				.timerangeEnd(dateForTest)
 				.timerangeStart(dateForTest)
@@ -361,6 +407,16 @@ public class LoggingAlertNotificationTest {
 		return EventNotificationContext.builder()
 				.notificationConfig(config)
 				.event(getEventDto())
+				.eventDefinition(getEventDefinitionDto())
+				.notificationId("notification_id")
+				.jobTrigger(getJobTriggerDto())
+				.build();
+	}
+
+	private EventNotificationContext getContextWithStream(LoggingNotificationConfig config) {
+		return EventNotificationContext.builder()
+				.notificationConfig(config)
+				.event(getEventDtoWithStream())
 				.eventDefinition(getEventDefinitionDto())
 				.notificationId("notification_id")
 				.jobTrigger(getJobTriggerDto())

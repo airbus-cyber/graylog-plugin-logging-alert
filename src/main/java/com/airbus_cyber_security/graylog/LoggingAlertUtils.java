@@ -118,7 +118,7 @@ public class LoggingAlertUtils {
 	public static String getAlertUrl(EventNotificationContext ctx)
     {
     	if (ctx.eventDefinition().isPresent()) {
-    		return "/event/"+ctx.eventDefinition().get().id();
+    		return "/alert/";//TODO: after demo confirm to which URL to return"/event/"+ctx.eventDefinition().get().id();
     	}
     	return "";
     }
@@ -169,11 +169,10 @@ public class LoggingAlertUtils {
 
 	public static String getStreamSearchUrl(EventNotificationContext ctx, DateTime timeBeginSearch){
 		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
-		return MSGS_URL_BEGIN
+		String message_url = MSGS_URL_BEGIN
 				+ timeBeginSearch.minusMinutes(1).toString(timeFormatter) + MSGS_URL_TO
-				+ ctx.event().eventTimestamp().plusMinutes(1).toString(timeFormatter)
-				//+ ctx.jobTrigger().get().triggeredAt().get().plusMinutes(1).toString(timeFormatter)
-				+ "&q=streams%3A" + ctx.event().id();
+				+ ctx.event().eventTimestamp().plusMinutes(1).toString(timeFormatter);
+		return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + "&q=streams%3A" + ctx.event().sourceStreams();
 	}
 
 	public static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, Map <String, Object> conditionParameters, MessageSummary messageSummary,
@@ -198,7 +197,15 @@ public class LoggingAlertUtils {
 
     		DateTime beginTime = timeBeginSearch;
 
-    		String search = "&q=streams%3A" + ctx.notificationId();
+	    	String search = "";
+			String concatStream = "";
+			if (!ctx.event().sourceStreams().isEmpty()) {
+				for (String stream : ctx.event().sourceStreams()) {
+					concatStream = stream.isEmpty() ? concatStream.concat(stream) : concatStream.concat(","+stream);
+				}
+    			search = "&q=streams%3A" + concatStream;
+			}
+
     		if(conditionParameters.containsKey("additional_stream")) {
     			String additionalStreamID = (String) conditionParameters.get("additional_stream");
 
@@ -208,7 +215,9 @@ public class LoggingAlertUtils {
     				if(timeFromMsgsUrl != null && timeFromMsgsUrl.isBefore(beginTime)){
     					beginTime = timeFromMsgsUrl;
     				}
-    				search = "&q=(+streams%3A" + ctx.notificationId() + getQuery(previousMsgsURL) + "+)";
+					if (!ctx.event().sourceStreams().isEmpty()) {
+						search = "&q=(+streams%3A" + concatStream + getQuery(previousMsgsURL) + "+)";//TODO
+					}
     			}
     		}
 
