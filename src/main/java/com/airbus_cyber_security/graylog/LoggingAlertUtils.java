@@ -37,7 +37,7 @@ public class LoggingAlertUtils {
 	
 	private static final String MSGS_URL_BEGIN = "/search?rangetype=absolute&from=";
 	private static final String MSGS_URL_TO = "&to=";
-	private static final String MSGS_URL_STREAM = "streams%3A";
+	private static final String MSGS_URL_STREAM = "&streams=";
 	private static final int SIZE_STREAM = 24;
 
 	private static final String SEPARATOR_TEMPLATE = "\n";
@@ -118,7 +118,7 @@ public class LoggingAlertUtils {
 	public static String getAlertUrl(EventNotificationContext ctx)
     {
     	if (ctx.eventDefinition().isPresent()) {
-    		return "/alert/";//TODO: after demo confirm to which URL to return"/event/"+ctx.eventDefinition().get().id();
+    		return "/alerts/";//TODO: after demo confirm to which URL to return"/event/"+ctx.eventDefinition().get().id();
     	}
     	return "";
     }
@@ -172,7 +172,7 @@ public class LoggingAlertUtils {
 		String message_url = MSGS_URL_BEGIN
 				+ timeBeginSearch.minusMinutes(1).toString(timeFormatter) + MSGS_URL_TO
 				+ ctx.event().eventTimestamp().plusMinutes(1).toString(timeFormatter);
-		return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + "&q=streams%3A" + ctx.event().sourceStreams();
+		return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + "&q=" + MSGS_URL_STREAM + getConcatStreams(ctx.event().sourceStreams());
 	}
 
 	public static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, Map <String, Object> conditionParameters, MessageSummary messageSummary,
@@ -198,12 +198,9 @@ public class LoggingAlertUtils {
     		DateTime beginTime = timeBeginSearch;
 
 	    	String search = "";
-			String concatStream = "";
+			String concatStream = getConcatStreams(ctx.event().sourceStreams());
 			if (!ctx.event().sourceStreams().isEmpty()) {
-				for (String stream : ctx.event().sourceStreams()) {
-					concatStream = stream.isEmpty() ? concatStream.concat(stream) : concatStream.concat(","+stream);
-				}
-    			search = "&q=streams%3A" + concatStream;
+				search = "&q=" + MSGS_URL_STREAM + concatStream;
 			}
 
     		if(conditionParameters.containsKey("additional_stream")) {
@@ -216,7 +213,7 @@ public class LoggingAlertUtils {
     					beginTime = timeFromMsgsUrl;
     				}
 					if (!ctx.event().sourceStreams().isEmpty()) {
-						search = "&q=(+streams%3A" + concatStream + getQuery(previousMsgsURL) + "+)";//TODO
+						search = "&q=(+" + MSGS_URL_STREAM + concatStream + getQuery(previousMsgsURL) + "+)";
 					}
     			}
     		}
@@ -282,13 +279,6 @@ public class LoggingAlertUtils {
 	public static void addLogToListMessages(final LoggingNotificationConfig config, Set<String> listMessagesToLog,
 									  final Map<String, Object> model, LoggingAlertFields loggingAlertFields, String separator) {
 		model.put("logging_alert", loggingAlertFields);
-		LOGGER.info("Logging Alert alert_url : " +loggingAlertFields.getAlert_url());
-		LOGGER.info("Logging Alert graylog_id : " +loggingAlertFields.getGraylog_id());
-		LOGGER.info("Logging Alert id : " +loggingAlertFields.getId());
-		LOGGER.info("Logging Alert messages_url : " +loggingAlertFields.getMessages_url());
-		LOGGER.info("Logging Alert severity : " +loggingAlertFields.getSeverity());
-		LOGGER.info("Logging Alert detect_time : " +loggingAlertFields.getDetect_time());
-		LOGGER.info("Model : " + model.toString());
 		String messageToLog=buildBody(config, model, separator);
 		listMessagesToLog.add(messageToLog);
 	}
@@ -308,5 +298,15 @@ public class LoggingAlertUtils {
 				.backlog(backlog)
 				.build();
 		return objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
+	}
+
+	public static final String getConcatStreams(Set<String> setStreams) {
+		String concatStream = "";
+		if (!setStreams.isEmpty()) {
+			for (String stream : setStreams) {
+				concatStream = concatStream.isEmpty() ? concatStream.concat(stream) : concatStream.concat("%2C"+stream);
+			}
+		}
+		return concatStream;
 	}
 }
