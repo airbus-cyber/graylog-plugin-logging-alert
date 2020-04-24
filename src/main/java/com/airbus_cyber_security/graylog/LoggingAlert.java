@@ -58,7 +58,7 @@ public class LoggingAlert implements EventNotification{
 	
 	@Override
 	public void execute(EventNotificationContext ctx) throws EventNotificationException {
-		LOGGER.info("Start of execute...");
+		LOGGER.debug("Start of execute...");
 		try {
 			final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
 			final ImmutableList<MessageSummary> backlog = notificationCallbackService.getBacklogForEvent(ctx);
@@ -74,7 +74,7 @@ public class LoggingAlert implements EventNotification{
 			final Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
 
 			if (backlog.isEmpty()) {
-				LOGGER.info("Add log to list message for empty backlog...");
+				LOGGER.debug("Add log to list message for empty backlog...");
 				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
 						LoggingAlertUtils.getGraylogID(ctx),
 						config.severity().getType(),
@@ -84,7 +84,7 @@ public class LoggingAlert implements EventNotification{
 				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 			} else {
 				if (config.singleMessage()) {
-					LOGGER.info("Add log to list message for single message...");
+					LOGGER.debug("Add log to list message for single message...");
 					for (MessageSummary messageSummary : backlog) {
 						listMessagesToLog.add(messageSummary.getRawMessage().getMessage());
 					}
@@ -93,7 +93,7 @@ public class LoggingAlert implements EventNotification{
 							LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 				} else {
-					LOGGER.info("Add log to list message for backlog...");
+					LOGGER.debug("Add log to list message for backlog...");
 					Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, searches);
 					for (MessageSummary messageSummary : backlog) {
 						String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);

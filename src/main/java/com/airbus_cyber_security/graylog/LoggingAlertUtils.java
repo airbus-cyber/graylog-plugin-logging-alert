@@ -51,7 +51,7 @@ public class LoggingAlertUtils {
 	}
 	
 	public static String getAggregationAlertID(LoggingNotificationConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
-		LOGGER.info("Start of getAggregationAlertID...");
+		LOGGER.debug("Start of getAggregationAlertID...");
 		try {
 			RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
 			final AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
