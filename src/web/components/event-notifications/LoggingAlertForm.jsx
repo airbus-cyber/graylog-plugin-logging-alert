@@ -155,7 +155,7 @@ const LoggingAlertForm = createReactClass({
 		   Fields that should be checked to split the alert according to each value by generating a different alert is for each value
 		 </HelpBlock>
 	  </FormGroup>
-	  <ControlLabel>Alert Time Range <small className="text-muted">(Optional)</small></ControlLabel>
+	  <ControlLabel>Aggregation Time Range <small className="text-muted">(Optional)</small></ControlLabel>
 	  <Input
 	    id="aggregation_time"
 	    type="number"
