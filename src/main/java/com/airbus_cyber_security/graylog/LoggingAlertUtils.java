@@ -183,7 +183,7 @@ public class LoggingAlertUtils {
 
     		DateTime endTime;
     		/* If the alert is interval and resolved */
-    		if(ctx.jobTrigger().isPresent() && ctx.jobTrigger().get().endTime() != null) {
+    		if(ctx.jobTrigger().isPresent() && ctx.jobTrigger().get().endTime().isPresent()) {
     			endTime = ctx.jobTrigger().get().endTime().get().plusMinutes(1);
     		}else {
     			endTime = ctx.jobTrigger().get().triggeredAt().get().plusMinutes(1);
@@ -199,7 +199,7 @@ public class LoggingAlertUtils {
 
 	    	String search = "";
 			String concatStream = getConcatStreams(ctx.event().sourceStreams());
-			if (!ctx.event().sourceStreams().isEmpty()) {
+			if (!concatStream.isEmpty()) {
 				search = "&q=" + MSGS_URL_STREAM + concatStream;
 			}
 
@@ -212,7 +212,7 @@ public class LoggingAlertUtils {
     				if(timeFromMsgsUrl != null && timeFromMsgsUrl.isBefore(beginTime)){
     					beginTime = timeFromMsgsUrl;
     				}
-					if (!ctx.event().sourceStreams().isEmpty()) {
+					if (!concatStream.isEmpty()) {
 						search = "&q=(+" + MSGS_URL_STREAM + concatStream + getQuery(previousMsgsURL) + "+)";
 					}
     			}
@@ -246,14 +246,14 @@ public class LoggingAlertUtils {
     
 	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingNotificationConfig config,
 							 Map<String, Object> model, DateTime date, Searches searches) {
-    	String alertUrl = getAlertUrl(ctx);
-    	Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
+		String alertUrl = getAlertUrl(ctx);
+		Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 
 		for (MessageSummary messageSummary : backlog) {		
 			String valuesAggregationField = getValuesAggregationField(messageSummary, config);
 			String messagesUrl = getMessagesUrl(ctx, config, model, messageSummary, date, searches);
 			String graylogId = getGraylogID(ctx);
-	    	
+
 			if(messageSummary.hasField(config.fieldAlertId())) {
 				listOfLoggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(config.fieldAlertId()),
 						graylogId, config.severity().getType(), date, alertUrl, messagesUrl));
@@ -272,7 +272,7 @@ public class LoggingAlertUtils {
 				}	
 			}
 		}
-		
+
 		return listOfLoggingAlertField;
     }
 
