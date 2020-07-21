@@ -14,16 +14,17 @@ public abstract class LoggingAlertConfig {
     private static final String FIELD_ALERT_ID = "id";
     private static final String SEPARATOR_TEMPLATE  = "\n";
     private static final String BODY_TEMPLATE =
-            "type: alert" + SEPARATOR_TEMPLATE +
+                    "type: alert" + SEPARATOR_TEMPLATE +
                     FIELD_ALERT_ID+ ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
                     "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
                     "app: graylog" + SEPARATOR_TEMPLATE +
-                    "subject: ${alertCondition.title}" + SEPARATOR_TEMPLATE +
-                    "body: ${check_result.resultDescription}" + SEPARATOR_TEMPLATE +
-                    "src: ${message.fields.src_ip}" + SEPARATOR_TEMPLATE +
-                    "src_category: ${message.fields.src_category}" + SEPARATOR_TEMPLATE +
-                    "dest: ${message.fields.dest_ip}" + SEPARATOR_TEMPLATE +
-                    "dest_category: ${message.fields.dest_category}";
+                    "subject: ${event_definition_title}" + SEPARATOR_TEMPLATE +
+                    "body: ${event_definition_description}" + SEPARATOR_TEMPLATE +
+                    "${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}" + SEPARATOR_TEMPLATE +
+                    "src_category: ${backlog[0].fields.src_category}" + SEPARATOR_TEMPLATE +
+                    "dest: ${backlog[0].fields.dest_ip}" + SEPARATOR_TEMPLATE +
+                    "dest_category: ${backlog[0].fields.dest_category}" + SEPARATOR_TEMPLATE +
+                    "${end}";
 
 
     @JsonProperty("severity")

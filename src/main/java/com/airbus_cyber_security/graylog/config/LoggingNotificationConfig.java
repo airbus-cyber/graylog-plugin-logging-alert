@@ -44,15 +44,17 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     private static final String FIELD_ALERT_ID = "id";
     private static final String SEPARATOR_TEMPLATE  = "\n";
     private static final String BODY_TEMPLATE =
-            "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-            "title: ${event_definition_title}" + SEPARATOR_TEMPLATE +
-            "description: ${event_definition_description}" + SEPARATOR_TEMPLATE +
-            "severity: ${logging_alert.severity}"  + SEPARATOR_TEMPLATE +
-            "create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
-            "detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
-            "alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
-            "messages_url: http://localhost:8080${logging_alert.messages_url}";
-
+                    "type: alert" + SEPARATOR_TEMPLATE +
+                    FIELD_ALERT_ID+ ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
+                    "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
+                    "app: graylog" + SEPARATOR_TEMPLATE +
+                    "subject: ${event_definition_title}" + SEPARATOR_TEMPLATE +
+                    "body: ${event_definition_description}" + SEPARATOR_TEMPLATE +
+                    "${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}" + SEPARATOR_TEMPLATE +
+                    "src_category: ${backlog[0].fields.src_category}" + SEPARATOR_TEMPLATE +
+                    "dest: ${backlog[0].fields.dest_ip}" + SEPARATOR_TEMPLATE +
+                    "dest_category: ${backlog[0].fields.dest_category}" + SEPARATOR_TEMPLATE +
+                    "${end}";
 
     @JsonProperty(FIELD_SEVERITY)
     public abstract SeverityType severity();

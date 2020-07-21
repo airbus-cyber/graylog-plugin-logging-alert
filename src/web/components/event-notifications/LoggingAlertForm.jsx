@@ -12,19 +12,10 @@ import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
 import StoreProvider from 'injection/StoreProvider';
 import ActionsProvider from 'injection/ActionsProvider';
+import * as Constants from '../LoggingAlertConfig'
+
 const ConfigurationsStore = StoreProvider.getStore('Configurations');
 const ConfigurationActions = ActionsProvider.getActions('Configuration');
-
-const DEFAULT_BODY_TEMPLATE = 'type: alert'  + '\n' +
-	'id: ${logging_alert.id}'  + '\n' +
-	'severity: ${logging_alert.severity}' + '\n' +
-	'app: graylog'  + '\n' +
-	'subject: ${alertCondition.title}' + '\n' +
-	'body: ${check_result.resultDescription}' + '\n' +
-	'src: ${message.fields.src_ip}' + '\n' +
-	'src_category: ${message.fields.src_category}' + '\n' +
-	'dest: ${message.fields.dest_ip}' + '\n' +
-	'dest_category: ${message.fields.dest_category}';
 
 const LoggingAlertForm = createReactClass({
 	mixins: [Reflux.connect(ConfigurationsStore)],
@@ -93,7 +84,7 @@ const LoggingAlertForm = createReactClass({
   	else {
   		return {
 			severity: 'LOW',
-			log_body: DEFAULT_BODY_TEMPLATE,
+			log_body: Constants.DEFAULT_BODY_TEMPLATE,
 			alert_tag: 'LoggingAlert',
 			aggregation_time: 0,
 			split_fields: [],

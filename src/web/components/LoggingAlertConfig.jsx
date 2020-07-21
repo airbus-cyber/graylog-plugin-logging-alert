@@ -9,6 +9,17 @@ import naturalSort from 'javascript-natural-sort';
 import StoreProvider from 'injection/StoreProvider';
 
 const StreamsStore = StoreProvider.getStore('Streams');
+const DEFAULT_BODY_TEMPLATE = 'type: alert'  + '\n' +
+    'id: ${logging_alert.id}'  + '\n' +
+    'severity: ${logging_alert.severity}' + '\n' +
+    'app: graylog'  + '\n' +
+    'subject: ${event_definition_title}' + '\n' +
+    'body: ${event_definition_description}' + '\n' +
+    '${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}' + '\n' +
+    'src_category: ${backlog[0].fields.src_category}' + '\n' +
+    'dest: ${backlog[0].fields.dest_ip}' + '\n' +
+    'dest_category: ${backlog[0].fields.dest_category}' + '\n' +
+    '${end}';
 
 const LoggingAlertConfig = createReactClass({
     displayName: 'LoggingAlertConfig',
@@ -24,16 +35,7 @@ const LoggingAlertConfig = createReactClass({
                 field_alert_id: 'id',
                 severity: 'LOW',
                 separator: ' | ',
-                log_body: 'type: alert'  + '\n' +
-                    'id: ${logging_alert.id}'  + '\n' +
-                    'severity: ${logging_alert.severity}' + '\n' +
-                    'app: graylog'  + '\n' +
-                    'subject: ${alertCondition.title}' + '\n' +
-                    'body: ${check_result.resultDescription}' + '\n' +
-                    'src: ${message.fields.src_ip}' + '\n' +
-                    'src_category: ${message.fields.src_category}' + '\n' +
-                    'dest: ${message.fields.dest_ip}' + '\n' +
-                    'dest_category: ${message.fields.dest_category}',
+                log_body: DEFAULT_BODY_TEMPLATE,
                 alert_tag: 'LoggingAlert',
                 overflow_tag: 'LoggingOverflow',
             },

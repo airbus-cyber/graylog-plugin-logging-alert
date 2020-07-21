@@ -65,38 +65,31 @@ public class LoggingAlertNotificationTest {
 			"analyzer: Graylog" + SEPARATOR_TEMPLATE +
 			"sensor: ${backlog[0].fields.sensor}" + SEPARATOR_TEMPLATE +
 			"classification: ${backlog[0].fields.classification}" + SEPARATOR_TEMPLATE +
-			"source_command: ${backlog[0].fields.cmd_src}" + SEPARATOR_TEMPLATE +
-			"source_file_name: ${backlog[0].fields.file_src}" + SEPARATOR_TEMPLATE +
-			"source_host_name: ${backlog[0].fields.host_src}" + SEPARATOR_TEMPLATE +
 			"source_ip_address: ${backlog[0].fields.ip_src}" + SEPARATOR_TEMPLATE +
-			"source_mac_address: ${backlog[0].fields.mac_src}" + SEPARATOR_TEMPLATE +
 			"source_port: ${backlog[0].fields.port_src}" + SEPARATOR_TEMPLATE +
-			"source_process: ${backlog[0].fields.process_src}" + SEPARATOR_TEMPLATE +
-			"source_service_name: ${backlog[0].fields.service_src}" + SEPARATOR_TEMPLATE +
-			"source_tool: ${backlog[0].fields.tool_src}" + SEPARATOR_TEMPLATE +
-			"source_url: ${backlog[0].fields.url_src}" + SEPARATOR_TEMPLATE +
-			"source_user_name: ${backlog[0].fields.user_src}" + SEPARATOR_TEMPLATE +
-			"source_user_privileges: ${backlog[0].fields.user_role_src}" + SEPARATOR_TEMPLATE +
-			"source_user_unique_identifier: ${backlog[0].fields.uid_src}" + SEPARATOR_TEMPLATE +
-			"target_command: ${backlog[0].fields.cmd_dst}" + SEPARATOR_TEMPLATE +
-			"target_file_name: ${backlog[0].fields.file_dst}" + SEPARATOR_TEMPLATE +
-			"target_host_name: ${backlog[0].fields.host_dst}" + SEPARATOR_TEMPLATE +
 			"target_ip_address: ${backlog[0].fields.ip_dst}" + SEPARATOR_TEMPLATE +
-			"target_mac_address: ${backlog[0].fields.mac_dst}" + SEPARATOR_TEMPLATE +
 			"target_port: ${backlog[0].fields.port_dst}" + SEPARATOR_TEMPLATE +
-			"target_process: ${backlog[0].fields.process_dst}" + SEPARATOR_TEMPLATE +
-			"target_service_name: ${backlog[0].fields.service_dst}" + SEPARATOR_TEMPLATE +
-			"target_tool: ${backlog[0].fields.tool_dst}" + SEPARATOR_TEMPLATE +
-			"target_url: ${backlog[0].fields.url_dst}" + SEPARATOR_TEMPLATE +
-			"target_user_name: ${backlog[0].fields.user_dst}" + SEPARATOR_TEMPLATE +
-			"target_user_privileges: ${backlog[0].fields.user_role_dst}" + SEPARATOR_TEMPLATE +
-			"target_user_unique_identifier: ${backlog[0].fields.uid_dst}" + SEPARATOR_TEMPLATE +
-			"file_name: ${backlog[0].fields.filename}" + SEPARATOR_TEMPLATE +
-			"file_hash: ${backlog[0].fields.filehash}" + SEPARATOR_TEMPLATE +
-			"file_size: ${backlog[0].fields.filesize}" + SEPARATOR_TEMPLATE +
-			"file_type: ${backlog[0].fields.filetype}" + SEPARATOR_TEMPLATE +
 			"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
 			"messages_url: http://localhost:8080${logging_alert.messages_url}";
+
+	private static final String BODY_TEMPLATE_ADDITIONAL_FIELDS_SINGLE_MESSAGE =
+			"alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
+					"title: ${event_definition_title}" + SEPARATOR_TEMPLATE +
+					"description: ${event_definition_description}" + SEPARATOR_TEMPLATE +
+					"severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
+					"create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+					"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
+					"analyzer: Graylog" + SEPARATOR_TEMPLATE +
+					"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
+					"messages_url: http://localhost:8080${logging_alert.messages_url}" + SEPARATOR_TEMPLATE +
+					"${foreach backlog message}" +
+					"sensor: ${message.fields.sensor}" + SEPARATOR_TEMPLATE +
+					"classification: ${message.fields.classification}" + SEPARATOR_TEMPLATE +
+					"source_ip_address: ${message.fields.ip_src}" + SEPARATOR_TEMPLATE +
+					"source_port: ${message.fields.port_src}" + SEPARATOR_TEMPLATE +
+					"target_ip_address: ${message.fields.ip_dst}" + SEPARATOR_TEMPLATE +
+					"target_port: ${message.fields.port_dst}" + SEPARATOR_TEMPLATE +
+					"${end}";
 
 	private static final TestLogger TEST_LOGGER = TestLoggerFactory.getTestLogger("LoggingAlert");
 
@@ -189,7 +182,7 @@ public class LoggingAlertNotificationTest {
 
 	@Test
 	public void testExecuteWithContext() throws EventNotificationException {
-		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE);
+		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE,"LoggingAlert", false);
 		//list of MessageSummary
 		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
 				new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))
@@ -210,7 +203,7 @@ public class LoggingAlertNotificationTest {
 
 	@Test
 	public void testExecuteWithContextAndStreams() throws EventNotificationException {
-		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE);
+		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE,"LoggingAlert", false);
 		//list of MessageSummary
 		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
 				new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))
@@ -236,63 +229,109 @@ public class LoggingAlertNotificationTest {
 		Message message = new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC));
 		message.addField("sensor", "sensor");
 		message.addField("classification", "classification");
-		message.addField("cmd_src", "cmd_src");
-		message.addField("file_src", "file_src");
-		message.addField("host_src", "host_src");
-		message.addField("ip_src", "ip_src");
-		message.addField("mac_src", "mac_src");
-		message.addField("port_src", "port_src");
-		message.addField("process_src", "process_src");
-		message.addField("service_src", "service_src");
-		message.addField("tool_src", "tool_src");
-		message.addField("url_src", "url_src");
-		message.addField("user_src", "user_src");
-		message.addField("user_role_src", "user_role_src");
-		message.addField("uid_src", "uid_src");
-		message.addField("cmd_dst", "cmd_dst");
-		message.addField("file_dst", "file_dst");
-		message.addField("host_dst", "host_dst");
-		message.addField("ip_dst", "ip_dst");
-		message.addField("mac_dst", "mac_dst");
-		message.addField("port_dst", "port_dst");
-		message.addField("process_dst", "process_dst");
-		message.addField("service_dst", "service_dst");
-		message.addField("tool_dst", "tool_dst");
-		message.addField("url_dst", "url_dst");
-		message.addField("user_dst", "user_dst");
-		message.addField("user_role_dst", "user_role_dst");
-		message.addField("uid_dst ", "uid_dst");
-		message.addField("filename", "filename");
-		message.addField("filehash", "filehash");
-		message.addField("filesize", "filesize");
-		message.addField("filetype", "filetype");
+		message.addField("ip_src", "192.168.2.10");
+		message.addField("port_src", "50000");
+		message.addField("ip_dst", "192.168.2.20");
+		message.addField("port_dst", "60000");
 
+		Message message2 = new Message("Test message 2", "source1", new DateTime(2017, 9, 6, 17, 1, DateTimeZone.UTC));
+		message2.addField("sensor", "sensor");
+		message2.addField("classification", "classification");
+		message2.addField("ip_src", "192.168.2.11");
+		message2.addField("port_src", "50001");
+		message2.addField("ip_dst", "192.168.2.21");
+		message2.addField("port_dst", "60001");
 		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
-				new MessageSummary("graylog_1", message));
+				new MessageSummary("graylog_1", message),
+				new MessageSummary("graylog_1", message2));
 
-		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE_ADDITIONAL_FIELDS);
+		String tag="TestWithFields";
+		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE_ADDITIONAL_FIELDS,tag, false);
 
 		EventNotificationContext context = getContext(config);
 		when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
 		loggingAlert.execute(context);
 
-		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(tag);
+		assertThat(testLogger.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
 						+ "title: "+context.eventDefinition().get().title() + " | "
 						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
 						+ "analyzer: Graylog | sensor: sensor | classification: classification | "
-						+ "source_command: cmd_src | source_file_name: file_src | source_host_name: host_src | source_ip_address: ip_src | "
-						+ "source_mac_address: mac_src | source_port: port_src | source_process: process_src | source_service_name: service_src | "
-						+ "source_tool: tool_src | source_url: url_src | source_user_name: user_src | source_user_privileges: user_role_src | "
-						+ "source_user_unique_identifier: uid_src | target_command: cmd_dst | target_file_name: file_dst | "
-						+ "target_host_name: host_dst | target_ip_address: ip_dst | target_mac_address: mac_dst | target_port: port_dst | "
-						+ "target_process: process_dst | target_service_name: service_dst | target_tool: tool_dst | target_url: url_dst | "
-						+ "target_user_name: user_dst | target_user_privileges: user_role_dst | target_user_unique_identifier: uid_dst | "
-						+ "file_name: filename | file_hash: filehash | file_size: filesize | file_type: filetype | "
+						+ "source_ip_address: 192.168.2.10 | "
+						+ "source_port: 50000 | "
+						+ "target_ip_address: 192.168.2.20 | "
+						+ "target_port: 60000 | "
 						+ "alert_url: http://localhost:8080/alerts/" + " | "
 						+ "messages_url: http://localhost:8080"
-						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))));
+						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))),
+				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
+						+ "title: "+context.eventDefinition().get().title() + " | "
+						+ "description: "+context.eventDefinition().get().description() + " | "
+						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
+						+ "analyzer: Graylog | sensor: sensor | classification: classification | "
+						+ "source_ip_address: 192.168.2.11 | "
+						+ "source_port: 50001 | "
+						+ "target_ip_address: 192.168.2.21 | "
+						+ "target_port: 60001 | "
+						+ "alert_url: http://localhost:8080/alerts/" + " | "
+						+ "messages_url: http://localhost:8080"
+						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)))
+				);
+	}
+
+	@Test
+	public void testExecuteWithAdditionalFieldsSingleMessage() throws EventNotificationException {
+		Message message = new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC));
+		message.addField("sensor", "sensor");
+		message.addField("classification", "classification");
+		message.addField("ip_src", "192.168.1.10");
+		message.addField("port_src", "50000");
+		message.addField("ip_dst", "192.168.1.20");
+		message.addField("port_dst", "60000");
+
+		Message message2 = new Message("Test message 2", "source1", new DateTime(2017, 9, 6, 17, 1, DateTimeZone.UTC));
+		message2.addField("sensor", "sensor");
+		message2.addField("classification", "classification");
+		message2.addField("ip_src", "192.168.1.11");
+		message2.addField("port_src", "50001");
+		message2.addField("ip_dst", "192.168.1.21");
+		message2.addField("port_dst", "60001");
+
+		final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
+				new MessageSummary("graylog_1", message),
+				new MessageSummary("graylog_1", message2));
+
+		String tag="TestSingle";
+		LoggingNotificationConfig config = getConfig(BODY_TEMPLATE_ADDITIONAL_FIELDS_SINGLE_MESSAGE,tag, true);
+
+		EventNotificationContext context = getContext(config);
+		when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
+		loggingAlert.execute(context);
+
+		TestLogger testLogger = TestLoggerFactory.getTestLogger(tag);
+		assertThat(testLogger.getLoggingEvents()).extracting("level", "message").contains(
+				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
+						+ "title: "+context.eventDefinition().get().title() + " | "
+						+ "description: "+context.eventDefinition().get().description() + " | "
+						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
+						+ "analyzer: Graylog | "
+						+ "alert_url: http://localhost:8080/alerts/" + " | "
+						+ "messages_url: http://localhost:8080"
+						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(dateForTest.plusMinutes(1))
+						+ " | sensor: sensor | classification: classification | "
+						+ "source_ip_address: 192.168.1.10 | "
+						+ "source_port: 50000 | "
+						+ "target_ip_address: 192.168.1.20 | "
+						+ "target_port: 60000 | "
+						+ "sensor: sensor | classification: classification | "
+						+ "source_ip_address: 192.168.1.11 | "
+						+ "source_port: 50001 | "
+						+ "target_ip_address: 192.168.1.21 | "
+						+ "target_port: 60001 | "
+						));
+
 	}
 
 	private String formatDate(DateTime date) {
@@ -300,17 +339,18 @@ public class LoggingAlertNotificationTest {
 		return sdf.format(date.toDate());
 	}
 
-	private LoggingNotificationConfig getConfig(String bodyTemplate) {
+	private LoggingNotificationConfig getConfig(String bodyTemplate, String tag, boolean single) {
 		return LoggingNotificationConfig.builder()
 				.aggregationStream("aggregation_stream")
 				.aggregationTime(60)
-				.alertTag("LoggingAlert")
+				.alertTag(tag)
 				.fieldAlertId("field_alert_id")
 				.limitOverflow(0)
 				.logBody(bodyTemplate)
 				.overflowTag("overflow_tag")
 				.splitFields(new HashSet<>())
 				.severity(SeverityType.LOW)
+				.singleMessage(single)
 				.build();
 	}
 

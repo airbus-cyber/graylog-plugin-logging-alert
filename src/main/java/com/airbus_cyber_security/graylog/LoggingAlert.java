@@ -71,7 +71,7 @@ public class LoggingAlert implements EventNotification{
 			}
 
 			Set<String> listMessagesToLog = new LinkedHashSet<>();
-			final Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
+			Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
 
 			if (backlog.isEmpty()) {
 				LOGGER.debug("Add log to list message for empty backlog...");
@@ -85,9 +85,6 @@ public class LoggingAlert implements EventNotification{
 			} else {
 				if (config.singleMessage()) {
 					LOGGER.debug("Add log to list message for single message...");
-					for (MessageSummary messageSummary : backlog) {
-						listMessagesToLog.add(messageSummary.getRawMessage().getMessage());
-					}
 					LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
 							LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
 							LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
@@ -96,6 +93,7 @@ public class LoggingAlert implements EventNotification{
 					LOGGER.debug("Add log to list message for backlog...");
 					Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, searches);
 					for (MessageSummary messageSummary : backlog) {
+						model = LoggingAlertUtils.getModel(ctx, messageSummary, objectMapper);
 						String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
 						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, listOfloggingAlertField.get(valuesAggregationField), generalConfigSeparator);
 					}

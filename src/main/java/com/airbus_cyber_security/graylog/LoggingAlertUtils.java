@@ -170,7 +170,7 @@ public class LoggingAlertUtils {
 	public static String getStreamSearchUrl(EventNotificationContext ctx, DateTime timeBeginSearch){
 		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
 		String message_url = MSGS_URL_BEGIN
-				+ timeBeginSearch.minusMinutes(1).toString(timeFormatter) + MSGS_URL_TO
+				+ timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
 				+ ctx.event().eventTimestamp().plusMinutes(1).toString(timeFormatter);
 		return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + "&q=" + MSGS_URL_STREAM + getConcatStreams(ctx.event().sourceStreams());
 	}
@@ -287,6 +287,24 @@ public class LoggingAlertUtils {
 											   final ObjectMapper objectMapper) {
 		final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
 		final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
+		final EventNotificationModelData modelData = EventNotificationModelData.builder()
+				.eventDefinitionId(definitionDto.map(EventDefinitionDto::id).orElse(UNKNOWN))
+				.eventDefinitionType(definitionDto.map(d -> d.config().type()).orElse(UNKNOWN))
+				.eventDefinitionTitle(definitionDto.map(EventDefinitionDto::title).orElse(UNKNOWN))
+				.eventDefinitionDescription(definitionDto.map(EventDefinitionDto::description).orElse(UNKNOWN))
+				.jobDefinitionId(jobTriggerDto.map(JobTriggerDto::jobDefinitionId).orElse(UNKNOWN))
+				.jobTriggerId(jobTriggerDto.map(JobTriggerDto::id).orElse(UNKNOWN))
+				.event(context.event())
+				.backlog(backlog)
+				.build();
+		return objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
+	}
+
+	public static Map<String, Object> getModel(final EventNotificationContext context, final MessageSummary message,
+											   final ObjectMapper objectMapper) {
+		final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
+		final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
+		ImmutableList<MessageSummary> backlog = new ImmutableList.Builder<MessageSummary>().add(message).build();
 		final EventNotificationModelData modelData = EventNotificationModelData.builder()
 				.eventDefinitionId(definitionDto.map(EventDefinitionDto::id).orElse(UNKNOWN))
 				.eventDefinitionType(definitionDto.map(d -> d.config().type()).orElse(UNKNOWN))
