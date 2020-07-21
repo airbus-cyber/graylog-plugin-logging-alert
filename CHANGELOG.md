@@ -1,6 +1,13 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [2.0.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.0.0...2.0.1) (2020-07-21)
+
+### Fix
+* Fix notification error with backlog 
+* Fix for single notification
+* Fix default template
+
 ## [2.0.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/1.3.0...2.0.0) (2020-04-24)
 
 ### Features
