@@ -253,10 +253,10 @@ public class LoggingAlertNotificationTest {
 		loggingAlert.execute(context);
 
 		TestLogger testLogger = TestLoggerFactory.getTestLogger(tag);
-		assertThat(testLogger.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
-				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
-						+ "title: "+context.eventDefinition().get().title() + " | "
-						+ "description: "+context.eventDefinition().get().description() + " | "
+		assertThat(testLogger.getLoggingEvents()).extracting("level", "message").contains(
+				tuple(INFO, "alert_id: " + context.event().eventDefinitionId() + " | "
+						+ "title: " + context.eventDefinition().get().title() + " | "
+						+ "description: " + context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
 						+ "analyzer: Graylog | sensor: sensor | classification: classification | "
 						+ "source_ip_address: 192.168.2.10 | "
@@ -266,9 +266,9 @@ public class LoggingAlertNotificationTest {
 						+ "alert_url: http://localhost:8080/alerts/" + " | "
 						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))),
-				tuple(INFO, "alert_id: "+context.event().eventDefinitionId() + " | "
-						+ "title: "+context.eventDefinition().get().title() + " | "
-						+ "description: "+context.eventDefinition().get().description() + " | "
+				tuple(INFO, "alert_id: " + context.event().eventDefinitionId() + " | "
+						+ "title: " + context.eventDefinition().get().title() + " | "
+						+ "description: " + context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
 						+ "analyzer: Graylog | sensor: sensor | classification: classification | "
 						+ "source_ip_address: 192.168.2.11 | "

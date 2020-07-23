@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * interfaces. (i.e. AlarmCallback, MessageInput, MessageOutput)
  * UPDATE Graylog 3.2 : the class should implement EventNotification
  */
-public class LoggingAlert implements EventNotification{
+public class LoggingAlert implements EventNotification {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoggingAlert.class);
 
@@ -57,73 +57,70 @@ public class LoggingAlert implements EventNotification{
 	}
 	
 	@Override
-	public void execute(EventNotificationContext ctx) throws EventNotificationException {
+	public void execute(EventNotificationContext ctx) {
 		LOGGER.debug("Start of execute...");
-		try {
-			final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
-			final ImmutableList<MessageSummary> backlog = notificationCallbackService.getBacklogForEvent(ctx);
+		final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
+		final ImmutableList<MessageSummary> backlog = notificationCallbackService.getBacklogForEvent(ctx);
 
-			DateTime date = ctx.event().eventTimestamp();
+		DateTime date = ctx.event().eventTimestamp();
 
-			for (MessageSummary messageSummary : backlog) {
-				if (messageSummary.getTimestamp().isBefore(date))
-					date = messageSummary.getTimestamp();
-			}
+		for (MessageSummary messageSummary : backlog) {
+			if (messageSummary.getTimestamp().isBefore(date))
+				date = messageSummary.getTimestamp();
+		}
 
-			Set<String> listMessagesToLog = new LinkedHashSet<>();
-			Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
+		Set<String> listMessagesToLog = new LinkedHashSet<>();
+		Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
 
-			if (backlog.isEmpty()) {
-				LOGGER.debug("Add log to list message for empty backlog...");
+		if (backlog.isEmpty()) {
+			LOGGER.debug("Add log to list message for empty backlog...");
+			LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
+					LoggingAlertUtils.getGraylogID(ctx),
+					config.severity().getType(),
+					date,
+					LoggingAlertUtils.getAlertUrl(ctx),
+					LoggingAlertUtils.getStreamSearchUrl(ctx, date));
+			LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
+		} else {
+			if (config.singleMessage()) {
+				LOGGER.debug("Add log to list message for single message...");
 				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
-						LoggingAlertUtils.getGraylogID(ctx),
-						config.severity().getType(),
-						date,
-						LoggingAlertUtils.getAlertUrl(ctx),
-						LoggingAlertUtils.getStreamSearchUrl(ctx, date));
+						LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
+						LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 			} else {
-				if (config.singleMessage()) {
-					LOGGER.debug("Add log to list message for single message...");
-					LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
-							LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
-							LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
-					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
-				} else {
-					LOGGER.debug("Add log to list message for backlog...");
-					Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, searches);
-					for (MessageSummary messageSummary : backlog) {
-						model = LoggingAlertUtils.getModel(ctx, messageSummary, objectMapper);
-						String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
-						LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, listOfloggingAlertField.get(valuesAggregationField), generalConfigSeparator);
-					}
+				LOGGER.debug("Add log to list message for backlog...");
+				Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, searches);
+				for (MessageSummary messageSummary : backlog) {
+					model = LoggingAlertUtils.getModel(ctx, messageSummary, objectMapper);
+					String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
+					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, listOfloggingAlertField.get(valuesAggregationField), generalConfigSeparator);
 				}
 			}
-
-			final Logger LOGGER = LoggerFactory.getLogger(config.alertTag());
-			final Logger LOGGER_OVERFLOW = LoggerFactory.getLogger(config.overflowTag());
-
-			Logger localLogger;
-			if(config.alertTag() != null && !config.alertTag().isEmpty()){
-				localLogger = LoggerFactory.getLogger(config.alertTag());
-			}else{
-				localLogger = LOGGER;
-			}
-
-			/* Log each messages */
-			int iter = 0;
-			for (String message : listMessagesToLog) {
-				if(config.limitOverflow() <= 0 || iter < config.limitOverflow()) {
-					localLogger.info(message);
-				} else {
-					LOGGER_OVERFLOW.info(message);
-				}
-				iter++;
-			}
-
-		} catch (Exception e) {
-			throw new EventNotificationException();
 		}
+
+		final Logger LOGGER = LoggerFactory.getLogger(config.alertTag());
+		final Logger LOGGER_OVERFLOW = LoggerFactory.getLogger(config.overflowTag());
+
+		Logger localLogger;
+		if (config.alertTag() != null && !config.alertTag().isEmpty()) {
+			localLogger = LoggerFactory.getLogger(config.alertTag());
+		} else {
+			localLogger = LOGGER;
+		}
+
+		/* Log each messages */
+		int iter = 0;
+		for (String message : listMessagesToLog) {
+			if (config.limitOverflow() <= 0 || iter < config.limitOverflow()) {
+				localLogger.info(message);
+			} else {
+				LOGGER_OVERFLOW.info(message);
+			}
+			iter++;
+		}
+
+		LOGGER.debug("End of execute...");
 	}
 
 	
