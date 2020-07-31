@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.graylog.plugins</groupId>
 		<artifactId>graylog-plugin-web-parent</artifactId>
-		<version>3.2.4</version>
+		<version>3.2.5</version>
 	</parent>
 
 	<groupId>com.airbus-cyber-security.graylog</groupId>
@@ -56,7 +56,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<graylog.version>3.2.4</graylog.version>
+		<graylog.version>3.2.5</graylog.version>
 		<graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 		<auto-value.version>1.5.1</auto-value.version>
 
@@ -320,6 +320,19 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
