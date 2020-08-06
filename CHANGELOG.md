@@ -1,6 +1,11 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [2.0.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.0.1...2.0.2) (2020-08-06)
+
+### Fix
+* Add default log body when no general configuration
+
 ## [2.0.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.0.0...2.0.1) (2020-07-21)
 
 ### Fix
