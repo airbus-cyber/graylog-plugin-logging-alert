@@ -3,16 +3,14 @@ import PropTypes from 'prop-types';
 import { ControlLabel, FormGroup, HelpBlock } from 'components/graylog';
 import lodash from 'lodash';
 import naturalSort from 'javascript-natural-sort';
-
 import { Select, MultiSelect, SourceCodeEditor } from 'components/common';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
-
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
 import StoreProvider from 'injection/StoreProvider';
 import ActionsProvider from 'injection/ActionsProvider';
-import * as Constants from '../LoggingAlertConfig'
+import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
 
 const ConfigurationsStore = StoreProvider.getStore('Configurations');
 const ConfigurationActions = ActionsProvider.getActions('Configuration');
@@ -28,7 +26,6 @@ const LoggingAlertForm = createReactClass({
 
 	getInitialState() {
 		return {
-			configurations: null,
 		};
 	},
 
@@ -84,7 +81,7 @@ const LoggingAlertForm = createReactClass({
   	else {
   		return {
 			severity: 'LOW',
-			log_body: Constants.DEFAULT_BODY_TEMPLATE,
+			log_body: DEFAULT_BODY_TEMPLATE,
 			alert_tag: 'LoggingAlert',
 			aggregation_time: 0,
 			split_fields: [],
@@ -126,7 +123,7 @@ const LoggingAlertForm = createReactClass({
 		 <SourceCodeEditor id="log_body"
 		                   mode="text"
 		                   theme="light"
-		                   value={config.log_body? config.log_body : alertConfig.log_body || ''}
+		                   value={config.log_body? config.log_body : alertConfig.log_body}
 		                   onChange={this.handleBodyTemplateChange} />
 		 <HelpBlock>
 		   {lodash.get(validation, 'errors.log_body[0]', 'The template to generate the log content form')}

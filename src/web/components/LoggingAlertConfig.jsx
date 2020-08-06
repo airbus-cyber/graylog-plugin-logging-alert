@@ -9,17 +9,17 @@ import naturalSort from 'javascript-natural-sort';
 import StoreProvider from 'injection/StoreProvider';
 
 const StreamsStore = StoreProvider.getStore('Streams');
-const DEFAULT_BODY_TEMPLATE = 'type: alert'  + '\n' +
-    'id: ${logging_alert.id}'  + '\n' +
-    'severity: ${logging_alert.severity}' + '\n' +
-    'app: graylog'  + '\n' +
-    'subject: ${event_definition_title}' + '\n' +
-    'body: ${event_definition_description}' + '\n' +
-    '${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}' + '\n' +
-    'src_category: ${backlog[0].fields.src_category}' + '\n' +
-    'dest: ${backlog[0].fields.dest_ip}' + '\n' +
-    'dest_category: ${backlog[0].fields.dest_category}' + '\n' +
-    '${end}';
+export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
+    "id: ${logging_alert.id}"  + "\n" +
+    "severity: ${logging_alert.severity}" + "\n" +
+    "app: graylog"  + "\n" +
+    "subject: ${event_definition_title}" + "\n" +
+    "body: ${event_definition_description}" + "\n" +
+    "${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}" + "\n" +
+    "src_category: ${backlog[0].fields.src_category}" + "\n" +
+    "dest: ${backlog[0].fields.dest_ip}" + "\n" +
+    "dest_category: ${backlog[0].fields.dest_category}" + "\n" +
+    "${end}";
 
 const LoggingAlertConfig = createReactClass({
     displayName: 'LoggingAlertConfig',

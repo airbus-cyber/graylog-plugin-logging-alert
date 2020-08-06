@@ -3,6 +3,7 @@ import { PluginManifest, PluginStore } from 'graylog-web-plugin/plugin';
 import LoggingAlertConfig from 'components/LoggingAlertConfig';
 import LoggingAlertFormContainer from 'components/event-notifications/LoggingAlertFormContainer';
 import LoggingAlertSummary from 'components/event-notifications/LoggingAlertSummary';
+export {DEFAULT_BODY_TEMPLATE} from 'components/LoggingAlertConfig';
 
 PluginStore.register(new PluginManifest(packageJson, {
   systemConfigurations: [
