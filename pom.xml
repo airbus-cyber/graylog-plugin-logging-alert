@@ -18,9 +18,9 @@
 	<url>https://github.com/airbus-cyber/graylog-plugin-logging-alert</url>
 
 	<licenses>
-        	<license>
-            		<name>GNU General Public License (GPL) version 3.0</name>
-		        <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+		<license>
+			<name>GNU General Public License (GPL) version 3.0</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.html</url>
 		</license>
 	</licenses>
 
@@ -200,17 +200,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<mavenExecutorId>forked-path</mavenExecutorId>
-					<tagNameFormat>@{project.version}</tagNameFormat>
-					<preparationGoals>clean test</preparationGoals>
-					<goals>package</goals>
-				</configuration>
-			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -254,7 +243,6 @@
 					<signRole>builder</signRole>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>rpm-maven-plugin</artifactId>
