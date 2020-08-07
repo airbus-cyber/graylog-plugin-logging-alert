@@ -1,8 +1,10 @@
-package com.airbus_cyber_security.graylog.config;
+package com.airbus_cyber_security.graylog.events.contentpack.entities;
 
 import java.util.Map;
 import java.util.Set;
 
+import com.airbus_cyber_security.graylog.events.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import org.graylog.events.contentpack.entities.EventNotificationConfigEntity;
 import org.graylog.events.notifications.EventNotificationConfig;
 import org.graylog2.contentpacks.model.entities.EntityDescriptor;
@@ -29,8 +31,7 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_OVERFLOW_TAG = "overflow_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-    private static final String FIELD_COMMENT = "comment";
-	
+
 	@JsonProperty(FIELD_SEVERITY)
     public abstract SeverityType severity();
     
@@ -60,9 +61,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 
     @JsonProperty(FIELD_SINGLE_MESSAGE)
     public abstract boolean singleMessage();
-
-    @JsonProperty(FIELD_COMMENT)
-    public abstract ValueReference comment();
     
     public static Builder builder() {
         return Builder.create();
@@ -98,8 +96,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
         public abstract Builder overflowTag(ValueReference overflowTag);
         @JsonProperty(FIELD_SINGLE_MESSAGE)
         public abstract Builder singleMessage(boolean singleMessage);
-        @JsonProperty(FIELD_COMMENT)
-        public abstract Builder comment(ValueReference comment);
         
         public abstract LoggingNotificationConfigEntity build();
     }
@@ -118,7 +114,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 				.alertTag(alertTag().asString(parameters))
                 .overflowTag(overflowTag().asString(parameters))
                 .singleMessage(singleMessage())
-                .comment(comment().asString(parameters))
 				.build();
 	}
 }

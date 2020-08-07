@@ -1,6 +1,7 @@
-package com.airbus_cyber_security.graylog;
+package com.airbus_cyber_security.graylog.events;
 
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingAlert;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import org.graylog2.plugin.PluginConfigBean;
 import org.graylog2.plugin.PluginModule;
 

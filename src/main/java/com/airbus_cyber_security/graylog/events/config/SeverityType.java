@@ -1,4 +1,4 @@
-package com.airbus_cyber_security.graylog.config;
+package com.airbus_cyber_security.graylog.events.config;
 
 public enum SeverityType {
 	INFO("info"),

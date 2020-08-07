@@ -1,11 +1,10 @@
-package com.airbus_cyber_security.graylog;
+package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
@@ -245,7 +244,7 @@ public class LoggingAlertUtils {
     }
     
 	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingNotificationConfig config,
-							 Map<String, Object> model, DateTime date, Searches searches) {
+																			 Map<String, Object> model, DateTime date, Searches searches) {
 		String alertUrl = getAlertUrl(ctx);
 		Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 
@@ -277,7 +276,7 @@ public class LoggingAlertUtils {
     }
 
 	public static void addLogToListMessages(final LoggingNotificationConfig config, Set<String> listMessagesToLog,
-									  final Map<String, Object> model, LoggingAlertFields loggingAlertFields, String separator) {
+											final Map<String, Object> model, LoggingAlertFields loggingAlertFields, String separator) {
 		model.put("logging_alert", loggingAlertFields);
 		String messageToLog=buildBody(config, model, separator);
 		listMessagesToLog.add(messageToLog);

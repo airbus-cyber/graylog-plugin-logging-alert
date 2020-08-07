@@ -1,14 +1,12 @@
-package com.airbus_cyber_security.graylog;
+package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import org.graylog.events.notifications.EventNotification;
 import org.graylog.events.notifications.EventNotificationContext;
-import org.graylog.events.notifications.EventNotificationException;
 import org.graylog.events.notifications.EventNotificationService;
 import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.MessageSummary;

@@ -1,7 +1,9 @@
 package com.airbus_cyber_security.graylog;
 
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingAlert;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingAlertUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.graylog.events.contentpack.entities.EventProcessorConfigEntity;
@@ -26,7 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.airbus_cyber_security.graylog.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import org.junit.rules.ExpectedException;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;

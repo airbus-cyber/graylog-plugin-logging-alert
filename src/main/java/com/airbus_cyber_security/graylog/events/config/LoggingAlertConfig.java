@@ -1,4 +1,4 @@
-package com.airbus_cyber_security.graylog.config;
+package com.airbus_cyber_security.graylog.events.config;
 
 import javax.annotation.Nullable;
 
@@ -13,7 +13,7 @@ public abstract class LoggingAlertConfig {
 
     private static final String FIELD_ALERT_ID = "id";
     private static final String SEPARATOR_TEMPLATE  = "\n";
-    private static final String BODY_TEMPLATE =
+    public static final String BODY_TEMPLATE =
                     "type: alert" + SEPARATOR_TEMPLATE +
                     FIELD_ALERT_ID+ ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
                     "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
@@ -86,6 +86,7 @@ public abstract class LoggingAlertConfig {
                 .accessLogBody(BODY_TEMPLATE)
                 .accessAggregationStream("*")
                 .accessAggregationTime(0)
+                .accessLimitOverflow(0)
                 .accessLimitOverflow(0)
                 .accessFieldAlertId(FIELD_ALERT_ID)
                 .accessAlertTag("LoggingAlert")

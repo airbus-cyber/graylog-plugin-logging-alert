@@ -1,5 +1,8 @@
-package com.airbus_cyber_security.graylog.config;
+package com.airbus_cyber_security.graylog.events.notifications.types;
 
+import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.contentpack.entities.LoggingNotificationConfigEntity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,22 +42,9 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_OVERFLOW_TAG = "overflow_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-    private static final String FIELD_COMMENT = "comment";
 
     private static final String FIELD_ALERT_ID = "id";
     private static final String SEPARATOR_TEMPLATE  = "\n";
-    private static final String BODY_TEMPLATE =
-                    "type: alert" + SEPARATOR_TEMPLATE +
-                    FIELD_ALERT_ID+ ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-                    "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
-                    "app: graylog" + SEPARATOR_TEMPLATE +
-                    "subject: ${event_definition_title}" + SEPARATOR_TEMPLATE +
-                    "body: ${event_definition_description}" + SEPARATOR_TEMPLATE +
-                    "${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}" + SEPARATOR_TEMPLATE +
-                    "src_category: ${backlog[0].fields.src_category}" + SEPARATOR_TEMPLATE +
-                    "dest: ${backlog[0].fields.dest_ip}" + SEPARATOR_TEMPLATE +
-                    "dest_category: ${backlog[0].fields.dest_category}" + SEPARATOR_TEMPLATE +
-                    "${end}";
 
     @JsonProperty(FIELD_SEVERITY)
     public abstract SeverityType severity();
@@ -86,9 +76,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
 
     @JsonProperty(FIELD_SINGLE_MESSAGE)
     public abstract boolean singleMessage();
-
-    @JsonProperty(FIELD_COMMENT)
-    public abstract String comment();
 
     @JsonIgnore
     public JobTriggerData toJobTriggerData(EventDto dto) {
@@ -124,17 +111,15 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
             return new AutoValue_LoggingNotificationConfig.Builder()
                     .type(TYPE_NAME)
                     .severity(SeverityType.LOW)
-                    .logBody(BODY_TEMPLATE)
+                    .logBody(LoggingAlertConfig.BODY_TEMPLATE)
                     .splitFields(new HashSet<>())
                     .aggregationStream("*")
                     .aggregationTime(0)
                     .limitOverflow(0)
                     .fieldAlertId(FIELD_ALERT_ID)
                     .alertTag("LoggingAlert")
-                    .overflowTag("")
-                    .singleMessage(false)
-                    .comment("");
-
+                    .overflowTag("LoggingOverflow")
+                    .singleMessage(false);
         }
 
         @JsonProperty(FIELD_SEVERITY)
@@ -157,8 +142,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
         public abstract Builder overflowTag(String overflowTag);
         @JsonProperty(FIELD_SINGLE_MESSAGE)
         public abstract Builder singleMessage(boolean singleMessage);
-        @JsonProperty(FIELD_COMMENT)
-        public abstract Builder comment(String comment);
 
         public abstract LoggingNotificationConfig build();
     }
@@ -176,7 +159,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
                 .alertTag(ValueReference.of(alertTag()))
                 .overflowTag(ValueReference.of(overflowTag()))
                 .singleMessage(singleMessage())
-                .comment(ValueReference.of(comment()))
                 .build();
     }
 

@@ -41,8 +41,8 @@ import org.mockito.junit.MockitoRule;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.airbus_cyber_security.graylog.LoggingAlert;
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingAlert;
+import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;

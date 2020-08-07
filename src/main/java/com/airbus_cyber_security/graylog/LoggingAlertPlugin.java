@@ -1,5 +1,6 @@
 package com.airbus_cyber_security.graylog;
 
+import com.airbus_cyber_security.graylog.events.LoggingAlertModule;
 import org.graylog2.plugin.Plugin;
 import org.graylog2.plugin.PluginMetaData;
 import org.graylog2.plugin.PluginModule;
