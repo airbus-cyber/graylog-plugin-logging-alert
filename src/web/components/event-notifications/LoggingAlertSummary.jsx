@@ -47,10 +47,6 @@ class LoggingAlertSummary extends React.Component {
                     <td>Single Notification</td>
                     <td>{notification.config.single_notification? 'true' : 'false'}</td>
                 </tr>
-                <tr>
-                    <td>Comment:</td>
-                    <td>{notification.config.comment}</td>
-                </tr>
             </React.Fragment>
         </CommonNotificationSummary>
     );

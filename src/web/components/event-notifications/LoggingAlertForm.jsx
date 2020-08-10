@@ -86,7 +86,6 @@ const LoggingAlertForm = createReactClass({
 			aggregation_time: 0,
 			split_fields: [],
 			single_notification: false,
-			comment: '',
 		}
 	}
   },
@@ -175,15 +174,6 @@ const LoggingAlertForm = createReactClass({
 			  Check this box to send only one message by alert
 		  </HelpBlock>
 	  </div>
-		  <ControlLabel>Comment <small className="text-muted">(Optional)</small></ControlLabel>
-		  <Input
-			  id="comment"
-			  type="text"
-			  name="comment"
-			  help="Comment about the configuration"
-			  value={config.comment}
-			  onChange={this.handleChange}
-		  />
 	  </React.Fragment>
     );
   },
