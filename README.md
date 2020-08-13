@@ -50,7 +50,10 @@ Then, in the popup that occurs, you can configure the **Title** of the notificat
 
 You can configure the **Alert Severity**. You have the choice between 4 levels of severity.  
 
-You can also configure the **Log Content** to log the information you want. Some plugin-specific fields values can be added to the log content.  
+You can also configure the **Log Content** to log the information you want. 
+Please see the [Graylog Documentation](https://docs.graylog.org/en/3.2/pages/alerts.html#data-available-to-notifications)
+
+Some plugin-specific fields values can be added to the log content.  
 
 | Plugin-specific Fields     | Description                                             |
 | -------------------------- | ------------------------------------------------------- |
