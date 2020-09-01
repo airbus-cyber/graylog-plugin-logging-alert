@@ -9,7 +9,7 @@ PluginStore.register(new PluginManifest(packageJson, {
   systemConfigurations: [
     {
       component: LoggingAlertConfig,
-      configType: 'com.airbus_cyber_security.graylog.config.LoggingAlertConfig',
+      configType: 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig',
     },
   ],
   eventNotificationTypes: [

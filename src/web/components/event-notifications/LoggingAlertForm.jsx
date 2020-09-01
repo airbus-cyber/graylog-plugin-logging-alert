@@ -29,7 +29,7 @@ const LoggingAlertForm = createReactClass({
 		};
 	},
 
-	LOGGING_ALERT_CONFIG: 'com.airbus_cyber_security.graylog.config.LoggingAlertConfig',
+	LOGGING_ALERT_CONFIG: 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig',
 
 	componentDidMount() {
 		ConfigurationActions.list(this.LOGGING_ALERT_CONFIG);
