@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [2.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.1.0...2.1.1) (2020-09-01)
+### Fix
+* Fix error when configuration update  
+
 ## [2.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.0.2...2.1.0) (2020-08-10)
 * Refactoring
 
