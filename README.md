@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
-[![GitHub Release](https://img.shields.io/badge/release-v2.1.1-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
+[![GitHub Release](https://img.shields.io/badge/release-v2.1.2-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
 
 #### Alert notification plugin for Graylog to generate log messages from alerts
 
@@ -60,7 +60,6 @@ Some plugin-specific fields values can be added to the log content.
 | logging_alert.id           | ID of the alert                                         |
 | logging_alert.severity     | Severity of the alert                                   |
 | logging_alert.detect_time  | Timestamp of the first message that triggered the alert |
-| logging_alert.alert_url    | URI of the Graylog alert                                |
 | logging_alert.messages_url | URI to the retrieve messages that triggered the alert   |
 
 The parameter **Split Fields** allow you to split the alert based on message field values. Thus, a different alert id is generated for each value of one or more message fields.
