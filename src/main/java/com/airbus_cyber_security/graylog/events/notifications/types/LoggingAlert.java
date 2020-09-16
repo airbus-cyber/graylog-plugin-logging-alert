@@ -76,7 +76,6 @@ public class LoggingAlert implements EventNotification {
 					LoggingAlertUtils.getGraylogID(ctx),
 					config.severity().getType(),
 					date,
-					LoggingAlertUtils.getAlertUrl(ctx),
 					LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 			LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 		} else {
@@ -84,7 +83,7 @@ public class LoggingAlert implements EventNotification {
 				LOGGER.debug("Add log to list message for single message...");
 				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
 						LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
-						LoggingAlertUtils.getAlertUrl(ctx), LoggingAlertUtils.getStreamSearchUrl(ctx, date));
+						LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 			} else {
 				LOGGER.debug("Add log to list message for backlog...");

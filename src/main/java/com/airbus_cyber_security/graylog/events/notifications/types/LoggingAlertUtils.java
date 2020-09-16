@@ -114,14 +114,6 @@ public class LoggingAlertUtils {
     	return valuesAggregationField.toString();
     }
     
-	public static String getAlertUrl(EventNotificationContext ctx)
-    {
-    	if (ctx.eventDefinition().isPresent()) {
-    		return "/alerts/";//TODO: after demo confirm to which URL to return"/event/"+ctx.eventDefinition().get().id();
-    	}
-    	return "";
-    }
-    
 	public static String getPreviousMessagesURL(String streamID, DateTime timeBegin, DateTime timeEnd, Searches searches) {
     	final String filter = "streams:" + streamID;	
 		final AbsoluteRange range = AbsoluteRange.create(timeBegin, timeEnd);
@@ -177,8 +169,14 @@ public class LoggingAlertUtils {
 	public static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, Map <String, Object> conditionParameters, MessageSummary messageSummary,
 			DateTime timeBeginSearch, Searches searches)
     {
-    	DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
+
+    	LOGGER.info("SourceStream: " + ctx.event().sourceStreams().toString());
+		LOGGER.info("Stream: " + ctx.event().streams().toString());
+
+
+		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
     	if(ctx.eventDefinition().isPresent()) {
+			LOGGER.info("Event definition present");
 
     		DateTime endTime;
     		/* If the alert is interval and resolved */
@@ -245,7 +243,6 @@ public class LoggingAlertUtils {
     
 	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingNotificationConfig config,
 																			 Map<String, Object> model, DateTime date, Searches searches) {
-		String alertUrl = getAlertUrl(ctx);
 		Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 
 		for (MessageSummary messageSummary : backlog) {		
@@ -255,19 +252,18 @@ public class LoggingAlertUtils {
 
 			if(messageSummary.hasField(config.fieldAlertId())) {
 				listOfLoggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(config.fieldAlertId()),
-						graylogId, config.severity().getType(), date, alertUrl, messagesUrl));
+						graylogId, config.severity().getType(), date, messagesUrl));
 			}else {
 				if(!listOfLoggingAlertField.containsKey(valuesAggregationField)) {
 					/* Add hash code if split field */
-					String alertID = null;
-					Message message = messageSummary.getRawMessage();
+					String alertID;
 					if(valuesAggregationField.equals("")) {
 						alertID = getAlertID(config, ctx, searches, "");
 					}else {
 						alertID = getAlertID(config, ctx, searches, "-"+getHashFromString(valuesAggregationField));
 					}
 					listOfLoggingAlertField.put(valuesAggregationField,
-							 new LoggingAlertFields(alertID, graylogId, config.severity().getType(), date, alertUrl, messagesUrl));
+							 new LoggingAlertFields(alertID, graylogId, config.severity().getType(), date, messagesUrl));
 				}	
 			}
 		}

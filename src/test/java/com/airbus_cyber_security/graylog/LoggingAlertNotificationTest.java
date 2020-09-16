@@ -54,7 +54,6 @@ public class LoggingAlertNotificationTest {
 			"severity: ${logging_alert.severity}"  + SEPARATOR_TEMPLATE +
 			"create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
 			"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
-			"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
 			"messages_url: http://localhost:8080${logging_alert.messages_url}";
 
 	private static final String BODY_TEMPLATE_ADDITIONAL_FIELDS =
@@ -71,7 +70,6 @@ public class LoggingAlertNotificationTest {
 			"source_port: ${backlog[0].fields.port_src}" + SEPARATOR_TEMPLATE +
 			"target_ip_address: ${backlog[0].fields.ip_dst}" + SEPARATOR_TEMPLATE +
 			"target_port: ${backlog[0].fields.port_dst}" + SEPARATOR_TEMPLATE +
-			"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
 			"messages_url: http://localhost:8080${logging_alert.messages_url}";
 
 	private static final String BODY_TEMPLATE_ADDITIONAL_FIELDS_SINGLE_MESSAGE =
@@ -82,7 +80,6 @@ public class LoggingAlertNotificationTest {
 					"create_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
 					"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE +
 					"analyzer: Graylog" + SEPARATOR_TEMPLATE +
-					"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
 					"messages_url: http://localhost:8080${logging_alert.messages_url}" + SEPARATOR_TEMPLATE +
 					"${foreach backlog message}" +
 					"sensor: ${message.fields.sensor}" + SEPARATOR_TEMPLATE +
@@ -198,7 +195,6 @@ public class LoggingAlertNotificationTest {
 						+ "title: "+context.eventDefinition().get().title() + " | "
 						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-						+ "alert_url: http://localhost:8080/alerts/" + " | "
 						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))));
 	}
@@ -221,7 +217,6 @@ public class LoggingAlertNotificationTest {
 						+ "title: "+context.eventDefinition().get().title() + " | "
 						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-						+ "alert_url: http://localhost:8080/alerts/" + " | "
 						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)) + "&q=&streams=" + concatStreams));
 	}
@@ -265,7 +260,6 @@ public class LoggingAlertNotificationTest {
 						+ "source_port: 50000 | "
 						+ "target_ip_address: 192.168.2.20 | "
 						+ "target_port: 60000 | "
-						+ "alert_url: http://localhost:8080/alerts/" + " | "
 						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))),
 				tuple(INFO, "alert_id: " + context.event().eventDefinitionId() + " | "
@@ -277,7 +271,6 @@ public class LoggingAlertNotificationTest {
 						+ "source_port: 50001 | "
 						+ "target_ip_address: 192.168.2.21 | "
 						+ "target_port: 60001 | "
-						+ "alert_url: http://localhost:8080/alerts/" + " | "
 						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)))
 				);
@@ -319,7 +312,6 @@ public class LoggingAlertNotificationTest {
 						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
 						+ "analyzer: Graylog | "
-						+ "alert_url: http://localhost:8080/alerts/" + " | "
 						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(dateForTest.plusMinutes(1))
 						+ " | sensor: sensor | classification: classification | "

@@ -108,7 +108,6 @@ public class LoggingAlertTest {
 			"file_hash: ${message.fields.filehash}" + SEPARATOR_TEMPLATE +
 			"file_size: ${message.fields.filesize}" + SEPARATOR_TEMPLATE +
 			"file_type: ${message.fields.filetype}" + SEPARATOR_TEMPLATE +
-			"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
 			"messages_url: http://localhost:8080${logging_alert.messages_url}";
 	
 	private static final String BODY_TEMPLATE_MSG_URL = 
@@ -116,7 +115,6 @@ public class LoggingAlertTest {
 			"alert_title: ${alertCondition.title}" + SEPARATOR_TEMPLATE +
 			"create_time: ${check_result.triggeredAt}" + SEPARATOR_TEMPLATE + 
 			"detect_time: ${logging_alert.detect_time}" + SEPARATOR_TEMPLATE + 
-			"alert_url: http://localhost:8080${logging_alert.alert_url}"  + SEPARATOR_TEMPLATE +
 			"messages_url: http://localhost:8080${logging_alert.messages_url}";
 
 	private static final TestLogger TEST_LOGGER = TestLoggerFactory.getTestLogger("LoggingAlert");
@@ -134,7 +132,6 @@ public class LoggingAlertTest {
 	@Rule
 	public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-//	private LoggingAlert alarmCallback;
 	private LoggingAlert loggingAlert;
 	private Searches searches;
 	private LoggingAlertConfig configGeneral;
@@ -144,11 +141,6 @@ public class LoggingAlertTest {
 		alertService = mock(AlertService.class);
 		searches = mock(Searches.class);
 		configGeneral = mock(LoggingAlertConfig.class);
-		/*when(configGeneral.aggregationStream()).thenReturn("*");
-		when(configGeneral.fieldAlertId()).thenReturn("alert_id");  
-		when(configGeneral.separator()).thenReturn(" | ");  
-		when(configGeneral.alertTag()).thenReturn("LoggingAlert");  
-		when(configGeneral.overflowTag()).thenReturn("LoggingOverflow"); */ 
 	}
 
 	private Map<String, Object> getConfigMap(String severity, String body, 
@@ -164,16 +156,12 @@ public class LoggingAlertTest {
 		return parameters;
 	}
 
-	private void initializeConfiguration(Map<String, Object> configMap) throws AlarmCallbackConfigurationException {
+	private void initializeConfiguration(Map<String, Object> configMap) {
 		final Configuration configuration = new Configuration(configMap);
 
 		final ClusterConfigService clusterConfigService= mock(ClusterConfigService.class);
 		final Indices indices = mock(Indices.class);
 		final IndexSetRegistry indexSetRegistry = mock(IndexSetRegistry.class);
-//		when(clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault())).thenReturn(configGeneral);
-//		alarmCallback = new LoggingAlert(clusterConfigService, indices, indexSetRegistry, alertService, searches);
-//
-//		alarmCallback.initialize(configuration);
 	}
 
 	private void initializeSimpleConfiguration() throws AlarmCallbackConfigurationException {
@@ -183,11 +171,10 @@ public class LoggingAlertTest {
 	@Test
 	public void checkConfigurationSucceedsWithValidConfiguration() throws Exception {
 		initializeSimpleConfiguration();
-//		alarmCallback.checkConfiguration();
 	}
 
 	@Test
-	public void callWithNoAdditionalField() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void callWithNoAdditionalField() throws AlarmCallbackConfigurationException {
 		initializeSimpleConfiguration();
 
 		Stream stream = mock(Stream.class);
@@ -218,7 +205,6 @@ public class LoggingAlertTest {
 		when(UUID.randomUUID()).thenReturn(uuid);
 		when(stream.getId()).thenReturn("001");
 
-//		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
 				tuple(INFO, "alert_id: "+uuid.toString()+" | alert_title: Alert Condition Title | alert_description: Result Description | "
@@ -235,7 +221,7 @@ public class LoggingAlertTest {
 	}
 
 	@Test
-	public void callWithAdditionalField() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void callWithAdditionalField() throws AlarmCallbackConfigurationException {
 		initializeSimpleConfiguration();
 
 		Stream stream = mock(Stream.class);
@@ -299,8 +285,6 @@ public class LoggingAlertTest {
 		when(UUID.randomUUID()).thenReturn(uuid);
 		when(stream.getId()).thenReturn("001");
 
-//		//alarmCallback.call(stream,checkResult);
-
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
 				tuple(INFO, "alert_id: "+uuid.toString()+" | alert_title: Alert Condition Title | alert_description: Result Description | "
 						+ "severity: info | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
@@ -313,14 +297,14 @@ public class LoggingAlertTest {
 						+ "target_process: process_dst | target_service_name: service_dst | target_tool: tool_dst | target_url: url_dst | "
 						+ "target_user_name: user_dst | target_user_privileges: user_role_dst | target_user_unique_identifier: uid_dst | "
 						+ "file_name: filename | file_hash: filehash | file_size: filesize | file_type: filetype | "
-						+ "alert_url: http://localhost:8080 | messages_url: http://localhost:8080"
+						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from=2017-09-06T16%3A59%3A00.000Z&to=2017-09-06T17%3A01%3A00.000Z&q=streams%3A001"));
 
 
 	}
 
 	@Test
-	public void testAggregationWith1Field() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void testAggregationWith1Field() throws AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
 				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 0,null, false));
@@ -367,8 +351,6 @@ public class LoggingAlertTest {
 		String alertID2 = randomUuid + "-" + valuesAggregationField2.hashCode();
 		mockStatic(UUID.class);
 		when(UUID.randomUUID()).thenReturn(randomUuid);
-
-//		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+alertID1+" | user: admin | ip_src: 127.0.0.1"),
@@ -423,8 +405,6 @@ public class LoggingAlertTest {
 		mockStatic(UUID.class);
 		when(UUID.randomUUID()).thenReturn(randomUuid);
 
-		//alarmCallback.call(stream,checkResult);
-
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+alertID1+" | user: admin"),
 				tuple(INFO, "alert_id: "+alertID2+" | user: root"));
@@ -432,7 +412,7 @@ public class LoggingAlertTest {
 	}
 
 	@Test
-	public void testAggregationWithMultipleField() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void testAggregationWithMultipleField() throws AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Arrays.asList(USER,"ip_src");
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
 				"user: ${message.fields.user}" +SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 0, 0,null, false));
@@ -482,8 +462,6 @@ public class LoggingAlertTest {
 		mockStatic(UUID.class);
 		when(UUID.randomUUID()).thenReturn(randomUuid);
 
-		//alarmCallback.call(stream,checkResult);
-
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+alertID1+" | user: admin | ip_src: 127.0.0.1"),
 				tuple(INFO, "alert_id: "+alertID2+" | user: root | ip_src: 127.0.0.1"),
@@ -492,7 +470,7 @@ public class LoggingAlertTest {
 	}
 
 	@Test
-	public void testWithAggregationTime() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void testWithAggregationTime() throws AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
 				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}", listAggegationFields, 15, 0,null, false));
@@ -550,8 +528,6 @@ public class LoggingAlertTest {
 
 		when(searches.search(anyString(), anyString(), any(TimeRange.class), eq(10), eq(0), any(Sorting.class))).thenReturn(backlogResult);
 
-		//alarmCallback.call(stream,checkResult);
-
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+"alertID"+" | user: admin | ip_src: 127.0.0.1"),
 				tuple(INFO, "alert_id: "+"alertID"+" | user: root | ip_src: 127.0.0.1"),
@@ -560,7 +536,7 @@ public class LoggingAlertTest {
 	}
 
 	@Test
-	public void testWithFieldAlerId() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void testWithFieldAlerId() throws AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList("user");
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
 				"user: ${message.fields.user}"+SEPARATOR_TEMPLATE+"ip_src: ${message.fields.ip_src}",listAggegationFields, 0, 0,null, false));
@@ -607,7 +583,6 @@ public class LoggingAlertTest {
 		mockStatic(UUID.class);
 		when(UUID.randomUUID()).thenReturn(randomUuid);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+1+" | user: admin | ip_src: 127.0.0.1"),
@@ -616,7 +591,7 @@ public class LoggingAlertTest {
 	}
 
 	@Test
-	public void callWithUrlAlertisInterval() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void callWithUrlAlertisInterval() throws AlarmCallbackConfigurationException {
 		initializeSimpleConfiguration();
 
 		Stream stream = mock(Stream.class);
@@ -656,7 +631,6 @@ public class LoggingAlertTest {
 		when(stream.getId()).thenReturn("001");
 		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
 				tuple(INFO, "alert_id: 002 | alert_title: Alert Condition Title | alert_description: Result Description | "
@@ -668,13 +642,13 @@ public class LoggingAlertTest {
 						+ "target_host_name:  | target_ip_address:  | target_mac_address:  | target_port:  | target_process:  | "
 						+ "target_service_name:  | target_tool:  | target_url:  | target_user_name:  | target_user_privileges:  | "
 						+ "target_user_unique_identifier:  | file_name:  | file_hash:  | file_size:  | file_type:  | "
-						+ "alert_url: http://localhost:8080/alerts/002 | messages_url: http://localhost:8080"
+						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from="
 						+ "2018-04-19T00%3A00%3A00.000Z&to=2018-04-19T00%3A03%3A27.000Z&q=streams%3A001"));
 	}
 
 	@Test
-	public void callWithUrlAlertisNotInterval() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void callWithUrlAlertisNotInterval() throws AlarmCallbackConfigurationException {
 		initializeSimpleConfiguration();
 
 		Stream stream = mock(Stream.class);
@@ -714,7 +688,6 @@ public class LoggingAlertTest {
 		when(stream.getId()).thenReturn("001");
 		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
 				tuple(INFO, "alert_id: 002 | alert_title: Alert Condition Title | alert_description: Result Description | "
@@ -726,14 +699,13 @@ public class LoggingAlertTest {
 						+ "target_host_name:  | target_ip_address:  | target_mac_address:  | target_port:  | target_process:  | "
 						+ "target_service_name:  | target_tool:  | target_url:  | target_user_name:  | target_user_privileges:  | "
 						+ "target_user_unique_identifier:  | file_name:  | file_hash:  | file_size:  | file_type:  | "
-						+ "alert_url: http://localhost:8080/alerts/002 | messages_url: http://localhost:8080"
+						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from="
 						+ "2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A02%3A27.000Z&q=streams%3A001"));
 	}
 
 	@Test
-	public void testLimitOverflow() throws AlarmCallbackException, AlarmCallbackConfigurationException {
-//		when(configGeneral.limitOverflow()).thenReturn(2);
+	public void testLimitOverflow() throws  AlarmCallbackConfigurationException {
 
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", "alert_id: ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
@@ -780,7 +752,6 @@ public class LoggingAlertTest {
 		mockStatic(UUID.class);
 		when(UUID.randomUUID()).thenReturn(randomUuid);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+alertID1+" | user: admin | ip_src: 127.0.0.1"),
@@ -793,7 +764,7 @@ public class LoggingAlertTest {
 	}
 
 	@Test
-	public void callWithSplitFieldTestMessageUrl() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void callWithSplitFieldTestMessageUrl() throws AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, listAggegationFields, 0, 0,null, false));
 
@@ -846,7 +817,6 @@ public class LoggingAlertTest {
 		when(stream.getId()).thenReturn("001");
 		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: 002-92668751 | alert_title: Alert Condition Title | alert_description: Result Description "
@@ -858,7 +828,7 @@ public class LoggingAlertTest {
 						+ "| target_command:  | target_file_name:  | target_host_name:  | target_ip_address:  "
 						+ "| target_mac_address:  | target_port:  | target_process:  | target_service_name:  | target_tool:  "
 						+ "| target_url:  | target_user_name:  | target_user_privileges:  | target_user_unique_identifier:  "
-						+ "| file_name:  | file_hash:  | file_size:  | file_type:  | alert_url: http://localhost:8080/alerts/002 "
+						+ "| file_name:  | file_hash:  | file_size:  | file_type:  "
 						+ "| messages_url: http://localhost:8080/search?rangetype=absolute"
 						+ "&from=2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A03%3A27.000Z&q=streams%3A001+AND+user%3A\"admin\""),
 				tuple(INFO, "alert_id: 002-92668751 | alert_title: Alert Condition Title | alert_description: Result Description "
@@ -870,7 +840,7 @@ public class LoggingAlertTest {
 						+ "| target_command:  | target_file_name:  | target_host_name:  | target_ip_address:  "
 						+ "| target_mac_address:  | target_port:  | target_process:  | target_service_name:  | target_tool:  "
 						+ "| target_url:  | target_user_name:  | target_user_privileges:  | target_user_unique_identifier:  "
-						+ "| file_name:  | file_hash:  | file_size:  | file_type:  | alert_url: http://localhost:8080/alerts/002 "
+						+ "| file_name:  | file_hash:  | file_size:  | file_type:  "
 						+ "| messages_url: http://localhost:8080/search?rangetype=absolute"
 						+ "&from=2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A03%3A27.000Z&q=streams%3A001+AND+user%3A\"admin\""),
 				tuple(INFO, "alert_id: 002-111578566 | alert_title: Alert Condition Title | alert_description: Result Description "
@@ -882,7 +852,7 @@ public class LoggingAlertTest {
 						+ "| target_command:  | target_file_name:  | target_host_name:  | target_ip_address:  "
 						+ "| target_mac_address:  | target_port:  | target_process:  | target_service_name:  | target_tool:  "
 						+ "| target_url:  | target_user_name:  | target_user_privileges:  | target_user_unique_identifier:  "
-						+ "| file_name:  | file_hash:  | file_size:  | file_type:  | alert_url: http://localhost:8080/alerts/002 "
+						+ "| file_name:  | file_hash:  | file_size:  | file_type:  "
 						+ "| messages_url: http://localhost:8080/search?rangetype=absolute"
 						+ "&from=2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A03%3A27.000Z&q=streams%3A001+AND+user%3A\"user1\""));
 
@@ -890,7 +860,7 @@ public class LoggingAlertTest {
 	}
 		
 	@Test
-	public void testMsgURLWithPreviousMsgsURL() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void testMsgURLWithPreviousMsgsURL() throws AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE_MSG_URL, listAggegationFields, 15, 0,null, false));
 
@@ -961,13 +931,11 @@ public class LoggingAlertTest {
 
 		when(searches.search(anyString(), anyString(), any(TimeRange.class), eq(10), eq(0), any(Sorting.class))).thenReturn(backlogResult);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: "+"alertID"+" | alert_title: Alert Condition Title | "
 						+ "create_time: 2017-09-06T17:00:00.000Z | "
 						+ "detect_time: 2017-09-06T17:00:00.000Z | "
-						+ "alert_url: http://localhost:8080/alerts/002 | "
 						+ "messages_url: http://localhost:8080/search?rangetype=absolute&"
 						+ "from=" + dateFromPreviousMsg
 						+ "&to=2017-09-06T17%3A01%3A00.000Z&q="
@@ -976,7 +944,6 @@ public class LoggingAlertTest {
 				tuple(INFO, "alert_id: "+"alertID"+" | alert_title: Alert Condition Title | "
 						+ "create_time: 2017-09-06T17:00:00.000Z | "
 						+ "detect_time: 2017-09-06T17:00:00.000Z | "
-						+ "alert_url: http://localhost:8080/alerts/002 | "
 						+ "messages_url: http://localhost:8080/search?rangetype=absolute&"
 						+ "from=" + dateFromPreviousMsg
 						+ "&to=2017-09-06T17%3A01%3A00.000Z&q="
@@ -986,7 +953,7 @@ public class LoggingAlertTest {
 	}
 	
 	@Test
-	public void callWithSplitFieldNotPresent() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void callWithSplitFieldNotPresent() throws AlarmCallbackConfigurationException {
 		List<String> listAggegationFields = Collections.singletonList(USER);
 		initializeConfiguration(getConfigMap("info", BODY_TEMPLATE, listAggegationFields, 0, 0,null, false));
 
@@ -1038,7 +1005,6 @@ public class LoggingAlertTest {
 		when(stream.getId()).thenReturn("001");
 		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
 				tuple(INFO, "alert_id: 002-92668751 | alert_title: Alert Condition Title | alert_description: Result Description "
@@ -1050,7 +1016,7 @@ public class LoggingAlertTest {
 						+ "| target_command:  | target_file_name:  | target_host_name:  | target_ip_address:  "
 						+ "| target_mac_address:  | target_port:  | target_process:  | target_service_name:  | target_tool:  "
 						+ "| target_url:  | target_user_name:  | target_user_privileges:  | target_user_unique_identifier:  "
-						+ "| file_name:  | file_hash:  | file_size:  | file_type:  | alert_url: http://localhost:8080/alerts/002 "
+						+ "| file_name:  | file_hash:  | file_size:  | file_type:  "
 						+ "| messages_url: http://localhost:8080/search?rangetype=absolute"
 						+ "&from=2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A03%3A27.000Z&q=streams%3A001+AND+user%3A\"admin\""),
 				tuple(INFO, "alert_id: 002-3392903 | alert_title: Alert Condition Title | alert_description: Result Description "
@@ -1062,7 +1028,7 @@ public class LoggingAlertTest {
 						+ "| target_command:  | target_file_name:  | target_host_name:  | target_ip_address:  "
 						+ "| target_mac_address:  | target_port:  | target_process:  | target_service_name:  | target_tool:  "
 						+ "| target_url:  | target_user_name:  | target_user_privileges:  | target_user_unique_identifier:  "
-						+ "| file_name:  | file_hash:  | file_size:  | file_type:  | alert_url: http://localhost:8080/alerts/002 "
+						+ "| file_name:  | file_hash:  | file_size:  | file_type:  "
 						+ "| messages_url: http://localhost:8080/search?rangetype=absolute"
 						+ "&from=2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A03%3A27.000Z&q=streams%3A001"),
 				tuple(INFO, "alert_id: 002-111578566 | alert_title: Alert Condition Title | alert_description: Result Description "
@@ -1074,7 +1040,7 @@ public class LoggingAlertTest {
 						+ "| target_command:  | target_file_name:  | target_host_name:  | target_ip_address:  "
 						+ "| target_mac_address:  | target_port:  | target_process:  | target_service_name:  | target_tool:  "
 						+ "| target_url:  | target_user_name:  | target_user_privileges:  | target_user_unique_identifier:  "
-						+ "| file_name:  | file_hash:  | file_size:  | file_type:  | alert_url: http://localhost:8080/alerts/002 "
+						+ "| file_name:  | file_hash:  | file_size:  | file_type:  "
 						+ "| messages_url: http://localhost:8080/search?rangetype=absolute"
 						+ "&from=2018-04-19T14%3A00%3A00.000Z&to=2018-04-19T14%3A03%3A27.000Z&q=streams%3A001+AND+user%3A\"user1\""));
 
@@ -1082,7 +1048,7 @@ public class LoggingAlertTest {
 	}
 
 	@Test
-	public void callWithListMsgEmpty() throws AlarmCallbackException, AlarmCallbackConfigurationException {
+	public void callWithListMsgEmpty() throws AlarmCallbackConfigurationException {
 		initializeSimpleConfiguration();
 
 		Stream stream = mock(Stream.class);
@@ -1118,7 +1084,6 @@ public class LoggingAlertTest {
 		when(stream.getId()).thenReturn("001");
 		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
 
-		//alarmCallback.call(stream,checkResult);
 
 		assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
 				tuple(INFO, "alert_id: 002 | alert_title: Alert Condition Title | alert_description: Result Description | "
@@ -1130,13 +1095,13 @@ public class LoggingAlertTest {
 						+ "target_host_name:  | target_ip_address:  | target_mac_address:  | target_port:  | target_process:  | "
 						+ "target_service_name:  | target_tool:  | target_url:  | target_user_name:  | target_user_privileges:  | "
 						+ "target_user_unique_identifier:  | file_name:  | file_hash:  | file_size:  | file_type:  | "
-						+ "alert_url: http://localhost:8080/alerts/002 | messages_url: http://localhost:8080"
+						+ "messages_url: http://localhost:8080"
 						+ "/search?rangetype=absolute&from="
 						+ "2018-04-19T13%3A59%3A00.000Z&to=2018-04-19T14%3A01%3A00.000Z&q=streams%3A001"));
 	}
 
 	@Test
-	public void callWithSpecificTagAndSingleNotification() throws AlarmCallbackConfigurationException, AlarmCallbackException {
+	public void callWithSpecificTagAndSingleNotification() throws AlarmCallbackConfigurationException {
 		String template = "type: alert\n" +
 							"id: ${logging_alert.id}\n" +
 							"severity: ${logging_alert.severity}\n" +
@@ -1195,7 +1160,6 @@ public class LoggingAlertTest {
 		when(stream.getId()).thenReturn("001");
 		when(alertService.getLastTriggeredAlert(anyString(), anyString())).thenReturn(optAlert);
 
-		//alarmCallback.call(stream,checkResult);
 
 		final TestLogger testLogger = TestLoggerFactory.getTestLogger("SpecificTag");
 		assertThat(testLogger.getLoggingEvents()).extracting("level", "message").containsExactlyInAnyOrder(
