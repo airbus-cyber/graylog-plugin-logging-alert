@@ -163,21 +163,14 @@ public class LoggingAlertUtils {
 		String message_url = MSGS_URL_BEGIN
 				+ timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
 				+ ctx.event().eventTimestamp().plusMinutes(1).toString(timeFormatter);
-		return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + "&q=" + MSGS_URL_STREAM + getConcatStreams(ctx.event().sourceStreams());
+		return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + getConcatStreams(ctx.event().sourceStreams());
 	}
 
-	public static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, Map <String, Object> conditionParameters, MessageSummary messageSummary,
+	public static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
 			DateTime timeBeginSearch, Searches searches)
     {
-
-    	LOGGER.info("SourceStream: " + ctx.event().sourceStreams().toString());
-		LOGGER.info("Stream: " + ctx.event().streams().toString());
-
-
 		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
     	if(ctx.eventDefinition().isPresent()) {
-			LOGGER.info("Event definition present");
-
     		DateTime endTime;
     		/* If the alert is interval and resolved */
     		if(ctx.jobTrigger().isPresent() && ctx.jobTrigger().get().endTime().isPresent()) {
@@ -197,29 +190,22 @@ public class LoggingAlertUtils {
 	    	String search = "";
 			String concatStream = getConcatStreams(ctx.event().sourceStreams());
 			if (!concatStream.isEmpty()) {
-				search = "&q=" + MSGS_URL_STREAM + concatStream;
+				search = MSGS_URL_STREAM + concatStream;
 			}
 
-    		if(conditionParameters.containsKey("additional_stream")) {
-    			String additionalStreamID = (String) conditionParameters.get("additional_stream");
-
-    			String previousMsgsURL =  getPreviousMessagesURL(additionalStreamID, beginTime, endTime, searches);
-    			if(previousMsgsURL!= null && !previousMsgsURL.isEmpty()) {
-    				DateTime timeFromMsgsUrl = getTimeFrom(previousMsgsURL, timeFormatter);
-    				if(timeFromMsgsUrl != null && timeFromMsgsUrl.isBefore(beginTime)){
-    					beginTime = timeFromMsgsUrl;
-    				}
-					if (!concatStream.isEmpty()) {
-						search = "&q=(+" + MSGS_URL_STREAM + concatStream + getQuery(previousMsgsURL) + "+)";
-					}
-    			}
-    		}
-
     		StringBuilder searchFields = new StringBuilder();
+			int i=0;
     		for (String field : config.splitFields()) {
     			String valueAggregationField = (String) messageSummary.getField(field);
+    			String prefix;
+    			if(i == 0){
+					prefix = "&q=";
+				}else{
+					prefix = "+AND+";
+				}
     			if(valueAggregationField != null && !valueAggregationField.isEmpty()) {
-    				searchFields.append("+AND+" + field + "%3A\"" + valueAggregationField + "\"");
+    				searchFields.append(prefix + field + "%3A\"" + valueAggregationField + "\"");
+    				i++;
     			}
     		}
 
@@ -247,7 +233,7 @@ public class LoggingAlertUtils {
 
 		for (MessageSummary messageSummary : backlog) {		
 			String valuesAggregationField = getValuesAggregationField(messageSummary, config);
-			String messagesUrl = getMessagesUrl(ctx, config, model, messageSummary, date, searches);
+			String messagesUrl = getMessagesUrl(ctx, config, messageSummary, date, searches);
 			String graylogId = getGraylogID(ctx);
 
 			if(messageSummary.hasField(config.fieldAlertId())) {

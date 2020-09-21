@@ -218,7 +218,7 @@ public class LoggingAlertNotificationTest {
 						+ "description: "+context.eventDefinition().get().description() + " | "
 						+ "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
 						+ "messages_url: http://localhost:8080"
-						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)) + "&q=&streams=" + concatStreams));
+						+ "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)) + "&streams=" + concatStreams));
 	}
 
 	@Test
