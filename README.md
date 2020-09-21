@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-logging-alert)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
-[![GitHub Release](https://img.shields.io/badge/release-v2.1.2-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
+[![GitHub Release](https://img.shields.io/badge/release-v2.1.3-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
 
 #### Alert notification plugin for Graylog to generate log messages from alerts
 
