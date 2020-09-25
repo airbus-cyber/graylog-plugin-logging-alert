@@ -76,6 +76,18 @@ const LoggingAlertForm = createReactClass({
 
   getAlertConfig() {
   	if (this.state.configuration && this.state.configuration[this.LOGGING_ALERT_CONFIG]) {
+  		if(this.props.config.severity === undefined){
+			this.handleSeverityChange(this.state.configuration[this.LOGGING_ALERT_CONFIG].severity);
+		}
+		if(this.props.config.log_body === undefined){
+			this.handleBodyTemplateChange(this.state.configuration[this.LOGGING_ALERT_CONFIG].log_body);
+		}
+		if(this.props.config.aggregation_time === undefined){
+			this.propagateChange('aggregation_time', this.state.configuration[this.LOGGING_ALERT_CONFIG].aggregation_time);
+		}
+		if(this.props.config.alert_tag === undefined){
+			this.propagateChange('alert_tag', this.state.configuration[this.LOGGING_ALERT_CONFIG].alert_tag);
+		}
   		return this.state.configuration[this.LOGGING_ALERT_CONFIG];
 	}
   	else {
