@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [2.1.4](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.1.3...2.1.4) (2020-09-26)
+### Bug Fixes
+* Fix default configuration when creating notification event
+
 ## [2.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.1.2...2.1.3) (2020-09-21)
 ### Bug Fixes
 * Fix logging_alert messages_url when split field
