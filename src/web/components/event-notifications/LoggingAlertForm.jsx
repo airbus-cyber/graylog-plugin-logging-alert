@@ -160,7 +160,7 @@ const LoggingAlertForm = createReactClass({
 	    type="number"
 	    name="aggregation_time"
 	    help="Aggregate alerts received in the given number of minutes by logging alerts with the same alert id"
-	    value={config.aggregation_time? config.aggregation_time : alertConfig.aggregation_time}
+	    value={config.aggregation_time === undefined? alertConfig.aggregation_time : config.aggregation_time}
 	    onChange={this.handleChange}
 	  />
 	  <ControlLabel>Alert Tag <small className="text-muted">(Optional)</small></ControlLabel>
