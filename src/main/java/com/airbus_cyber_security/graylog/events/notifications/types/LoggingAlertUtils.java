@@ -74,22 +74,8 @@ public class LoggingAlertUtils {
     	return null;
     }
     
-	public static String getGraylogID(EventNotificationContext ctx) {
-    	if (ctx.eventDefinition().isPresent()) {
-    		return ctx.eventDefinition().get().id();
-    	}
-    	else {
-    		return null;
-    	}
-    }
-    
-	public static String getNewAlertID(EventNotificationContext ctx) {
-    	String graylogID = getGraylogID(ctx);
-    	if(graylogID != null) {
-			return graylogID;
-		}else {
-			return UUID.randomUUID().toString();
-		}
+	private static String getNewAlertID() {
+		return UUID.randomUUID().toString();
     }
     
 	public static String getAlertID(LoggingNotificationConfig config, EventNotificationContext ctx, Searches searches, String sufixID) {
@@ -101,7 +87,7 @@ public class LoggingAlertUtils {
 		}
 		
 		if(loggingAlertID == null || loggingAlertID.isEmpty()) {
-			loggingAlertID = getNewAlertID(ctx) + sufixID;
+			loggingAlertID = getNewAlertID() + sufixID;
 		}
 		return loggingAlertID;
     }
@@ -112,38 +98,6 @@ public class LoggingAlertUtils {
 			valuesAggregationField.append(messageSummary.getField(field));
 		}
     	return valuesAggregationField.toString();
-    }
-    
-	public static String getPreviousMessagesURL(String streamID, DateTime timeBegin, DateTime timeEnd, Searches searches) {
-    	final String filter = "streams:" + streamID;	
-		final AbsoluteRange range = AbsoluteRange.create(timeBegin, timeEnd);
-    	final SearchResult backlogResult = searches.search("*", filter,
-				range, 10, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
-
-		if(!backlogResult.getResults().isEmpty()) {
-			Object fieldMsgUrl = backlogResult.getResults().get(0).getMessage().getField("messages_url");
-			if (fieldMsgUrl != null) {
-				return fieldMsgUrl.toString();
-			}
-		}
-
-    	return null;
-    }
-    
-	public static DateTime getTimeFrom(String msgsURL, DateTimeFormatter timeFormatter) {   	
-    	int indexBegin = msgsURL.indexOf(MSGS_URL_BEGIN);
-    	int indexEnd = msgsURL.indexOf(MSGS_URL_TO);
-    	if(indexBegin > 0 && indexEnd > 0) {
-    		String date = msgsURL.substring(indexBegin+MSGS_URL_BEGIN.length(), indexEnd);
-    		try {
-    			return DateTime.parse(date, timeFormatter);
-    		}catch(Exception e) {
-    			/* Invalid date */
-				LOGGER.error("[getTimeFrom] - ERROR!", e);
-    		}
-    	}
-    	
-    	return null;
     }
     
 	public static String getQuery(String msgsURL) {
@@ -230,26 +184,33 @@ public class LoggingAlertUtils {
 	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingNotificationConfig config,
 																			 Map<String, Object> model, DateTime date, Searches searches) {
 		Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
+		String alertID = getNewAlertID();
 
 		for (MessageSummary messageSummary : backlog) {		
 			String valuesAggregationField = getValuesAggregationField(messageSummary, config);
 			String messagesUrl = getMessagesUrl(ctx, config, messageSummary, date, searches);
-			String graylogId = getGraylogID(ctx);
-
+			
 			if(messageSummary.hasField(config.fieldAlertId())) {
 				listOfLoggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(config.fieldAlertId()),
-						graylogId, config.severity().getType(), date, messagesUrl));
+						config.severity().getType(), date, messagesUrl));
 			}else {
 				if(!listOfLoggingAlertField.containsKey(valuesAggregationField)) {
 					/* Add hash code if split field */
-					String alertID;
-					if(valuesAggregationField.equals("")) {
-						alertID = getAlertID(config, ctx, searches, "");
-					}else {
-						alertID = getAlertID(config, ctx, searches, "-"+getHashFromString(valuesAggregationField));
+					String sufix = "";
+					if(!valuesAggregationField.equals("")) {
+						sufix = "-"+getHashFromString(valuesAggregationField);
 					}
+
+					String loggingAlertID = null;
+					if(config.aggregationTime() > 0 && config.aggregationStream() != null && !config.aggregationStream().isEmpty()) {
+						loggingAlertID = getAggregationAlertID(config, ctx, searches, sufix);
+					}
+					if(loggingAlertID == null || loggingAlertID.isEmpty()) {
+						loggingAlertID = alertID + sufix;
+					}
+
 					listOfLoggingAlertField.put(valuesAggregationField,
-							 new LoggingAlertFields(alertID, graylogId, config.severity().getType(), date, messagesUrl));
+							 new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl));
 				}	
 			}
 		}

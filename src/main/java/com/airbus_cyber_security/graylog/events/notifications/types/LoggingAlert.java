@@ -72,8 +72,8 @@ public class LoggingAlert implements EventNotification {
 
 		if (backlog.isEmpty()) {
 			LOGGER.debug("Add log to list message for empty backlog...");
-			LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
-					LoggingAlertUtils.getGraylogID(ctx),
+			LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
+					LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
 					config.severity().getType(),
 					date,
 					LoggingAlertUtils.getStreamSearchUrl(ctx, date));
@@ -81,8 +81,9 @@ public class LoggingAlert implements EventNotification {
 		} else {
 			if (config.singleMessage()) {
 				LOGGER.debug("Add log to list message for single message...");
-				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
-						LoggingAlertUtils.getGraylogID(ctx), config.severity().getType(), date,
+				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
+						LoggingAlertUtils.getAlertID(config, ctx, searches, ""),
+						config.severity().getType(), date,
 						LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
 			} else {
