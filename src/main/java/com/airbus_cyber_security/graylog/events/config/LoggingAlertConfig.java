@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 
+import static org.graylog2.plugin.streams.Stream.DEFAULT_STREAM_ID;
+
 @JsonAutoDetect
 @AutoValue
 public abstract class LoggingAlertConfig {
@@ -84,7 +86,7 @@ public abstract class LoggingAlertConfig {
                 .accessSeverity(SeverityType.LOW)
                 .accessSeparator(" | ")
                 .accessLogBody(BODY_TEMPLATE)
-                .accessAggregationStream("*")
+                .accessAggregationStream(DEFAULT_STREAM_ID)
                 .accessAggregationTime(0)
                 .accessLimitOverflow(0)
                 .accessLimitOverflow(0)

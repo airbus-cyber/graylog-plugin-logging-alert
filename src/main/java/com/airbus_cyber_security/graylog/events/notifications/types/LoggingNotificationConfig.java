@@ -24,6 +24,9 @@ import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.graylog2.plugin.streams.Stream.DEFAULT_STREAM_ID;
+
+
 @AutoValue
 @JsonTypeName(LoggingNotificationConfig.TYPE_NAME)
 @JsonDeserialize(builder = LoggingNotificationConfig.Builder.class)
@@ -113,7 +116,7 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
                     .severity(SeverityType.LOW)
                     .logBody(LoggingAlertConfig.BODY_TEMPLATE)
                     .splitFields(new HashSet<>())
-                    .aggregationStream("*")
+                    .aggregationStream(DEFAULT_STREAM_ID)
                     .aggregationTime(0)
                     .limitOverflow(0)
                     .fieldAlertId(FIELD_ALERT_ID)
