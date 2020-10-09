@@ -35,7 +35,7 @@ public class LoggingAlert implements EventNotification {
     
     private final MoreSearch moreSearch;
 
-	private final String generalConfigSeparator;
+	private final ClusterConfigService clusterConfigService;
     
 	public interface Factory extends EventNotification.Factory{
 		@Override
@@ -48,16 +48,13 @@ public class LoggingAlert implements EventNotification {
 		this.notificationCallbackService = notificationCallbackService;
 		this.objectMapper = objectMapper;
 		this.moreSearch = moreSearch;
-
-		final LoggingAlertConfig generalConfig = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
-				LoggingAlertConfig.createDefault());
-
-		generalConfigSeparator = generalConfig.accessSeparator();
+		this.clusterConfigService = clusterConfigService;
 	}
 
 	@Override
 	public void execute(EventNotificationContext ctx) {
 		LOGGER.debug("Start of execute...");
+		final LoggingAlertConfig generalConfig = clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault());
 		final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
 		final ImmutableList<MessageSummary> backlog = notificationCallbackService.getBacklogForEvent(ctx);
 
@@ -74,32 +71,34 @@ public class LoggingAlert implements EventNotification {
 		if (backlog.isEmpty()) {
 			LOGGER.debug("Add log to list message for empty backlog...");
 			LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
-					LoggingAlertUtils.getAlertID(config, ctx, moreSearch, ""),
+					LoggingAlertUtils.getAlertID(config, generalConfig.accessAggregationStream(), ctx, moreSearch, ""),
 					config.severity().getType(),
 					date,
 					LoggingAlertUtils.getStreamSearchUrl(ctx, date));
-			LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
+			LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfig.accessSeparator());
 		} else {
 			if (config.singleMessage()) {
 				LOGGER.debug("Add log to list message for single message...");
 				LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
-						LoggingAlertUtils.getAlertID(config, ctx, moreSearch,""),
+						LoggingAlertUtils.getAlertID(config, generalConfig.accessAggregationStream(), ctx, moreSearch,""),
 						config.severity().getType(), date,
 						LoggingAlertUtils.getStreamSearchUrl(ctx, date));
-				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfigSeparator);
+				LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfig.accessSeparator());
 			} else {
 				LOGGER.debug("Add log to list message for backlog...");
-				Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, model, date, moreSearch);
+				Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.
+						getListOfLoggingAlertField(ctx, backlog, config, generalConfig.accessAggregationStream(), date, moreSearch);
 				for (MessageSummary messageSummary : backlog) {
 					model = LoggingAlertUtils.getModel(ctx, messageSummary, objectMapper);
 					String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
-					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, listOfloggingAlertField.get(valuesAggregationField), generalConfigSeparator);
+					LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model,
+							listOfloggingAlertField.get(valuesAggregationField), generalConfig.accessSeparator());
 				}
 			}
 		}
 
 		final Logger LOGGER = LoggerFactory.getLogger(config.alertTag());
-		final Logger LOGGER_OVERFLOW = LoggerFactory.getLogger(config.overflowTag());
+		final Logger LOGGER_OVERFLOW = LoggerFactory.getLogger(generalConfig.accessOverflowTag());
 
 		Logger localLogger;
 		if (config.alertTag() != null && !config.alertTag().isEmpty()) {
@@ -111,7 +110,7 @@ public class LoggingAlert implements EventNotification {
 		/* Log each messages */
 		int iter = 0;
 		for (String message : listMessagesToLog) {
-			if (config.limitOverflow() <= 0 || iter < config.limitOverflow()) {
+			if (generalConfig.accessLimitOverflow() <= 0 || iter < generalConfig.accessLimitOverflow()) {
 				localLogger.info(message);
 			} else {
 				LOGGER_OVERFLOW.info(message);

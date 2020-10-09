@@ -50,7 +50,8 @@ public class LoggingAlertUtils {
 		return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
 	}
 
-	public static String getAggregationAlertID(LoggingNotificationConfig config, EventNotificationContext ctx, MoreSearch moreSearch, String sufixID) {
+	public static String getAggregationAlertID(LoggingNotificationConfig config, String aggregationStream,
+											   EventNotificationContext ctx, MoreSearch moreSearch, String sufixID) {
 		LOGGER.debug("Start of getAggregationAlertID...");
 		try {
 			RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
@@ -73,7 +74,7 @@ public class LoggingAlertUtils {
 
 				LOGGER.debug("Alert Query: "+bldStringsearchQuery);
 
-				String filter2 = "streams:" + config.aggregationStream();
+				String filter2 = "streams:" + aggregationStream;
 
 				LOGGER.debug("Alert filter: "+filter2);
 
@@ -92,13 +93,13 @@ public class LoggingAlertUtils {
     	return null;
     }
 
-	public static String getAlertID(LoggingNotificationConfig config, EventNotificationContext ctx, MoreSearch moreSearch, String sufixID) {
+	public static String getAlertID(LoggingNotificationConfig config, String aggregationStream,
+									EventNotificationContext ctx, MoreSearch moreSearch, String sufixID) {
 
     	String loggingAlertID = null;
     	    	
-		if(config.aggregationTime() > 0 &&
-				config.aggregationStream() != null && !config.aggregationStream().isEmpty()) {
-			loggingAlertID = getAggregationAlertID(config, ctx, moreSearch, sufixID);
+		if(config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
+			loggingAlertID = getAggregationAlertID(config, aggregationStream, ctx, moreSearch, sufixID);
 		}
 		
 		if(loggingAlertID == null || loggingAlertID.isEmpty()) {
@@ -196,8 +197,12 @@ public class LoggingAlertUtils {
     	return String.valueOf(hash);
     }
     
-	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx, ImmutableList<MessageSummary> backlog, LoggingNotificationConfig config,
-																			 Map<String, Object> model, DateTime date, MoreSearch moreSearch) {
+	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx,
+																			 ImmutableList<MessageSummary> backlog,
+																			 LoggingNotificationConfig config,
+																			 String aggregationStream,
+																			 DateTime date,
+																			 MoreSearch moreSearch) {
 		Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 		String alertID = ctx.event().id();
 
@@ -217,8 +222,8 @@ public class LoggingAlertUtils {
 					}
 
 					String loggingAlertID = null;
-					if(config.aggregationTime() > 0 && config.aggregationStream() != null && !config.aggregationStream().isEmpty()) {
-						loggingAlertID = getAggregationAlertID(config, ctx, moreSearch, sufix);
+					if(config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
+						loggingAlertID = getAggregationAlertID(config, aggregationStream, ctx, moreSearch, sufix);
 					}
 					if(loggingAlertID == null || loggingAlertID.isEmpty()) {
 						loggingAlertID = alertID + sufix;
