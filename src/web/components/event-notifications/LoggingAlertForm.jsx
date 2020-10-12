@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import { ControlLabel, FormGroup, HelpBlock } from 'components/graylog';
 import lodash from 'lodash';
 import naturalSort from 'javascript-natural-sort';

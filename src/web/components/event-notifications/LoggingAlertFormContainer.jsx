@@ -1,12 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import createReactClass from 'create-react-class';
 import { Spinner } from 'components/common';
 import LoggingAlertForm from './LoggingAlertForm';
 import connect from 'stores/connect';
 import { FieldTypesStore } from 'views/stores/FieldTypesStore';
 
-const LoggingAlertFormContainer = createReactClass({
+class LoggingAlertFormContainer extends React.Component {
+    static propTypes = {
+        config: PropTypes.object.isRequired,
+        validation: PropTypes.object.isRequired,
+        onChange: PropTypes.func.isRequired,
+        fieldTypes: PropTypes.object.isRequired,
+    };
 
     render() {
         const { fieldTypes, ...otherProps } = this.props;
@@ -18,7 +24,7 @@ const LoggingAlertFormContainer = createReactClass({
 
         return <LoggingAlertForm allFieldTypes={fieldTypes.all.toJS()} {...otherProps} />;
     }
-})
+};
 
 export default connect(LoggingAlertFormContainer, {
     fieldTypes: FieldTypesStore,
