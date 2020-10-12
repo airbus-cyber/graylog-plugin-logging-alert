@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import { ControlLabel, FormGroup, HelpBlock } from 'components/graylog';
 import lodash from 'lodash';
 import naturalSort from 'javascript-natural-sort';
-import { Select, MultiSelect, SourceCodeEditor } from 'components/common';
+import { Select, MultiSelect } from 'components/common';
+// TODO this works, but should rather load the SourceCodeEditor from the index (it will then use lazy-loading)
+//      => import { SourceCodeEditor } from 'components/common';
+//      however, it doesn't work, since the graylog server does not serve the js file corresponding to the SourceCodeEditor
+import SourceCodeEditor from 'components/common/SourceCodeEditor';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
 import Reflux from 'reflux';
@@ -15,14 +19,28 @@ import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
 const ConfigurationsStore = StoreProvider.getStore('Configurations');
 const ConfigurationActions = ActionsProvider.getActions('Configuration');
 
+import { defaultCompare } from 'views/logic/DefaultCompare';
+
 const LoggingAlertForm = createReactClass({
 	mixins: [Reflux.connect(ConfigurationsStore)],
 	propTypes: {
     config: PropTypes.object.isRequired,
     validation: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-  	fields: PropTypes.array.isRequired,
+  	allFieldTypes: PropTypes.array.isRequired,
   },
+
+    formatFields(fieldTypes) {
+        return fieldTypes
+            .sort((ftA, ftB) => defaultCompare(ftA.name, ftB.name))
+            .map((fieldType) => {
+                return {
+                    label: `${fieldType.name} – ${fieldType.value.type.type}`,
+                    value: fieldType.name,
+                };
+            }
+        );
+    },
 
 	getInitialState() {
 		return {
@@ -74,6 +92,12 @@ const LoggingAlertForm = createReactClass({
   	return {value: value, label: key};
   },
 
+    handleSplitFieldsChange(selected) {
+        const nextValue = selected === '' ? [] : selected.split(',');
+        this.propagateChange('split_fields', nextValue)
+    },
+
+
   getAlertConfig() {
   	if (this.state.configuration && this.state.configuration[this.LOGGING_ALERT_CONFIG]) {
   		if(this.props.config.severity === undefined){
@@ -103,12 +127,8 @@ const LoggingAlertForm = createReactClass({
   },
     
   render() {
-    const { config, validation, fields } = this.props;
-    let formattedOptions = null;
-    if(fields) {
-    	formattedOptions = Object.keys(fields).map(key => this._formatOption(fields[key], fields[key]))
-			.sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
-    }
+    const { config, validation, allFieldTypes } = this.props;
+    const formattedFields = this.formatFields(allFieldTypes);
 
     const alertConfig = this.getAlertConfig();
 
@@ -140,20 +160,20 @@ const LoggingAlertForm = createReactClass({
 		   {lodash.get(validation, 'errors.log_body[0]', 'The template to generate the log content form')}
 		 </HelpBlock>
 	  </FormGroup>
-	  <FormGroup controlId="split_fields">
-		 <ControlLabel>Split Fields <small className="text-muted">(Optional)</small></ControlLabel>
-		 <MultiSelect id="split_fields"
-		     placeholder="Add Split Fields"
-	         required
-	         options={formattedOptions}
-	         matchProp="value"
-	         value={Array.isArray(config.split_fields) ? config.split_fields.join(',') : ''}
-	         onChange={this.handleFieldsChange('split_fields')}
-	     />
-		 <HelpBlock>
-		   Fields that should be checked to split the alert according to each value by generating a different alert is for each value
-		 </HelpBlock>
-	  </FormGroup>
+        <FormGroup controlId="split_fields">
+            <ControlLabel>Split Fields  <small className="text-muted">(Optional)</small></ControlLabel>
+            <MultiSelect id="split_fields"
+                         matchProp="label"
+                         onChange={this.handleSplitFieldsChange}
+                         options={formattedFields}
+                         ignoreAccents={false}
+                         value={lodash.defaultTo(config.split_fields, []).join(',')}
+                         allowCreate />
+            <HelpBlock>
+                Fields that should be checked to split the alert according to each value by generating a different alert is for each value
+            </HelpBlock>
+        </FormGroup>
+
 	  <ControlLabel>Aggregation Time Range <small className="text-muted">(Optional)</small></ControlLabel>
 	  <Input
 	    id="aggregation_time"

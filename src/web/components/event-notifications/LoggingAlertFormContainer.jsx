@@ -3,34 +3,23 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import { Spinner } from 'components/common';
 import LoggingAlertForm from './LoggingAlertForm';
-import StoreProvider from 'injection/StoreProvider';
-
-const FieldsStore = StoreProvider.getStore('Fields');
+import connect from 'stores/connect';
+import { FieldTypesStore } from 'views/stores/FieldTypesStore';
 
 const LoggingAlertFormContainer = createReactClass({
-    getInitialState() {
-        return {
-            fields: [],
-        };
-    },
-
-    componentDidMount() {
-        this.loadSplitFields();
-    },
-
-    loadSplitFields() {
-        FieldsStore.loadFields().then((fields) => {
-            this.setState({fields: fields});
-        });
-    },
 
     render() {
-        const { fields } = this.state;
+        const { fieldTypes, ...otherProps } = this.props;
+        const isLoading = typeof fieldTypes.all !== 'object';
 
-        if (!fields) {
-            return <p><Spinner text="Loading Notification information..." /></p>;
+        if (isLoading) {
+            return <Spinner text="Loading Logging Alert Information..." />;
         }
-        return <LoggingAlertForm {...this.props} fields={fields} />;
+
+        return <LoggingAlertForm allFieldTypes={fieldTypes.all.toJS()} {...otherProps} />;
     }
 })
-export default LoggingAlertFormContainer;
+
+export default connect(LoggingAlertFormContainer, {
+    fieldTypes: FieldTypesStore,
+});
