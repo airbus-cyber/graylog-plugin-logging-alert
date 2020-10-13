@@ -12,11 +12,9 @@ import SourceCodeEditor from 'components/common/SourceCodeEditor';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
 import Reflux from 'reflux';
-import createReactClass from 'create-react-class';
 import StoreProvider from 'injection/StoreProvider';
 import ActionsProvider from 'injection/ActionsProvider';
 import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
-
 
 import connect from 'stores/connect';
 const ConfigurationsStore = StoreProvider.getStore('Configurations');
@@ -24,97 +22,102 @@ const ConfigurationActions = ActionsProvider.getActions('Configuration');
 
 import { defaultCompare } from 'views/logic/DefaultCompare';
 
-const LoggingAlertForm = createReactClass({
-	propTypes: {
-    config: PropTypes.object.isRequired,
-    validation: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
-  	allFieldTypes: PropTypes.array.isRequired,
-  },
+const LOGGING_ALERT_CONFIG = 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig';
 
-    formatFields(fieldTypes) {
-        return fieldTypes
-            .sort((ftA, ftB) => defaultCompare(ftA.name, ftB.name))
-            .map((fieldType) => {
-                return {
-                    label: `${fieldType.name} – ${fieldType.value.type.type}`,
-                    value: fieldType.name,
-                };
-            }
-        );
-    },
 
-	getInitialState() {
-		return {
-		};
-	},
+class LoggingAlertForm extends React.Component {
+    // Memoize function to only format fields when they change. Use joined fieldNames as cache key.
+    formatFields = lodash.memoize(
+        (fieldTypes) => {
+            return fieldTypes
+                .sort((ftA, ftB) => defaultCompare(ftA.name, ftB.name))
+                .map((fieldType) => {
+                    return {
+                        label: `${fieldType.name} – ${fieldType.value.type.type}`,
+                        value: fieldType.name,
+                    };
+                }
+            );
+        },
+        (fieldTypes) => fieldTypes.map((ft) => ft.name).join('-'),
+    );
 
-	LOGGING_ALERT_CONFIG: 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig',
+	static propTypes = {
+        config: PropTypes.object.isRequired,
+        validation: PropTypes.object.isRequired,
+        onChange: PropTypes.func.isRequired,
+  	    allFieldTypes: PropTypes.array.isRequired,
+    };
+
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
 
 	componentDidMount() {
-		ConfigurationActions.list(this.LOGGING_ALERT_CONFIG);
-	},
+		ConfigurationActions.list(LOGGING_ALERT_CONFIG);
+	}
   
-  propagateChange(key, value) {
+  propagateChange = (key, value) => {
 	const { config, onChange } = this.props;
 	const nextConfig = lodash.cloneDeep(config);
 	nextConfig[key] = value;
 	onChange(nextConfig);
-  },
+  };
 
-  handleChange(event) {
+  handleChange = (event) => {
 	const { name } = event.target;
 	this.propagateChange(name, FormsUtils.getValueFromInput(event.target));
-  },
+  };
 
-  handleSeverityChange(nextValue) {
+  handleSeverityChange = (nextValue) => {
   	this.propagateChange('severity', nextValue);
-  },
+  };
 
-  handleBodyTemplateChange(nextValue) {
+  handleBodyTemplateChange = (nextValue) => {
 	this.propagateChange('log_body', nextValue);
-  },
+  };
 
-  handleFieldsChange(key) {
+  handleFieldsChange = (key) => {
   	return nextValue => {
   		this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
 	}
-  },
+  };
 
-  availableSeverityTypes() {
+  availableSeverityTypes = () => {
       return [
         {value: 'HIGH', label: 'High'},
         {value: 'MEDIUM', label: 'Medium'},
         {value: 'LOW', label: 'Low'}, 
         {value: 'INFO', label: 'Info'},  
       ];
-  },
+  };
   
-  _formatOption(key, value) {
+  _formatOption = (key, value) => {
   	return {value: value, label: key};
-  },
+  };
 
-    handleSplitFieldsChange(selected) {
+    handleSplitFieldsChange = (selected) => {
         const nextValue = selected === '' ? [] : selected.split(',');
         this.propagateChange('split_fields', nextValue)
-    },
+    };
 
 
-  getAlertConfig(configuration) {
-  	if (configuration && configuration[this.LOGGING_ALERT_CONFIG]) {
+  getAlertConfig = (configuration) => {
+  	if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
   		if (this.props.config.severity === undefined){
-			this.handleSeverityChange(configuration[this.LOGGING_ALERT_CONFIG].severity);
+			this.handleSeverityChange(configuration[LOGGING_ALERT_CONFIG].severity);
 		}
 		if (this.props.config.log_body === undefined){
-			this.handleBodyTemplateChange(configuration[this.LOGGING_ALERT_CONFIG].log_body);
+			this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
 		}
 		if (this.props.config.aggregation_time === undefined){
-			this.propagateChange('aggregation_time', configuration[this.LOGGING_ALERT_CONFIG].aggregation_time);
+			this.propagateChange('aggregation_time', configuration[LOGGING_ALERT_CONFIG].aggregation_time);
 		}
 		if (this.props.config.alert_tag === undefined){
-			this.propagateChange('alert_tag', configuration[this.LOGGING_ALERT_CONFIG].alert_tag);
+			this.propagateChange('alert_tag', configuration[LOGGING_ALERT_CONFIG].alert_tag);
 		}
-  		return configuration[this.LOGGING_ALERT_CONFIG];
+  		return configuration[LOGGING_ALERT_CONFIG];
 	} else {
   		return {
 			severity: 'LOW',
@@ -125,7 +128,7 @@ const LoggingAlertForm = createReactClass({
 			single_notification: false,
 		}
 	}
-  },
+  };
     
   render() {
     const { config, validation, allFieldTypes } = this.props;
@@ -209,8 +212,8 @@ const LoggingAlertForm = createReactClass({
 	  </div>
 	  </React.Fragment>
     );
-  },
-});
+  }
+}
 
 export default connect(LoggingAlertForm, {
     configurationsStore: ConfigurationsStore
