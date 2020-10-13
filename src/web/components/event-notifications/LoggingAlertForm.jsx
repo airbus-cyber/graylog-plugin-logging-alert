@@ -17,13 +17,14 @@ import StoreProvider from 'injection/StoreProvider';
 import ActionsProvider from 'injection/ActionsProvider';
 import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
 
+
+import connect from 'stores/connect';
 const ConfigurationsStore = StoreProvider.getStore('Configurations');
 const ConfigurationActions = ActionsProvider.getActions('Configuration');
 
 import { defaultCompare } from 'views/logic/DefaultCompare';
 
 const LoggingAlertForm = createReactClass({
-	mixins: [Reflux.connect(ConfigurationsStore)],
 	propTypes: {
     config: PropTypes.object.isRequired,
     validation: PropTypes.object.isRequired,
@@ -99,23 +100,22 @@ const LoggingAlertForm = createReactClass({
     },
 
 
-  getAlertConfig() {
-  	if (this.state.configuration && this.state.configuration[this.LOGGING_ALERT_CONFIG]) {
-  		if(this.props.config.severity === undefined){
-			this.handleSeverityChange(this.state.configuration[this.LOGGING_ALERT_CONFIG].severity);
+  getAlertConfig(configuration) {
+  	if (configuration && configuration[this.LOGGING_ALERT_CONFIG]) {
+  		if (this.props.config.severity === undefined){
+			this.handleSeverityChange(configuration[this.LOGGING_ALERT_CONFIG].severity);
 		}
-		if(this.props.config.log_body === undefined){
-			this.handleBodyTemplateChange(this.state.configuration[this.LOGGING_ALERT_CONFIG].log_body);
+		if (this.props.config.log_body === undefined){
+			this.handleBodyTemplateChange(configuration[this.LOGGING_ALERT_CONFIG].log_body);
 		}
-		if(this.props.config.aggregation_time === undefined){
-			this.propagateChange('aggregation_time', this.state.configuration[this.LOGGING_ALERT_CONFIG].aggregation_time);
+		if (this.props.config.aggregation_time === undefined){
+			this.propagateChange('aggregation_time', configuration[this.LOGGING_ALERT_CONFIG].aggregation_time);
 		}
-		if(this.props.config.alert_tag === undefined){
-			this.propagateChange('alert_tag', this.state.configuration[this.LOGGING_ALERT_CONFIG].alert_tag);
+		if (this.props.config.alert_tag === undefined){
+			this.propagateChange('alert_tag', configuration[this.LOGGING_ALERT_CONFIG].alert_tag);
 		}
-  		return this.state.configuration[this.LOGGING_ALERT_CONFIG];
-	}
-  	else {
+  		return configuration[this.LOGGING_ALERT_CONFIG];
+	} else {
   		return {
 			severity: 'LOW',
 			log_body: DEFAULT_BODY_TEMPLATE,
@@ -131,7 +131,7 @@ const LoggingAlertForm = createReactClass({
     const { config, validation, allFieldTypes } = this.props;
     const formattedFields = this.formatFields(allFieldTypes);
 
-    const alertConfig = this.getAlertConfig();
+    const alertConfig = this.getAlertConfig(this.props.configurationsStore.configuration);
 
     return (
       <React.Fragment>
@@ -212,4 +212,6 @@ const LoggingAlertForm = createReactClass({
   },
 });
 
-export default LoggingAlertForm;
+export default connect(LoggingAlertForm, {
+    configurationsStore: ConfigurationsStore
+});
