@@ -20,12 +20,12 @@
 
 package com.airbus_cyber_security.graylog.events.config;
 
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
+
+import javax.annotation.Nullable;
 
 import static org.graylog2.plugin.streams.Stream.DEFAULT_STREAM_ID;
 

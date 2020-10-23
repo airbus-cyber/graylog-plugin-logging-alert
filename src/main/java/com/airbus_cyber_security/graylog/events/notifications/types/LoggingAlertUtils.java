@@ -20,9 +20,11 @@
 
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
-import java.util.*;
-
+import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floreysoft.jmte.Engine;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
 import org.graylog.events.processor.EventDefinitionDto;
@@ -30,7 +32,6 @@ import org.graylog.events.search.MoreSearch;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.indexer.results.ResultMessage;
 import org.graylog2.indexer.results.SearchResult;
-import org.graylog2.indexer.searches.Searches;
 import org.graylog2.indexer.searches.Sorting;
 import org.graylog2.jackson.TypeReferences;
 import org.graylog2.plugin.Message;
@@ -42,12 +43,13 @@ import org.graylog2.plugin.indexer.searches.timeranges.RelativeRange;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import com.floreysoft.jmte.Engine;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.graylog2.plugin.streams.Stream.DEFAULT_EVENTS_STREAM_ID;
 
@@ -70,12 +72,13 @@ public class LoggingAlertUtils {
 		return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
 	}
 
-	public static String getAggregationAlertID(LoggingNotificationConfig config, String aggregationStream,
+	public static String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
 											   EventNotificationContext ctx, MoreSearch moreSearch, String sufixID) {
 		LOGGER.debug("Start of getAggregationAlertID...");
 		try {
 			RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
 			final AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
+			String fieldAlertId = generalConfig.accessFieldAlertId();
 
 			String filter = "streams:" + DEFAULT_EVENTS_STREAM_ID;
 			String query = "event_definition_id: " + ctx.eventDefinition().get().id();
@@ -87,14 +90,14 @@ public class LoggingAlertUtils {
 				LOGGER.debug(result.getResults().size()+" Events found");
 
 				Iterator<ResultMessage> itMessages = result.getResults().iterator();
-				StringBuilder bldStringsearchQuery = new StringBuilder(config.fieldAlertId()+": "+ itMessages.next().getMessage().getId()+sufixID);
+				StringBuilder bldStringsearchQuery = new StringBuilder(fieldAlertId + ": " + itMessages.next().getMessage().getId()+sufixID);
 				while (itMessages.hasNext()) {
-					bldStringsearchQuery.append(" OR "+config.fieldAlertId()+": "+itMessages.next().getMessage().getId()+sufixID);
+					bldStringsearchQuery.append(" OR " + fieldAlertId + ": "+itMessages.next().getMessage().getId()+sufixID);
 				}
 
 				LOGGER.debug("Alert Query: "+bldStringsearchQuery);
 
-				String filter2 = "streams:" + aggregationStream;
+				String filter2 = "streams:" + generalConfig.accessAggregationStream();
 
 				LOGGER.debug("Alert filter: "+filter2);
 
@@ -103,7 +106,7 @@ public class LoggingAlertUtils {
 
 				if (result2 != null && !result2.getResults().isEmpty()) {
 					LOGGER.debug(result2.getResults().size()+" Alert found");
-					return result2.getResults().get(0).getMessage().getField(config.fieldAlertId()).toString();
+					return result2.getResults().get(0).getMessage().getField(fieldAlertId).toString();
 				}
 			}
 
@@ -113,13 +116,14 @@ public class LoggingAlertUtils {
     	return null;
     }
 
-	public static String getAlertID(LoggingNotificationConfig config, String aggregationStream,
+	public static String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
 									EventNotificationContext ctx, MoreSearch moreSearch, String sufixID) {
 
     	String loggingAlertID = null;
+		String aggregationStream = generalConfig.accessAggregationStream();
     	    	
 		if(config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-			loggingAlertID = getAggregationAlertID(config, aggregationStream, ctx, moreSearch, sufixID);
+			loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, moreSearch, sufixID);
 		}
 		
 		if(loggingAlertID == null || loggingAlertID.isEmpty()) {
@@ -220,18 +224,19 @@ public class LoggingAlertUtils {
 	public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx,
 																			 ImmutableList<MessageSummary> backlog,
 																			 LoggingNotificationConfig config,
-																			 String aggregationStream,
+																			 LoggingAlertConfig generalConfig,
 																			 DateTime date,
 																			 MoreSearch moreSearch) {
 		Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 		String alertID = ctx.event().id();
+		String aggregationStream = generalConfig.accessAggregationStream();
 
 		for (MessageSummary messageSummary : backlog) {		
 			String valuesAggregationField = getValuesAggregationField(messageSummary, config);
 			String messagesUrl = getMessagesUrl(ctx, config, messageSummary, date);
 			
-			if(messageSummary.hasField(config.fieldAlertId())) {
-				listOfLoggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(config.fieldAlertId()),
+			if(messageSummary.hasField(generalConfig.accessFieldAlertId())) {
+				listOfLoggingAlertField.put(valuesAggregationField,	new LoggingAlertFields((String) messageSummary.getField(generalConfig.accessFieldAlertId()),
 						config.severity().getType(), date, messagesUrl));
 			}else {
 				if(!listOfLoggingAlertField.containsKey(valuesAggregationField)) {
@@ -243,7 +248,7 @@ public class LoggingAlertUtils {
 
 					String loggingAlertID = null;
 					if(config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-						loggingAlertID = getAggregationAlertID(config, aggregationStream, ctx, moreSearch, sufix);
+						loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, moreSearch, sufix);
 					}
 					if(loggingAlertID == null || loggingAlertID.isEmpty()) {
 						loggingAlertID = alertID + sufix;

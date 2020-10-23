@@ -37,7 +37,6 @@ import org.graylog.scheduler.JobTriggerData;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog.scheduler.JobTriggerLock;
 import org.graylog2.contentpacks.EntityDescriptorIds;
-import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.cluster.ClusterConfigService;
@@ -154,12 +153,8 @@ public class LoggingAlertNotificationTest {
 						.severity(SeverityType.LOW)
 						.splitFields(new HashSet<>())
 						.logBody("")
-						.aggregationStream("")
 						.aggregationTime(0)
-						.limitOverflow(0)
-						.fieldAlertId("")
 						.alertTag("")
-						.overflowTag("")
 						.build())
 				.build();
 	}
@@ -172,12 +167,8 @@ public class LoggingAlertNotificationTest {
 						.severity(SeverityType.LOW)
 						.splitFields(new HashSet<>())
 						.logBody("body test ")
-						.aggregationStream("Stream test")
 						.aggregationTime(0)
-						.limitOverflow(0)
-						.fieldAlertId("alert_id")
 						.alertTag("alert_tag_test")
-						.overflowTag("overflow_tag_test")
 						.build())
 				.build();
 	}
@@ -383,13 +374,9 @@ public class LoggingAlertNotificationTest {
 
 	private LoggingNotificationConfig getConfig(String bodyTemplate, String tag, boolean single) {
 		return LoggingNotificationConfig.builder()
-				.aggregationStream("aggregation_stream")
 				.aggregationTime(60)
 				.alertTag(tag)
-				.fieldAlertId("field_alert_id")
-				.limitOverflow(0)
 				.logBody(bodyTemplate)
-				.overflowTag("overflow_tag")
 				.splitFields(new HashSet<>())
 				.severity(SeverityType.LOW)
 				.singleMessage(single)

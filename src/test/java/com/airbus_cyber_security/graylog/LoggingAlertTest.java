@@ -151,16 +151,7 @@ public class LoggingAlertTest {
 	@Rule
 	public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-	private LoggingAlert loggingAlert;
 	private Searches searches;
-	private LoggingAlertConfig configGeneral;
-
-	@Before
-	public void setUp() throws Exception {
-		alertService = mock(AlertService.class);
-		searches = mock(Searches.class);
-		configGeneral = mock(LoggingAlertConfig.class);
-	}
 
 	private Map<String, Object> getConfigMap(String severity, String body, 
 			List<String> aggregationField, int aggregationTime, int limitOverflow, String alertTag, boolean singleNotification) {

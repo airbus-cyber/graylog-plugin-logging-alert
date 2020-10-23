@@ -40,12 +40,8 @@ import org.graylog2.plugin.rest.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.graylog2.plugin.streams.Stream.DEFAULT_STREAM_ID;
-
 
 @AutoValue
 @JsonTypeName(LoggingNotificationConfig.TYPE_NAME)
@@ -58,16 +54,9 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     private static final String FIELD_SEVERITY = "severity";
     private static final String FIELD_SPLIT_FIELDS = "split_fields";
     private static final String FIELD_LOG_BODY = "log_body";
-    private static final String FIELD_AGGREGATION_STREAM = "aggregation_stream";
     private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
-    private static final String FIELD_LIMIT_OVERFLOW = "limit_overflow";
-    private static final String FIELD_FIELD_ALERT_ID = "field_alert_id";
     private static final String FIELD_ALERT_TAG = "alert_tag";
-    private static final String FIELD_OVERFLOW_TAG = "overflow_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-
-    private static final String FIELD_ALERT_ID = "id";
-    private static final String SEPARATOR_TEMPLATE  = "\n";
 
     @JsonProperty(FIELD_SEVERITY)
     public abstract SeverityType severity();
@@ -78,24 +67,11 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     @JsonProperty(FIELD_LOG_BODY)
     public abstract String logBody();
 
-    @JsonProperty(FIELD_AGGREGATION_STREAM)
-    @Nullable
-    public abstract String aggregationStream();
-
     @JsonProperty(FIELD_AGGREGATION_TIME)
     public abstract int aggregationTime();
 
-    @JsonProperty(FIELD_LIMIT_OVERFLOW)
-    public abstract int limitOverflow();
-
-    @JsonProperty(FIELD_FIELD_ALERT_ID)
-    public abstract String fieldAlertId();
-
     @JsonProperty(FIELD_ALERT_TAG)
     public abstract String alertTag();
-
-    @JsonProperty(FIELD_OVERFLOW_TAG)
-    public abstract String overflowTag();
 
     @JsonProperty(FIELD_SINGLE_MESSAGE)
     public abstract boolean singleMessage();
@@ -136,12 +112,8 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
                     .severity(SeverityType.LOW)
                     .logBody(LoggingAlertConfig.BODY_TEMPLATE)
                     .splitFields(new HashSet<>())
-                    .aggregationStream(DEFAULT_STREAM_ID)
                     .aggregationTime(0)
-                    .limitOverflow(0)
-                    .fieldAlertId(FIELD_ALERT_ID)
                     .alertTag("LoggingAlert")
-                    .overflowTag("LoggingOverflow")
                     .singleMessage(false);
         }
 
@@ -151,18 +123,10 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
         public abstract Builder splitFields(Set<String> splitFields);
         @JsonProperty(FIELD_LOG_BODY)
         public abstract Builder logBody(String logBody);
-        @JsonProperty(FIELD_AGGREGATION_STREAM)
-        public abstract Builder aggregationStream(String aggregationStream);
         @JsonProperty(FIELD_AGGREGATION_TIME)
         public abstract Builder aggregationTime(int aggregationTime);
-        @JsonProperty(FIELD_LIMIT_OVERFLOW)
-        public abstract Builder limitOverflow(int limitOverflow);
-        @JsonProperty(FIELD_FIELD_ALERT_ID)
-        public abstract Builder fieldAlertId(String fieldAlertId);
         @JsonProperty(FIELD_ALERT_TAG)
         public abstract Builder alertTag(String alertTag);
-        @JsonProperty(FIELD_OVERFLOW_TAG)
-        public abstract Builder overflowTag(String overflowTag);
         @JsonProperty(FIELD_SINGLE_MESSAGE)
         public abstract Builder singleMessage(boolean singleMessage);
 
@@ -175,12 +139,8 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
                 .severity(severity())
                 .splitFields(splitFields())
                 .logBody(ValueReference.of(logBody()))
-                .aggregationStream(ValueReference.of(aggregationStream()))
                 .aggregationTime(aggregationTime())
-                .limitOverflow(limitOverflow())
-                .fieldAlertId(ValueReference.of(fieldAlertId()))
                 .alertTag(ValueReference.of(alertTag()))
-                .overflowTag(ValueReference.of(overflowTag()))
                 .singleMessage(singleMessage())
                 .build();
     }
