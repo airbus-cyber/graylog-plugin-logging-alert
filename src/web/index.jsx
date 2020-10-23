@@ -1,3 +1,4 @@
+import 'webpack-entry';
 import packageJson from '../../package.json';
 import { PluginManifest, PluginStore } from 'graylog-web-plugin/plugin';
 import LoggingAlertConfig from 'components/LoggingAlertConfig';
