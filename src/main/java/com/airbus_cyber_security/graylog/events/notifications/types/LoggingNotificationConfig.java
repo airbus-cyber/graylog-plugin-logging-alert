@@ -77,11 +77,13 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     public abstract boolean singleMessage();
 
     @JsonIgnore
+    @Override
     public JobTriggerData toJobTriggerData(EventDto dto) {
         return EventNotificationExecutionJob.Data.builder().eventDto(dto).build();
     }
 
     @JsonIgnore
+    @Override
     public ValidationResult validate() {
         final ValidationResult validation = new ValidationResult();
         String errorMessage;
