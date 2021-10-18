@@ -17,3 +17,6 @@ build/
 cache/
 .idea/
 /graylog-plugin-logging-alert.iml
+
+# Location for built plugin
+runtime/graylog/plugin/
