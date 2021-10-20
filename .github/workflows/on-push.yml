@@ -25,6 +25,7 @@ jobs:
         run: |
           cd graylog2-server
           mvn compile -DskipTests=true --batch-mode
-
-    
-
+      - name: Build plugin
+        run: |
+          cd graylog-plugin-logging-alert
+          mvn package --batch-mode
