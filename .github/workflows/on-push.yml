@@ -21,6 +21,7 @@ jobs:
           java-version: 8
           distribution: temurin
           cache: maven
+      # TODO should cache the result of building graylog2-server, it would increase build speed
       - name: Build Graylog
         run: |
           cd graylog2-server
@@ -33,4 +34,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: jar
+          # TODO should upload only the jar with its full name (get the version number from the pom.xml)
           path: graylog-plugin-logging-alert/target/*.jar
