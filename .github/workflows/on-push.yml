@@ -29,3 +29,8 @@ jobs:
         run: |
           cd graylog-plugin-logging-alert
           mvn package --batch-mode
+      - name: Archive jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: jar
+          path: graylog-plugin-logging-alert/target/*.jar
