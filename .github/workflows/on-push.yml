@@ -6,14 +6,25 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+        with:
+          path: graylog-plugin-logging-alert
+      - name: Check out Graylog
+        uses: actions/checkout@v2
+        with:
+          repository: Graylog2/graylog2-server
+          # TODO SSOT: should extract the version of graylog2-server from the pom.xml
+          ref: 4.1
+          path: graylog2-server
       - name: Setup Java JDK 8
         uses: actions/setup-java@v2
         with:
           java-version: 8
           distribution: temurin
           cache: maven
-      - name: Build with maven
-        run: mvn --batch-mode package
-      - run: echo "This job's status is ${{job.status}}."
+      - name: Build Graylog
+        run: |
+          cd graylog2-server
+          mvn compile -DskipTests=true --batch-mode
+
     
 
