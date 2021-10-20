@@ -1,0 +1,11 @@
+name: Continuous Integration
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: ls ${{github.workspace}}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+    
