@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ## [4.0.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.0....4.0.1) (2021-10-22)
 ### Features
-* Changed plugin license to SSPL version
+* Changed plugin license to SSPL version 1
 
 ## [4.0.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/2.2.0....4.0.0) (2021-09-30)
 ### Features
