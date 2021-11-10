@@ -21,7 +21,8 @@ jobs:
           echo ::set-output name=name::$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
           echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo ::set-output name=graylogVersion::$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)
-      - uses: actions/cache@v2
+      - name: Cache Graylog
+        uses: actions/cache@v2
         id: cache
         with:
           path: graylog2-server
@@ -38,6 +39,11 @@ jobs:
         run: |
           cd graylog2-server
           mvn compile -DskipTests=true --batch-mode
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: graylog-plugin-logging-alert/node_modules
+          key: ${{ hashFiles('graylog-plugin-logging-alert/yarn.lock') }}
       - name: Build plugin
         run: |
           cd graylog-plugin-logging-alert
