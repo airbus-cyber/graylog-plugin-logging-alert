@@ -8,6 +8,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: graylog-plugin-logging-alert
+      - id: getVersions
+        run: |
+          cd graylog-plugin-logging-alert
+          GRAYLOG_VERSION = $( mvn help:evaluation -Dexpression=project.parent.version -q -DforceStdout )
+          echo "::set-output name=graylogVersion::$GRAYLOG_VERSION"
       - name: Setup Java JDK 8
         uses: actions/setup-java@v2
         with:
@@ -18,15 +23,13 @@ jobs:
         id: cache
         with:
           path: graylog2-server
-          # TODO SSOT: should extract the version of graylog2-server from the pom.xml
-          key: 4.1
+          key: ${{ steps.getVersions.outputs.graylogVersion }}
       - name: Check out Graylog
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v2
         with:
           repository: Graylog2/graylog2-server
-          # TODO SSOT: should extract the version of graylog2-server from the pom.xml
-          ref: 4.1
+          ref: ${{ steps.getVersions.outputs.graylogVersion }}
           path: graylog2-server
       - name: Build Graylog
         if: steps.cache.outputs.cache-hit != 'true'
