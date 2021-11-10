@@ -53,3 +53,17 @@ jobs:
         with:
           name: jar
           path: graylog-plugin-logging-alert/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
+
+  release:
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+      - name: Download jar from build
+        uses: actions/donwload-artifact@v2
+        with:
+          name: jar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            graylog-plugin-logging-alert/target/*.jar
