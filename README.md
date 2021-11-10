@@ -1,6 +1,6 @@
 # Logging Alert Plugin for Graylog
 
-[![Build status](https://github.com/airbus-cyber/graylog-plugin-logging-alert/actions/workflows/ci.yml/badge.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/actions/workflows/ci.yml)
+[![Continuous Integration](https://github.com/airbus-cyber/graylog-plugin-logging-alert/actions/workflows/ci.yml/badge.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-SSPL-green)](https://www.mongodb.com/licensing/server-side-public-license)
 [![GitHub Release](https://img.shields.io/badge/release-v2.2.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
 
