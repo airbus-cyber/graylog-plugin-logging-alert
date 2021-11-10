@@ -67,4 +67,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            graylog-plugin-logging-alert/target/*.jar
+            graylog-plugin-logging-alert-*.jar
