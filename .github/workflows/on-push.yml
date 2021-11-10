@@ -11,7 +11,7 @@ jobs:
       - id: getVersions
         run: |
           cd graylog-plugin-logging-alert
-          GRAYLOG_VERSION = $( mvn help:evaluation -Dexpression=project.parent.version -q -DforceStdout )
+          GRAYLOG_VERSION=$( mvn help:evaluation -Dexpression=project.parent.version -q -DforceStdout )
           echo "::set-output name=graylogVersion::$GRAYLOG_VERSION"
       - name: Setup Java JDK 8
         uses: actions/setup-java@v2
