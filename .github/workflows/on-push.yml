@@ -18,7 +18,8 @@ jobs:
         id: getVersions
         run: |
           cd graylog-plugin-logging-alert
-          GRAYLOG_VERSION=$( mvn help:evaluation -Dexpression=project.parent.version -q -DforceStdout )
+          mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout
+          GRAYLOG_VERSION=$( mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout )
           echo $GRAYLOG_VERSION
           echo "::set-output name=graylogVersion::$GRAYLOG_VERSION"
       - uses: actions/cache@v2
