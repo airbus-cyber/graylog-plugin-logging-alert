@@ -14,23 +14,24 @@ jobs:
           java-version: 8
           distribution: temurin
           cache: maven
-      - name: Retrieve versions
-        id: getVersions
+      - name: Retrieve variables from pom
+        id: requestPom
         run: |
           cd graylog-plugin-logging-alert
-          GRAYLOG_VERSION=$( mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout )
-          echo "::set-output name=graylogVersion::$GRAYLOG_VERSION"
+          echo ::set-output name=name::$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
+          echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo ::set-output name=graylogVersion::$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)
       - uses: actions/cache@v2
         id: cache
         with:
           path: graylog2-server
-          key: ${{ steps.getVersions.outputs.graylogVersion }}
+          key: ${{ steps.requestPom.outputs.graylogVersion }}
       - name: Check out Graylog
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v2
         with:
           repository: Graylog2/graylog2-server
-          ref: ${{ steps.getVersions.outputs.graylogVersion }}
+          ref: ${{ steps.requestPom.outputs.graylogVersion }}
           path: graylog2-server
       - name: Build Graylog
         if: steps.cache.outputs.cache-hit != 'true'
@@ -45,5 +46,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: jar
-          # TODO should upload only the jar with its full name (get the version number from the pom.xml)
-          path: graylog-plugin-logging-alert/target/*.jar
+          path: graylog-plugin-logging-alert/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
