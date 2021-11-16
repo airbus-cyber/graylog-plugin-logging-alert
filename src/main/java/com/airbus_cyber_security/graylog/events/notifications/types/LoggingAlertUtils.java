@@ -64,6 +64,12 @@ public class LoggingAlertUtils {
 
     private static final Engine templateEngine = new Engine();
 
+    private final ObjectMapper objectMapper;
+
+    public LoggingAlertUtils(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     public static String buildBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
         return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
     }
@@ -257,8 +263,7 @@ public class LoggingAlertUtils {
         listMessagesToLog.add(messageToLog);
     }
 
-    public static Map<String, Object> getModel(final EventNotificationContext context, final ImmutableList<MessageSummary> backlog,
-                                               final ObjectMapper objectMapper) {
+    public Map<String, Object> getModel(final EventNotificationContext context, final ImmutableList<MessageSummary> backlog) {
         final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
         final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
         final EventNotificationModelData modelData = EventNotificationModelData.builder()
@@ -271,25 +276,12 @@ public class LoggingAlertUtils {
                 .event(context.event())
                 .backlog(backlog)
                 .build();
-        return objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
+        return this.objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
     }
 
-    public static Map<String, Object> getModel(final EventNotificationContext context, final MessageSummary message,
-                                               final ObjectMapper objectMapper) {
-        final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
-        final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
+    public Map<String, Object> getModel(final EventNotificationContext context, final MessageSummary message) {
         ImmutableList<MessageSummary> backlog = new ImmutableList.Builder<MessageSummary>().add(message).build();
-        final EventNotificationModelData modelData = EventNotificationModelData.builder()
-                .eventDefinitionId(definitionDto.map(EventDefinitionDto::id).orElse(UNKNOWN))
-                .eventDefinitionType(definitionDto.map(d -> d.config().type()).orElse(UNKNOWN))
-                .eventDefinitionTitle(definitionDto.map(EventDefinitionDto::title).orElse(UNKNOWN))
-                .eventDefinitionDescription(definitionDto.map(EventDefinitionDto::description).orElse(UNKNOWN))
-                .jobDefinitionId(jobTriggerDto.map(JobTriggerDto::jobDefinitionId).orElse(UNKNOWN))
-                .jobTriggerId(jobTriggerDto.map(JobTriggerDto::id).orElse(UNKNOWN))
-                .event(context.event())
-                .backlog(backlog)
-                .build();
-        return objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
+        return this.getModel(context, backlog);
     }
 
     public static final String getConcatStreams(Set<String> setStreams) {

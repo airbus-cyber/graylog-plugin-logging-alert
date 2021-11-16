@@ -51,6 +51,8 @@ public class LoggingAlert implements EventNotification {
 
     private final Searches searches;
 
+    private final LoggingAlertUtils loggingAlertUtils;
+
     public interface Factory extends EventNotification.Factory {
         @Override
         LoggingAlert create();
@@ -63,6 +65,7 @@ public class LoggingAlert implements EventNotification {
         this.objectMapper = objectMapper;
         this.clusterConfigService = clusterConfigService;
         this.searches = searches;
+        this.loggingAlertUtils = new LoggingAlertUtils(objectMapper);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class LoggingAlert implements EventNotification {
         }
 
         Set<String> listMessagesToLog = new LinkedHashSet<>();
-        Map<String, Object> model = LoggingAlertUtils.getModel(ctx, backlog, objectMapper);
+        Map<String, Object> model = this.loggingAlertUtils.getModel(ctx, backlog);
 
         if (backlog.isEmpty() || config.singleMessage()) {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
@@ -95,7 +98,7 @@ public class LoggingAlert implements EventNotification {
             Map<String, LoggingAlertFields> listOfloggingAlertField =
                     LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date, searches);
             for (MessageSummary messageSummary : backlog) {
-                model = LoggingAlertUtils.getModel(ctx, messageSummary, objectMapper);
+                model = this.loggingAlertUtils.getModel(ctx, messageSummary);
                 String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
                 LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
                 LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfig.accessSeparator());
