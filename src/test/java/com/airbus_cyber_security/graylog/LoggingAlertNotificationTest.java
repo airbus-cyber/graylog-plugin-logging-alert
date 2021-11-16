@@ -28,7 +28,6 @@ import org.graylog.events.event.EventDto;
 import org.graylog.events.notifications.*;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
-import org.graylog.events.search.MoreSearch;
 import org.graylog.scheduler.JobSchedule;
 import org.graylog.scheduler.JobTriggerData;
 import org.graylog.scheduler.JobTriggerDto;
@@ -121,8 +120,6 @@ public class LoggingAlertNotificationTest {
 
     private LoggingAlert loggingAlert;
 
-    private LoggingAlertConfig configGeneral;
-
     DateTime dateForTest = new DateTime();
 
     DateTime jobTriggerEndTime = dateForTest.plusMinutes(5);
@@ -132,13 +129,12 @@ public class LoggingAlertNotificationTest {
         final ClusterConfigService clusterConfigService = mock(ClusterConfigService.class);
         notificationCallbackService = mock(EventNotificationService.class);
         final ObjectMapper objectMapper = new ObjectMapper();
-        final MoreSearch moreSearch = mock(MoreSearch.class);
         final Searches searches = mock(Searches.class);
 
-        configGeneral = mock(LoggingAlertConfig.class);
+        LoggingAlertConfig configGeneral = mock(LoggingAlertConfig.class);
         when(configGeneral.accessSeparator()).thenReturn(" | ");
         when(clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault())).thenReturn(configGeneral);
-        loggingAlert = new LoggingAlert(clusterConfigService, notificationCallbackService, objectMapper, moreSearch, searches);
+        loggingAlert = new LoggingAlert(clusterConfigService, notificationCallbackService, objectMapper, searches);
     }
 
 
@@ -187,7 +183,7 @@ public class LoggingAlertNotificationTest {
     }
 
     @Test(expected = Exception.class)
-    public void testExecuteWithNullContext() throws EventNotificationException {
+    public void testExecuteWithNullContext() {
         loggingAlert.execute(null);
     }
 

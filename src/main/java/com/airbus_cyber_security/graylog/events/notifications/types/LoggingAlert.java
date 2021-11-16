@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import org.graylog.events.notifications.EventNotification;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationService;
-import org.graylog.events.search.MoreSearch;
 import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.cluster.ClusterConfigService;
@@ -48,8 +47,6 @@ public class LoggingAlert implements EventNotification {
 
     private final ObjectMapper objectMapper;
 
-    private final MoreSearch moreSearch;
-
     private final ClusterConfigService clusterConfigService;
 
     private final Searches searches;
@@ -60,11 +57,10 @@ public class LoggingAlert implements EventNotification {
     }
 
     @Inject
-    public LoggingAlert(final ClusterConfigService clusterConfigService, final EventNotificationService notificationCallbackService,
-                        final ObjectMapper objectMapper, final MoreSearch moreSearch, Searches searches) {
+    public LoggingAlert(ClusterConfigService clusterConfigService, EventNotificationService notificationCallbackService,
+                        ObjectMapper objectMapper, Searches searches) {
         this.notificationCallbackService = notificationCallbackService;
         this.objectMapper = objectMapper;
-        this.moreSearch = moreSearch;
         this.clusterConfigService = clusterConfigService;
         this.searches = searches;
     }
