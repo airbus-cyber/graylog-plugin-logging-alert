@@ -20,6 +20,7 @@ import { PluginManifest, PluginStore } from 'graylog-web-plugin/plugin';
 import LoggingAlertConfig from 'components/LoggingAlertConfig';
 import LoggingAlertFormContainer from 'components/event-notifications/LoggingAlertFormContainer';
 import LoggingAlertSummary from 'components/event-notifications/LoggingAlertSummary';
+import LoggingAlertNotificationDetails from 'components/event-notifications/LoggingAlertNotificationDetails';
 export {DEFAULT_BODY_TEMPLATE} from 'components/LoggingAlertConfig';
 
 PluginStore.register(new PluginManifest(packageJson, {
@@ -35,6 +36,7 @@ PluginStore.register(new PluginManifest(packageJson, {
       displayName: 'Logging Alert Notification',
       formComponent: LoggingAlertFormContainer,
       summaryComponent: LoggingAlertSummary,
+      detailsComponent: LoggingAlertNotificationDetails
     }
   ],
 }));
