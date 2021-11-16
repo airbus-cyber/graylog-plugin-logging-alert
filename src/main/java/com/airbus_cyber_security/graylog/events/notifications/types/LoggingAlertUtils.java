@@ -87,7 +87,7 @@ public class LoggingAlertUtils {
                 // build query to get all aggregation alerts
                 StringBuilder bldStringSearchQuery = new StringBuilder("streams:").append(generalConfig.accessAggregationStream());
                 Iterator<ResultMessage> messages = result.getResults().iterator();
-                bldStringSearchQuery.append(fieldAlertId).append(":(");
+                bldStringSearchQuery.append(" AND ").append(fieldAlertId).append(":(");
                 bldStringSearchQuery.append(messages.next().getMessage().getId()).append(sufixID);
                 while (messages.hasNext()) {
                     bldStringSearchQuery.append(" OR ").append(messages.next().getMessage().getId()).append(sufixID);
