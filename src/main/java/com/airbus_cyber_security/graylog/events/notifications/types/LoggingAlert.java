@@ -102,15 +102,8 @@ public class LoggingAlert implements EventNotification {
             }
         }
 
-        final Logger LOGGER = LoggerFactory.getLogger(config.alertTag());
-        final Logger LOGGER_OVERFLOW = LoggerFactory.getLogger(generalConfig.accessOverflowTag());
-
-        Logger localLogger;
-        if (config.alertTag() != null && !config.alertTag().isEmpty()) {
-            localLogger = LoggerFactory.getLogger(config.alertTag());
-        } else {
-            localLogger = LOGGER;
-        }
+        final Logger localLogger = LoggerFactory.getLogger(config.alertTag());
+        final Logger loggerOverflow = LoggerFactory.getLogger(generalConfig.accessOverflowTag());
 
         /* Log each messages */
         int iter = 0;
@@ -118,7 +111,7 @@ public class LoggingAlert implements EventNotification {
             if (generalConfig.accessLimitOverflow() <= 0 || iter < generalConfig.accessLimitOverflow()) {
                 localLogger.info(message);
             } else {
-                LOGGER_OVERFLOW.info(message);
+                loggerOverflow.info(message);
             }
             iter++;
         }
