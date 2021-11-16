@@ -92,8 +92,8 @@ public class LoggingAlert implements EventNotification {
             LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfig.accessSeparator());
         } else {
             LOGGER.debug("Add log to list message for backlog...");
-            Map<String, LoggingAlertFields> listOfloggingAlertField = LoggingAlertUtils.
-                    getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date, searches);
+            Map<String, LoggingAlertFields> listOfloggingAlertField =
+                    LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date, searches);
             for (MessageSummary messageSummary : backlog) {
                 model = LoggingAlertUtils.getModel(ctx, messageSummary, objectMapper);
                 String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
