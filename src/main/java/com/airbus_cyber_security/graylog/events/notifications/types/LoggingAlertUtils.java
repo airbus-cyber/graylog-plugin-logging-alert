@@ -73,7 +73,7 @@ public class LoggingAlertUtils {
         this.searches = searches;
     }
 
-    public static String buildBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
+    public static String buildMessageBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
         return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
     }
 
@@ -258,14 +258,7 @@ public class LoggingAlertUtils {
         return listOfLoggingAlertField;
     }
 
-    public static void addLogToListMessages(final LoggingNotificationConfig config, Set<String> listMessagesToLog,
-                                            final Map<String, Object> model, LoggingAlertFields loggingAlertFields, String separator) {
-        model.put("logging_alert", loggingAlertFields);
-        String messageToLog = buildBody(config, model, separator);
-        listMessagesToLog.add(messageToLog);
-    }
-
-    public Map<String, Object> getModel(final EventNotificationContext context, final ImmutableList<MessageSummary> backlog) {
+    public Map<String, Object> getModel(final EventNotificationContext context, final ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
         final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
         final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
         final EventNotificationModelData modelData = EventNotificationModelData.builder()
@@ -278,15 +271,12 @@ public class LoggingAlertUtils {
                 .event(context.event())
                 .backlog(backlog)
                 .build();
-        return this.objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
+        Map<String, Object> model = this.objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
+        model.put("logging_alert", loggingAlertFields);
+        return model;
     }
 
-    public Map<String, Object> getModel(final EventNotificationContext context, final MessageSummary message) {
-        ImmutableList<MessageSummary> backlog = new ImmutableList.Builder<MessageSummary>().add(message).build();
-        return this.getModel(context, backlog);
-    }
-
-    public static final String getConcatStreams(Set<String> setStreams) {
+    public static String getConcatStreams(Set<String> setStreams) {
         String concatStream = "";
         if (!setStreams.isEmpty()) {
             for (String stream : setStreams) {
