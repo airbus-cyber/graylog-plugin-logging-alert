@@ -105,8 +105,8 @@ public class LoggingAlert implements EventNotification {
                 for (MessageSummary messageSummary : backlog) {
                     model = LoggingAlertUtils.getModel(ctx, messageSummary, objectMapper);
                     String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
-                    LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model,
-                            listOfloggingAlertField.get(valuesAggregationField), generalConfig.accessSeparator());
+                    LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
+                    LoggingAlertUtils.addLogToListMessages(config, listMessagesToLog, model, loggingAlertFields, generalConfig.accessSeparator());
                 }
             }
         }
