@@ -23,8 +23,7 @@ public enum SeverityType {
 	HIGH("high");
 	
 	private final String type;
-	
-	
+
 	SeverityType(String type){
 		this.type = type;
 	}
