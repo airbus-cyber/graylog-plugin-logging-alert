@@ -45,8 +45,6 @@ public class LoggingAlert implements EventNotification {
 
     private final EventNotificationService notificationCallbackService;
 
-    private final ObjectMapper objectMapper;
-
     private final ClusterConfigService clusterConfigService;
 
     private final Searches searches;
@@ -62,7 +60,6 @@ public class LoggingAlert implements EventNotification {
     public LoggingAlert(ClusterConfigService clusterConfigService, EventNotificationService notificationCallbackService,
                         ObjectMapper objectMapper, Searches searches) {
         this.notificationCallbackService = notificationCallbackService;
-        this.objectMapper = objectMapper;
         this.clusterConfigService = clusterConfigService;
         this.searches = searches;
         this.loggingAlertUtils = new LoggingAlertUtils(objectMapper);
