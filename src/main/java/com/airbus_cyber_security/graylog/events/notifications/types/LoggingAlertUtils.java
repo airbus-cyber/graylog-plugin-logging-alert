@@ -68,7 +68,7 @@ public class LoggingAlertUtils {
         return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
     }
 
-    public static String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
+    private static String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
                                                EventNotificationContext ctx, Searches searches, String sufixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
