@@ -140,18 +140,6 @@ public class LoggingAlertUtils {
         return valuesAggregationField.toString();
     }
 
-    public static String getQuery(String msgsURL) {
-        StringBuilder query = new StringBuilder();
-        int indexBegin = msgsURL.indexOf(MSGS_URL_STREAM);
-        while (indexBegin > 0) {
-            int indexEnd = indexBegin + MSGS_URL_STREAM.length() + SIZE_STREAM;
-            query.append("+OR+" + msgsURL.substring(indexBegin, indexEnd));
-            indexBegin = msgsURL.indexOf(MSGS_URL_STREAM, indexEnd);
-        }
-
-        return query.toString();
-    }
-
     public static String getStreamSearchUrl(EventNotificationContext ctx, DateTime timeBeginSearch) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         String message_url = MSGS_URL_BEGIN
