@@ -94,9 +94,10 @@ public class LoggingAlertUtils {
             if (result != null && !result.getResults().isEmpty()) {
                 LOGGER.debug(result.getResults().size() + " Events found");
                 // build query to get all aggregation alerts
-                StringBuilder bldStringSearchQuery = new StringBuilder("streams:").append(generalConfig.accessAggregationStream());
+                // TODO think about it: is it really necessary to have the streams:<stream> AND in the query, since it is already present as a filter? => remove
+                StringBuilder bldStringSearchQuery = new StringBuilder("streams:").append(generalConfig.accessAggregationStream()).append(" AND ");
                 Iterator<ResultMessage> messages = result.getResults().iterator();
-                bldStringSearchQuery.append(" AND ").append(fieldAlertId).append(":(");
+                bldStringSearchQuery.append(fieldAlertId).append(":(");
                 bldStringSearchQuery.append(messages.next().getMessage().getId()).append(suffixID);
                 while (messages.hasNext()) {
                     bldStringSearchQuery.append(" OR ").append(messages.next().getMessage().getId()).append(suffixID);
