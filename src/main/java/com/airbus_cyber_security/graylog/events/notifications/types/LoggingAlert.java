@@ -47,8 +47,6 @@ public class LoggingAlert implements EventNotification {
 
     private final ClusterConfigService clusterConfigService;
 
-    private final Searches searches;
-
     private final LoggingAlertUtils loggingAlertUtils;
 
     public interface Factory extends EventNotification.Factory {
@@ -61,8 +59,7 @@ public class LoggingAlert implements EventNotification {
                         ObjectMapper objectMapper, Searches searches) {
         this.notificationCallbackService = notificationCallbackService;
         this.clusterConfigService = clusterConfigService;
-        this.searches = searches;
-        this.loggingAlertUtils = new LoggingAlertUtils(objectMapper);
+        this.loggingAlertUtils = new LoggingAlertUtils(objectMapper, searches);
     }
 
     @Override
@@ -85,7 +82,7 @@ public class LoggingAlert implements EventNotification {
         if (backlog.isEmpty() || config.singleMessage()) {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
             LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
-                    LoggingAlertUtils.getAlertID(config, generalConfig, ctx, searches, ""),
+                    this.loggingAlertUtils.getAlertID(config, generalConfig, ctx, ""),
                     config.severity().getType(),
                     date,
                     LoggingAlertUtils.getStreamSearchUrl(ctx, date));
@@ -93,7 +90,7 @@ public class LoggingAlert implements EventNotification {
         } else {
             LOGGER.debug("Add log to list message for backlog...");
             Map<String, LoggingAlertFields> listOfloggingAlertField =
-                    LoggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date, searches);
+                    this.loggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date);
             for (MessageSummary messageSummary : backlog) {
                 model = this.loggingAlertUtils.getModel(ctx, messageSummary);
                 String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(messageSummary, config);
@@ -118,6 +115,4 @@ public class LoggingAlert implements EventNotification {
 
         LOGGER.debug("End of execute...");
     }
-
-
 }

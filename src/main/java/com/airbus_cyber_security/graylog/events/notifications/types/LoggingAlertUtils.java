@@ -64,18 +64,21 @@ public class LoggingAlertUtils {
 
     private static final Engine templateEngine = new Engine();
 
+    private final Searches searches;
+
     private final ObjectMapper objectMapper;
 
-    public LoggingAlertUtils(ObjectMapper objectMapper) {
+    public LoggingAlertUtils(ObjectMapper objectMapper, Searches searches) {
         this.objectMapper = objectMapper;
+        this.searches = searches;
     }
 
     public static String buildBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
         return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
     }
 
-    private static String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                               EventNotificationContext ctx, Searches searches, String sufixID) {
+    private String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
+                                               EventNotificationContext ctx, String sufixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
             RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
@@ -85,7 +88,7 @@ public class LoggingAlertUtils {
             String filter = "streams:" + DEFAULT_EVENTS_STREAM_ID;
             String query = "event_definition_id: " + ctx.eventDefinition().get().id();
 
-            final SearchResult result = searches.search(query, filter,
+            final SearchResult result = this.searches.search(query, filter,
                     range, 50, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
 
             if (result != null && !result.getResults().isEmpty()) {
@@ -107,7 +110,7 @@ public class LoggingAlertUtils {
                 LOGGER.debug("Alert filter: {}", filter2);
 
                 // Execute query
-                final SearchResult result2 = searches.search(searchByIdsQuery, filter2,
+                final SearchResult result2 = this.searches.search(searchByIdsQuery, filter2,
                         range, 50, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
 
                 if (result2 != null && !result2.getResults().isEmpty()) {
@@ -122,14 +125,14 @@ public class LoggingAlertUtils {
         return null;
     }
 
-    public static String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                    EventNotificationContext ctx, Searches searches, String sufixID) {
+    public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
+                                    EventNotificationContext ctx, String sufixID) {
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
 
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-            loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, searches, sufixID);
+            loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, sufixID);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
@@ -214,12 +217,11 @@ public class LoggingAlertUtils {
         return String.valueOf(hash);
     }
 
-    public static Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx,
+    public Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx,
                                                                              ImmutableList<MessageSummary> backlog,
                                                                              LoggingNotificationConfig config,
                                                                              LoggingAlertConfig generalConfig,
-                                                                             DateTime date,
-                                                                             Searches searches) {
+                                                                             DateTime date) {
         Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
         String alertID = ctx.event().id();
         String aggregationStream = generalConfig.accessAggregationStream();
@@ -241,7 +243,7 @@ public class LoggingAlertUtils {
 
                     String loggingAlertID = null;
                     if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-                        loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, searches, sufix);
+                        loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, sufix);
                     }
                     if (loggingAlertID == null || loggingAlertID.isEmpty()) {
                         loggingAlertID = alertID + sufix;
