@@ -78,7 +78,7 @@ public class LoggingAlertUtils {
     }
 
     private String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                               EventNotificationContext ctx, String sufixID) {
+                                               EventNotificationContext ctx, String suffixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
             RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
@@ -97,9 +97,9 @@ public class LoggingAlertUtils {
                 StringBuilder bldStringSearchQuery = new StringBuilder("streams:").append(generalConfig.accessAggregationStream());
                 Iterator<ResultMessage> messages = result.getResults().iterator();
                 bldStringSearchQuery.append(" AND ").append(fieldAlertId).append(":(");
-                bldStringSearchQuery.append(messages.next().getMessage().getId()).append(sufixID);
+                bldStringSearchQuery.append(messages.next().getMessage().getId()).append(suffixID);
                 while (messages.hasNext()) {
-                    bldStringSearchQuery.append(" OR ").append(messages.next().getMessage().getId()).append(sufixID);
+                    bldStringSearchQuery.append(" OR ").append(messages.next().getMessage().getId()).append(suffixID);
                 }
                 bldStringSearchQuery.append(")");
                 String searchByIdsQuery = bldStringSearchQuery.toString();
@@ -126,17 +126,17 @@ public class LoggingAlertUtils {
     }
 
     public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                             EventNotificationContext ctx, String sufixID) {
+                             EventNotificationContext ctx) {
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
 
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-            loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, sufixID);
+            loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, "");
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
-            loggingAlertID = ctx.event().id() + sufixID;
+            loggingAlertID = ctx.event().id();
         }
         return loggingAlertID;
     }
@@ -236,17 +236,17 @@ public class LoggingAlertUtils {
             } else {
                 if (!listOfLoggingAlertField.containsKey(valuesAggregationField)) {
                     /* Add hash code if split field */
-                    String sufix = "";
+                    String suffix = "";
                     if (!valuesAggregationField.equals("")) {
-                        sufix = "-" + getHashFromString(valuesAggregationField);
+                        suffix = "-" + getHashFromString(valuesAggregationField);
                     }
 
                     String loggingAlertID = null;
                     if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-                        loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, sufix);
+                        loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, suffix);
                     }
                     if (loggingAlertID == null || loggingAlertID.isEmpty()) {
-                        loggingAlertID = alertID + sufix;
+                        loggingAlertID = alertID + suffix;
                     }
 
                     listOfLoggingAlertField.put(valuesAggregationField,

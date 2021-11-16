@@ -80,7 +80,7 @@ public class LoggingAlert implements EventNotification {
         if (backlog.isEmpty() || config.singleMessage()) {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
             LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
-                    this.loggingAlertUtils.getAlertID(config, generalConfig, ctx, ""),
+                    this.loggingAlertUtils.getAlertID(config, generalConfig, ctx),
                     config.severity().getType(),
                     date,
                     LoggingAlertUtils.getStreamSearchUrl(ctx, date));
