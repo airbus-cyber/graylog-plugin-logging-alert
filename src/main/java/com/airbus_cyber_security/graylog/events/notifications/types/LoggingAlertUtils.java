@@ -126,7 +126,7 @@ public class LoggingAlertUtils {
     }
 
     public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                    EventNotificationContext ctx, String sufixID) {
+                             EventNotificationContext ctx, String sufixID) {
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
