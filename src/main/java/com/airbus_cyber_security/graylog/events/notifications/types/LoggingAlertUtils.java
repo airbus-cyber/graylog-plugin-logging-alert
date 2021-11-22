@@ -72,7 +72,7 @@ public class LoggingAlertUtils {
     }
 
     private String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                               EventNotificationContext ctx, String suffixID) {
+                                         EventNotificationContext ctx, String suffixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
             RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
@@ -120,7 +120,7 @@ public class LoggingAlertUtils {
     }
 
     public String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                             EventNotificationContext ctx, String suffix) {
+                                       EventNotificationContext ctx, String suffix) {
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
@@ -142,6 +142,7 @@ public class LoggingAlertUtils {
     public static String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
         StringBuilder valuesAggregationField = new StringBuilder();
         for (String field : config.splitFields()) {
+            // TODO should probably add a separator: field1=a, field2=ab <=> field1=aa, field2=b!!!
             valuesAggregationField.append(messageSummary.getField(field));
         }
         return valuesAggregationField.toString();
@@ -237,6 +238,7 @@ public class LoggingAlertUtils {
                 /* Add hash code if split field */
                 String suffix = "";
                 if (!key.equals("")) {
+                    // TODO should add the events_definition_id: ctx.eventDefinition().get().id()
                     suffix = "-" + getHashFromString(key);
                 }
 
