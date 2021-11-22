@@ -30,9 +30,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This is the plugin. Your class should implement one of the existing plugin
@@ -76,7 +74,7 @@ public class LoggingAlert implements EventNotification {
                 date = messageSummary.getTimestamp();
         }
 
-        Set<String> listMessagesToLog = new LinkedHashSet<>();
+        Collection<String> listMessagesToLog = new ArrayList<>();
         if (backlog.isEmpty() || config.singleMessage()) {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
             LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
