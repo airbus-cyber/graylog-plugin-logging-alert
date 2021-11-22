@@ -25,7 +25,6 @@ import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.scheduler.JobTriggerDto;
-import org.graylog2.indexer.results.ResultMessage;
 import org.graylog2.indexer.results.SearchResult;
 import org.graylog2.indexer.searches.Searches;
 import org.graylog2.indexer.searches.Sorting;
@@ -42,12 +41,11 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.graylog2.plugin.streams.Stream.DEFAULT_EVENTS_STREAM_ID;
 
 public class LoggingAlertUtils {
 
@@ -71,47 +69,28 @@ public class LoggingAlertUtils {
         this.searches = searches;
     }
 
-    private String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                         EventNotificationContext ctx, String suffixID) {
+    private String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig, String suffixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
             RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
             final AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
             String fieldAlertId = generalConfig.accessFieldAlertId();
 
-            String filter = "streams:" + DEFAULT_EVENTS_STREAM_ID;
-            String query = "event_definition_id: " + ctx.eventDefinition().get().id();
+            String query = MessageFormat.format("{0}: /.*{1}/", fieldAlertId, suffixID);
+            LOGGER.debug("Alert Query: {}", query);
 
+            // Add stream filter
+            String filter = "streams:" + generalConfig.accessAggregationStream();
+            LOGGER.debug("Alert filter: {}", filter);
+
+            // Execute query
             final SearchResult result = this.searches.search(query, filter,
                     range, 50, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
 
             if (result != null && !result.getResults().isEmpty()) {
-                LOGGER.debug(result.getResults().size() + " Events found");
-                // build query to get all aggregation alerts
-                StringBuilder bldStringSearchQuery = new StringBuilder("streams:");
-                Iterator<ResultMessage> messages = result.getResults().iterator();
-                bldStringSearchQuery.append(fieldAlertId).append(":(");
-                bldStringSearchQuery.append(messages.next().getMessage().getId()).append(suffixID);
-                while (messages.hasNext()) {
-                    bldStringSearchQuery.append(" OR ").append(messages.next().getMessage().getId()).append(suffixID);
-                }
-                bldStringSearchQuery.append(")");
-                String searchByIdsQuery = bldStringSearchQuery.toString();
-                LOGGER.debug("Alert Query: {}", searchByIdsQuery);
-
-                // Add stream filter
-                String filter2 = "streams:" + generalConfig.accessAggregationStream();
-                LOGGER.debug("Alert filter: {}", filter2);
-
-                // Execute query
-                final SearchResult result2 = this.searches.search(searchByIdsQuery, filter2,
-                        range, 50, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
-
-                if (result2 != null && !result2.getResults().isEmpty()) {
-                    LOGGER.debug(result2.getResults().size() + " Alert found");
-                    // return the first matching alert
-                    return result2.getResults().get(0).getMessage().getField(fieldAlertId).toString();
-                }
+                LOGGER.debug(result.getResults().size() + " Alert found");
+                // return the first matching alert
+                return result.getResults().get(0).getMessage().getField(fieldAlertId).toString();
             }
         } catch (InvalidRangeParametersException e) {
             LOGGER.debug("[getAggregationAlertID] - ERROR!", e);
@@ -126,7 +105,7 @@ public class LoggingAlertUtils {
         String aggregationStream = generalConfig.accessAggregationStream();
 
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-            loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, suffix);
+            loggingAlertID = getAggregationAlertID(config, generalConfig, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
