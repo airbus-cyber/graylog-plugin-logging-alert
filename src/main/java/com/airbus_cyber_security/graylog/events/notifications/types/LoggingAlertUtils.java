@@ -119,20 +119,24 @@ public class LoggingAlertUtils {
         return null;
     }
 
-    public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                             EventNotificationContext ctx) {
+    public String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
+                             EventNotificationContext ctx, String suffix) {
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
 
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-            loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, "");
+            loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
             loggingAlertID = ctx.event().id();
         }
         return loggingAlertID;
+    }
+
+    public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig, EventNotificationContext ctx) {
+        return this.getAlertIDWithSuffix(config, generalConfig, ctx, "");
     }
 
     public static String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
@@ -212,13 +216,11 @@ public class LoggingAlertUtils {
     }
 
     public Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx,
-                                                                             ImmutableList<MessageSummary> backlog,
-                                                                             LoggingNotificationConfig config,
-                                                                             LoggingAlertConfig generalConfig,
-                                                                             DateTime date) {
+                                                                      ImmutableList<MessageSummary> backlog,
+                                                                      LoggingNotificationConfig config,
+                                                                      LoggingAlertConfig generalConfig,
+                                                                      DateTime date) {
         Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
-        String alertID = ctx.event().id();
-        String aggregationStream = generalConfig.accessAggregationStream();
 
         for (MessageSummary messageSummary : backlog) {
             String key = getValuesAggregationField(messageSummary, config);
@@ -238,13 +240,9 @@ public class LoggingAlertUtils {
                     suffix = "-" + getHashFromString(key);
                 }
 
-                if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-                    loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, suffix);
-                }
-                if (loggingAlertID == null || loggingAlertID.isEmpty()) {
-                    loggingAlertID = alertID + suffix;
-                }
+                loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, suffix);
             }
+
             listOfLoggingAlertField.put(key, new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl));
         }
 
