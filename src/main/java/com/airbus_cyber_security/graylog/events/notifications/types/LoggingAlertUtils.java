@@ -62,18 +62,19 @@ public class LoggingAlertUtils {
 
     private static final String UNKNOWN = "<unknown>";
 
-    private static final Engine templateEngine = new Engine();
+    private final Engine templateEngine;
 
     private final Searches searches;
 
     private final ObjectMapper objectMapper;
 
     public LoggingAlertUtils(ObjectMapper objectMapper, Searches searches) {
+        this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
         this.searches = searches;
     }
 
-    public static String buildMessageBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
+    public String buildMessageBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
         return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
     }
 

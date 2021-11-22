@@ -86,7 +86,7 @@ public class LoggingAlert implements EventNotification {
                     LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 
             Map<String, Object> model = this.loggingAlertUtils.getModel(ctx, backlog, loggingAlertFields);
-            String messageToLog = LoggingAlertUtils.buildMessageBody(config, model, generalConfig.accessSeparator());
+            String messageToLog = this.loggingAlertUtils.buildMessageBody(config, model, generalConfig.accessSeparator());
             listMessagesToLog.add(messageToLog);
         } else {
             LOGGER.debug("Add log to list message for backlog...");
@@ -98,7 +98,7 @@ public class LoggingAlert implements EventNotification {
                 ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
                 Map<String, Object> model = this.loggingAlertUtils.getModel(ctx, backlogWithMessage, loggingAlertFields);
-                String messageToLog = LoggingAlertUtils.buildMessageBody(config, model, generalConfig.accessSeparator());
+                String messageToLog = this.loggingAlertUtils.buildMessageBody(config, model, generalConfig.accessSeparator());
                 listMessagesToLog.add(messageToLog);
             }
         }
