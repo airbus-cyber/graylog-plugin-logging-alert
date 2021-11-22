@@ -56,9 +56,6 @@ public class LoggingAlertUtils {
     private static final String MSGS_URL_BEGIN = "/search?rangetype=absolute&from=";
     private static final String MSGS_URL_TO = "&to=";
     private static final String MSGS_URL_STREAM = "&streams=";
-    private static final int SIZE_STREAM = 24;
-
-    private static final String SEPARATOR_TEMPLATE = "\n";
 
     private static final String UNKNOWN = "<unknown>";
 
@@ -72,10 +69,6 @@ public class LoggingAlertUtils {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
         this.searches = searches;
-    }
-
-    public String buildMessageBody(LoggingNotificationConfig config, Map<String, Object> model, String separator) {
-        return templateEngine.transform(config.logBody().replace(SEPARATOR_TEMPLATE, separator), model);
     }
 
     private String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
@@ -259,7 +252,7 @@ public class LoggingAlertUtils {
         return listOfLoggingAlertField;
     }
 
-    public Map<String, Object> getModel(final EventNotificationContext context, final ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
+    private Map<String, Object> getModel(EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
         final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
         final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
         final EventNotificationModelData modelData = EventNotificationModelData.builder()
@@ -275,6 +268,11 @@ public class LoggingAlertUtils {
         Map<String, Object> model = this.objectMapper.convertValue(modelData, TypeReferences.MAP_STRING_OBJECT);
         model.put("logging_alert", loggingAlertFields);
         return model;
+    }
+
+    public String buildMessageBody(String logTemplate, EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
+        Map<String, Object> model = this.getModel(context, backlog, loggingAlertFields);
+        return templateEngine.transform(logTemplate, model);
     }
 
     public static String getConcatStreams(Set<String> setStreams) {

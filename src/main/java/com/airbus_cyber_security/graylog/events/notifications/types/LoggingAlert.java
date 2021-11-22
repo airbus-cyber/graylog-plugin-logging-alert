@@ -41,6 +41,8 @@ public class LoggingAlert implements EventNotification {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingAlert.class);
 
+    private static final String SEPARATOR_TEMPLATE = "\n";
+
     private final EventNotificationService notificationCallbackService;
 
     private final ClusterConfigService clusterConfigService;
@@ -66,6 +68,7 @@ public class LoggingAlert implements EventNotification {
         final LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault());
         final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
         final ImmutableList<MessageSummary> backlog = this.notificationCallbackService.getBacklogForEvent(ctx);
+        String logTemplate = config.logBody().replace(SEPARATOR_TEMPLATE, generalConfig.accessSeparator());
 
         DateTime date = ctx.event().eventTimestamp();
 
@@ -83,8 +86,7 @@ public class LoggingAlert implements EventNotification {
                     date,
                     LoggingAlertUtils.getStreamSearchUrl(ctx, date));
 
-            Map<String, Object> model = this.loggingAlertUtils.getModel(ctx, backlog, loggingAlertFields);
-            String messageToLog = this.loggingAlertUtils.buildMessageBody(config, model, generalConfig.accessSeparator());
+            String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, ctx, backlog, loggingAlertFields);
             listMessagesToLog.add(messageToLog);
         } else {
             LOGGER.debug("Add log to list message for backlog...");
@@ -95,8 +97,7 @@ public class LoggingAlert implements EventNotification {
                 LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
                 ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
-                Map<String, Object> model = this.loggingAlertUtils.getModel(ctx, backlogWithMessage, loggingAlertFields);
-                String messageToLog = this.loggingAlertUtils.buildMessageBody(config, model, generalConfig.accessSeparator());
+                String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, ctx, backlogWithMessage, loggingAlertFields);
                 listMessagesToLog.add(messageToLog);
             }
         }
