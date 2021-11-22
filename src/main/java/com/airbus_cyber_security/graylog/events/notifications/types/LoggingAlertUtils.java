@@ -221,32 +221,31 @@ public class LoggingAlertUtils {
         String aggregationStream = generalConfig.accessAggregationStream();
 
         for (MessageSummary messageSummary : backlog) {
-            String valuesAggregationField = getValuesAggregationField(messageSummary, config);
+            String key = getValuesAggregationField(messageSummary, config);
             String messagesUrl = getMessagesUrl(ctx, config, messageSummary, date);
 
+            if (listOfLoggingAlertField.containsKey(key)) {
+                continue;
+            }
+
+            String loggingAlertID = null;
             if (messageSummary.hasField(generalConfig.accessFieldAlertId())) {
-                listOfLoggingAlertField.put(valuesAggregationField, new LoggingAlertFields((String) messageSummary.getField(generalConfig.accessFieldAlertId()),
-                        config.severity().getType(), date, messagesUrl));
+                loggingAlertID = (String) messageSummary.getField(generalConfig.accessFieldAlertId());
             } else {
-                if (!listOfLoggingAlertField.containsKey(valuesAggregationField)) {
-                    /* Add hash code if split field */
-                    String suffix = "";
-                    if (!valuesAggregationField.equals("")) {
-                        suffix = "-" + getHashFromString(valuesAggregationField);
-                    }
+                /* Add hash code if split field */
+                String suffix = "";
+                if (!key.equals("")) {
+                    suffix = "-" + getHashFromString(key);
+                }
 
-                    String loggingAlertID = null;
-                    if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-                        loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, suffix);
-                    }
-                    if (loggingAlertID == null || loggingAlertID.isEmpty()) {
-                        loggingAlertID = alertID + suffix;
-                    }
-
-                    listOfLoggingAlertField.put(valuesAggregationField,
-                            new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl));
+                if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
+                    loggingAlertID = getAggregationAlertID(config, generalConfig, ctx, suffix);
+                }
+                if (loggingAlertID == null || loggingAlertID.isEmpty()) {
+                    loggingAlertID = alertID + suffix;
                 }
             }
+            listOfLoggingAlertField.put(key, new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl));
         }
 
         return listOfLoggingAlertField;
