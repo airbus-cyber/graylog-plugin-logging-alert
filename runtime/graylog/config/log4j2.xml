@@ -9,6 +9,7 @@
         <Memory name="graylog-internal-logs" bufferSize="500"/>
     </Appenders>
     <Loggers>
+        <Logger name="com.airbus_cyber_security.graylog" level="debug"/>
         <!-- Application Loggers -->
         <Logger name="org.graylog2" level="info"/>
         <Logger name="com.github.joschi.jadconfig" level="warn"/>
