@@ -99,7 +99,9 @@ public class LoggingAlertUtils {
     }
 
     public String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                       EventNotificationContext ctx, String suffix) {
+                                       EventNotificationContext ctx, String key) {
+        String events_definition_id = ctx.eventDefinition().get().id();
+        String suffix = "-" + getHashFromString(events_definition_id + "-" + key);
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
@@ -109,7 +111,7 @@ public class LoggingAlertUtils {
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
-            loggingAlertID = ctx.event().id();
+            loggingAlertID = ctx.event().id() + suffix;
         }
         return loggingAlertID;
     }
@@ -215,13 +217,7 @@ public class LoggingAlertUtils {
                 loggingAlertID = (String) messageSummary.getField(generalConfig.accessFieldAlertId());
             } else {
                 /* Add hash code if split field */
-                String suffix = "";
-                if (!key.equals("")) {
-                    // TODO should add the events_definition_id: ctx.eventDefinition().get().id()
-                    suffix = "-" + getHashFromString(key);
-                }
-
-                loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, suffix);
+                loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
             }
 
             listOfLoggingAlertField.put(key, new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl));
