@@ -212,13 +212,7 @@ public class LoggingAlertUtils {
                 continue;
             }
 
-            String loggingAlertID = null;
-            if (messageSummary.hasField(generalConfig.accessFieldAlertId())) {
-                loggingAlertID = (String) messageSummary.getField(generalConfig.accessFieldAlertId());
-            } else {
-                /* Add hash code if split field */
-                loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
-            }
+            String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
 
             listOfLoggingAlertField.put(key, new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl));
         }
