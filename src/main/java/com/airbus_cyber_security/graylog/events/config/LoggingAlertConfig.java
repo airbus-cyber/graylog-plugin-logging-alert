@@ -33,7 +33,7 @@ public abstract class LoggingAlertConfig {
     private static final String SEPARATOR_TEMPLATE  = "\n";
     public static final String BODY_TEMPLATE =
                     "type: alert" + SEPARATOR_TEMPLATE +
-                    FIELD_ALERT_ID+ ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
+                    FIELD_ALERT_ID + ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
                     "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
                     "app: graylog" + SEPARATOR_TEMPLATE +
                     "subject: ${event_definition_title}" + SEPARATOR_TEMPLATE +
