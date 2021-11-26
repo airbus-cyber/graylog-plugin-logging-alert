@@ -25,6 +25,10 @@ import javax.annotation.Nullable;
 
 import static org.graylog2.plugin.streams.Stream.DEFAULT_STREAM_ID;
 
+/**
+ * This is the general configuration of the plugin (see System/Configurations)
+ * It is probably linked to the IHM, just by the configuration in the web index.jsx.
+ */
 @JsonAutoDetect
 @AutoValue
 public abstract class LoggingAlertConfig {

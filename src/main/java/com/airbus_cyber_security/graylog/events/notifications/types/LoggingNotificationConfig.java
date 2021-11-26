@@ -39,6 +39,9 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This is the configuration of a notification
+ */
 @AutoValue
 @JsonTypeName(LoggingNotificationConfig.TYPE_NAME)
 @JsonDeserialize(builder = LoggingNotificationConfig.Builder.class)
