@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.4](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.3....4.0.4) (2021-11-29)
+### Bug Fixes
+* Missing license header
+
 ## [4.0.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.2....4.0.3) (2021-11-29)
 ### Features
 * New page for the notification detail (issue #31)
