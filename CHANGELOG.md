@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.2....4.0.3) (2021-11-29)
+### Features
+* New page for the notification detail (issue #31)
+### Bug Fixes
+* Do not reuse the logging identifier when it is already present in messages of the backlog (issue #22)
+* Exception when looking for the logging identifier to perform aggregation (issue #30)
+
 ## [4.0.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.1....4.0.2) (2021-10-22)
 ### Bug Fixes
 * License was incorrectly specified in pom.xml
