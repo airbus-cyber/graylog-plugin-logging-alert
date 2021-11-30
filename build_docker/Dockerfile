@@ -1,5 +1,5 @@
 # Build:
-# docker build --file build.Dockerfile --tag graylog.plugin.build:latest .
+# docker build --tag graylog.plugin.build:latest .
 # Execute:
 # docker run --interactive --tty --rm --user $(id --user):$(id --group) --mount type=bind,source=$(pwd),target=/host graylog.plugin.build:latest
 
