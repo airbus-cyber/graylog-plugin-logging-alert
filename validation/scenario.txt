@@ -1,0 +1,29 @@
+
+* issue22 6fc7b71604f3cefb29aba5b2b31151d9eabae930
+** plugin configured field logging_alert as the alert identifier
+** notification with backlog
+** message with field logging_alert
+=> the alert identifier should not be equal to the field logging_alert in the message
+
+* issue30 514c154bef20aea8da3798a97bbed768a3752388
+** configure notification with aggregation
+=> there should not be a stack trace when looking for possible aggregation
+
+* singleMessage
+** with option singleMessage
+=> check the log is sent once
+
+** without option singleMessage
+=> check the log is sent twice
+
+* event definition id 3e15289234932b522635671e13c511c42e3cf909
+** have two different event definitions
+=> check their identifiers are not aggregated (there is a filter on the events_definition_id)
+
+* split fields
+** one split field
+** two messages with different values of split fields
+=> check the identifiers are not aggregated
+
+* split fields
+** value a, bc should not be aggregated with value ab, c
