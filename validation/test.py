@@ -21,12 +21,12 @@ class Test(TestCase):
     def setUp(self) -> None:
         # TODO maybe merge _graylog and _graylog_rest_api
         self._graylog = GraylogServer('../runtime')
-#        self._graylog.start()
+        self._graylog.start()
         self._graylog_rest_api = GraylogRestApi()
         self._graylog_rest_api.wait_until_graylog_has_started()
 
-#    def tearDown(self) -> None:
-#        self._graylog.stop()
+    def tearDown(self) -> None:
+        self._graylog.stop()
 
     def test_process_an_event_should_not_fail_for_a_notification_with_aggregation(self):
         notification_identifier = self._graylog_rest_api.create_notification()
