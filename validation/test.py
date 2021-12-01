@@ -13,7 +13,7 @@ import time
 from graylog_server import GraylogServer
 from graylog_rest_api import GraylogRestApi
 
-_PERIOD = 5
+_PERIOD = 1
 
 
 class Test(TestCase):
