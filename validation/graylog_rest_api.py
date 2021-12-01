@@ -100,7 +100,7 @@ class GraylogRestApi:
         notification = response.json()
         return notification['id']
 
-    def create_event_definition(self, notification_identifier, period=5):
+    def create_event_definition(self, notification_identifier, backlog_size=None, period=5):
         events_definition_configuration = {
             'alert': True,
             'config': {
@@ -118,7 +118,7 @@ class GraylogRestApi:
             'field_spec': {},
             'key_spec': [],
             'notification_settings': {
-                'backlog_size': None,
+                'backlog_size': backlog_size,
                 'grace_period_ms': 0
             },
             'notifications': [{
