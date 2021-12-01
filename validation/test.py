@@ -13,7 +13,7 @@ import time
 from graylog_server import GraylogServer
 from graylog_rest_api import GraylogRestApi
 
-_PERIOD = 1
+_PERIOD = 5
 
 
 class Test(TestCase):
@@ -49,7 +49,8 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop'})
-            time.sleep(_PERIOD)
+            # wait long enough for potential exception to occur (even on slow machines)
+            time.sleep(2*_PERIOD)
             logs = self._graylog.extract_latest_logs()
             self.assertNotIn('ElasticsearchException', logs)
 
@@ -63,7 +64,7 @@ class Test(TestCase):
 
             gelf_inputs.send({'short_message': 'pop'})
             # wait long enough for processing to terminate (even on slow machines)
-            time.sleep(10)
+            time.sleep(2*_PERIOD)
             logs = self._graylog.extract_latest_logs(5)
             notification_identifier = self._parse_notification_log(logs)
             self.assertNotEqual(notification_identifier, 'message_identifier')

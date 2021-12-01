@@ -1,9 +1,3 @@
-* issue22 6fc7b71604f3cefb29aba5b2b31151d9eabae930 (see send_issue22d.py)
-** plugin configured field logging_alert as the alert identifier
-** notification with backlog
-** message with field logging_alert
-=> the alert identifier should not be equal to the field logging_alert in the message
-
 * agregation (see send_issue22b.py)
 ** configure an event with a notification with agregation
 ** have an alert (with an id)
