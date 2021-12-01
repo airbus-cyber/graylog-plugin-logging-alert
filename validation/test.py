@@ -33,15 +33,12 @@ class Test(TestCase):
         self._graylog_rest_api.create_event_definition(notification_identifier, _PERIOD)
         with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({})
-            time.sleep(_PERIOD)
-
-            gelf_inputs.send({'short_message': 'pop'})
             time.sleep(2*_PERIOD)
 
             gelf_inputs.send({})
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop'})
-            logs = self._graylog.extract_logs(2*_PERIOD)
+            logs = self._graylog.extract_logs(_PERIOD)
             self.assertNotIn('ElasticsearchException', logs)
 
