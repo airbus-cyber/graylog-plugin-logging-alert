@@ -1,7 +1,3 @@
-* issue30 514c154bef20aea8da3798a97bbed768a3752388 (see send_issue30.py)
-** configure notification with aggregation
-=> there should not be a stack trace when looking for possible aggregation
-
 * issue22 6fc7b71604f3cefb29aba5b2b31151d9eabae930 (see send_issue22d.py)
 ** plugin configured field logging_alert as the alert identifier
 ** notification with backlog
