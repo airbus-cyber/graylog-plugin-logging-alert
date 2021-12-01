@@ -1,13 +1,12 @@
+* issue30 514c154bef20aea8da3798a97bbed768a3752388 (see send_issue30.py)
+** configure notification with aggregation
+=> there should not be a stack trace when looking for possible aggregation
 
 * issue22 6fc7b71604f3cefb29aba5b2b31151d9eabae930 (see send_issue22d.py)
 ** plugin configured field logging_alert as the alert identifier
 ** notification with backlog
 ** message with field logging_alert
 => the alert identifier should not be equal to the field logging_alert in the message
-
-* issue30 514c154bef20aea8da3798a97bbed768a3752388 (see send_issue30.py)
-** configure notification with aggregation
-=> there should not be a stack trace when looking for possible aggregation
 
 * agregation (see send_issue22b.py)
 ** configure an event with a notification with agregation
@@ -16,13 +15,6 @@
 ** input in the log stream a message with the same id + the hash of the events_definition_id
 ** have a new alert
 => check the id is the same
-
-* singleMessage
-** with option singleMessage
-=> check the log is sent once
-
-** without option singleMessage
-=> check the log is sent twice
 
 * event definition id 3e15289234932b522635671e13c511c42e3cf909 (see send_issue22c.py)
 ** have two different event definitions
@@ -35,3 +27,11 @@
 
 * split fields
 ** value a, bc should not be aggregated with value ab, c
+
+* singleMessage
+** with option singleMessage
+=> check the log is sent once
+
+** without option singleMessage
+=> check the log is sent twice
+
