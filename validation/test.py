@@ -203,6 +203,7 @@ class Test(TestCase):
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
     # This is the same test as the preceding one, but without a backlog => this may be a bug!!!!
+    # TODO try to put this test back...
     @skip
     def test_aggregation_should_not_reuse_the_notification_identifier_when_there_is_a_split_field_with_a_different_value_when_there_is_no_backlog(self):
         stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
