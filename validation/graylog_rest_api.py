@@ -16,18 +16,20 @@ class GraylogRestApi:
 
     def get(self, path):
         url = self._build_url(path)
-        print('GET {}'.format(url))
-        return requests.get(url, auth=_AUTH, headers=_HEADERS)
+        response = requests.get(url, auth=_AUTH, headers=_HEADERS)
+        print('GET {} => {}'.format(url, response.status_code))
+        return response
 
     def put(self, path, payload):
         url = self._build_url(path)
-        print('PUT {} {}'.format(url, payload))
-        requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
+        response = requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
+        print('PUT {} {} => {}'.format(url, payload, response.status_code))
 
-    def post(self, path, payload):
+    def post(self, path, payload=None):
         url = self._build_url(path)
-        print('POST {} {}'.format(url, payload))
-        return requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
+        response = requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
+        print('POST {} {} => {}'.format(url, payload, response.status_code))
+        return response
 
     def _input_is_running(self, identifier):
         response = self.get('system/inputstates/')
@@ -100,7 +102,9 @@ class GraylogRestApi:
         notification = response.json()
         return notification['id']
 
-    def create_event_definition(self, notification_identifier, backlog_size=None, period=5):
+    def create_event_definition(self, notification_identifier, streams=None, backlog_size=None, period=5):
+        if streams is None:
+            streams = []
         events_definition_configuration = {
             'alert': True,
             'config': {
@@ -111,7 +115,7 @@ class GraylogRestApi:
                 'query_parameters': [],
                 'search_within_ms': period*1000,
                 'series': [],
-                'streams': [],
+                'streams': streams,
                 'type': 'aggregation-v1'
             },
             'description': '',
@@ -129,3 +133,24 @@ class GraylogRestApi:
         }
         self.post('events/definitions', events_definition_configuration)
 
+    def create_stream_with_rule(self, title, field, value):
+        response = self.get('system/indices/index_sets')
+        default_index_set_identifier = response.json()['index_sets'][0]['id']
+        stream = {
+            'description': title,
+            'index_set_id': default_index_set_identifier,
+            'remove_matches_from_default_stream': False,
+            'title': title
+        }
+        response = self.post('streams', stream)
+        stream_identifier = response.json()['stream_id']
+        rule = {
+            'description': '',
+            'field': field,
+            'inverted': False,
+            'type': 1,
+            'value': value
+        }
+        self.post('streams/{}/rules'.format(stream_identifier), rule)
+        self.post('streams/{}/resume'.format(stream_identifier))
+        return stream_identifier

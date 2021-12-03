@@ -1,11 +1,4 @@
-* agregation (see send_issue22b.py)
-** configure an event with a notification with agregation
-** have an alert (with an id)
-** get the id
-** input in the log stream a message with the same id + the hash of the events_definition_id
-** have a new alert
-=> check the id is the same
-
+notification_should_not_aggregate_logs_from_different_event_definitions
 * event definition id 3e15289234932b522635671e13c511c42e3cf909 (see send_issue22c.py)
 ** have two different event definitions
 => check their identifiers are not aggregated (there is a filter on the events_definition_id)
