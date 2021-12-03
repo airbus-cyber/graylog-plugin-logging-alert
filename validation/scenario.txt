@@ -1,7 +1,0 @@
-* singleMessage
-** with option singleMessage
-=> check the log is sent once
-
-** without option singleMessage
-=> check the log is sent twice
-

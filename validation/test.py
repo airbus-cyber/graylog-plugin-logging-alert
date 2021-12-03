@@ -28,6 +28,14 @@ class Test(TestCase):
     def tearDown(self) -> None:
         self._graylog.stop()
 
+    def _count_notification_log(self, logs):
+        result = 0
+        for log in logs.splitlines():
+            if 'INFO : LoggingAlert' not in log:
+                continue
+            result += 1
+        return result
+
     def _parse_notification_log(self, logs):
         for log in logs.splitlines():
             if 'INFO : LoggingAlert' not in log:
@@ -275,3 +283,102 @@ class Test(TestCase):
             notification_identifier2 = self._parse_notification_log(logs)
 
             self.assertEqual(notification_identifier2, notification_identifier1)
+
+    def test_aggregation_should_send_several_messages_when_there_is_a_backlog(self):
+        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
+        plugin_configuration = {
+            'aggregation_stream': stream_log_identifier,
+            'aggregation_time': '10',
+            'alert_tag': 'LoggingAlert',
+            'field_alert_id': 'id',
+            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+            'overflow_tag': 'LoggingOverflow',
+            'separator': ' | ',
+            'severity': 'LOW'
+        }
+        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        notification_definition_identifier = self._graylog_rest_api.create_notification()
+        conditions = {
+            'expression': {
+                'expr': '>',
+                'left': {
+                    'expr': 'number-ref',
+                    'ref': 'count-'
+                },
+                'right': {
+                    'expr': 'number',
+                    'value': 1
+                }
+            }
+        }
+        serie = {
+            'function': 'count',
+            'id': 'count-'
+        }
+        self._graylog_rest_api.create_event_definition(notification_definition_identifier,
+                                                       streams=[stream_input_identifier], backlog_size=50,
+                                                       conditions=conditions,
+                                                       series=[serie],
+                                                       period=_PERIOD)
+
+        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+            gelf_inputs.send({'_stream': 'input'})
+            gelf_inputs.send({'_stream': 'input'})
+            time.sleep(_PERIOD)
+
+            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
+            time.sleep(_PERIOD)
+            logs = self._graylog.extract_latest_logs(5)
+            self.assertEqual(self._count_notification_log(logs), 2)
+
+    def test_aggregation_should_send_one_messages_when_there_is_a_backlog_and_single_message(self):
+        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
+        plugin_configuration = {
+            'aggregation_stream': stream_log_identifier,
+            'aggregation_time': '10',
+            'alert_tag': 'LoggingAlert',
+            'field_alert_id': 'id',
+            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+            'overflow_tag': 'LoggingOverflow',
+            'separator': ' | ',
+            'severity': 'LOW'
+        }
+        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        notification_definition_identifier = self._graylog_rest_api.create_notification(single_message=True)
+        conditions = {
+            'expression': {
+                'expr': '>',
+                'left': {
+                    'expr': 'number-ref',
+                    'ref': 'count-'
+                },
+                'right': {
+                    'expr': 'number',
+                    'value': 1
+                }
+            }
+        }
+        serie = {
+            'function': 'count',
+            'id': 'count-'
+        }
+        self._graylog_rest_api.create_event_definition(notification_definition_identifier,
+                                                       streams=[stream_input_identifier], backlog_size=50,
+                                                       conditions=conditions,
+                                                       series=[serie],
+                                                       period=_PERIOD)
+
+        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+            gelf_inputs.send({'_stream': 'input'})
+            gelf_inputs.send({'_stream': 'input'})
+            time.sleep(_PERIOD)
+
+            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
+            time.sleep(_PERIOD)
+
+            logs = self._graylog.extract_latest_logs(5)
+            self.assertEqual(self._count_notification_log(logs), 1)
