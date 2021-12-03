@@ -95,7 +95,6 @@ class Test(TestCase):
             time.sleep(2 * _PERIOD)
 
             logs = self._graylog.extract_latest_logs(5)
-            print(logs)
             notification_identifier1 = self._parse_notification_log(logs)
 
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
@@ -106,7 +105,6 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             logs = self._graylog.extract_latest_logs(5)
-            print(logs)
             notification_identifier2 = self._parse_notification_log(logs)
 
             self.assertEqual(notification_identifier2, notification_identifier1)
