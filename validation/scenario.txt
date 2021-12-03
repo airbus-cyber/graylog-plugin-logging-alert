@@ -1,9 +1,4 @@
 * split fields
-** one split field
-** two messages with different values of split fields
-=> check the identifiers are not aggregated
-
-* split fields
 ** value a, bc should not be aggregated with value ab, c
 
 * singleMessage

@@ -89,9 +89,12 @@ class GraylogRestApi:
                 pass
             time.sleep(1)
 
-    def create_notification(self):
+    def create_notification(self, split_fields=None):
+        if split_fields is None:
+            split_fields = []
         notification_configuration = {
         'config': {
+                'split_fields': split_fields,
                 'aggregation_time': 10,
                 'type': 'logging-alert-notification'
             },
