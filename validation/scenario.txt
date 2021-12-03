@@ -1,8 +1,3 @@
-notification_should_not_aggregate_logs_from_different_event_definitions
-* event definition id 3e15289234932b522635671e13c511c42e3cf909 (see send_issue22c.py)
-** have two different event definitions
-=> check their identifiers are not aggregated (there is a filter on the events_definition_id)
-
 * split fields
 ** one split field
 ** two messages with different values of split fields
