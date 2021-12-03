@@ -8,7 +8,7 @@
 # * execute tests
 #   python -m unittest
 
-from unittest import TestCase
+from unittest import TestCase, skip
 import time
 from graylog_server import GraylogServer
 from graylog_rest_api import GraylogRestApi
@@ -171,6 +171,48 @@ class Test(TestCase):
         self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
         notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
         self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], backlog_size=50, period=_PERIOD)
+
+        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+            gelf_inputs.send({'_stream': 'input', '_user': 'a'})
+            time.sleep(_PERIOD)
+
+            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
+            time.sleep(2 * _PERIOD)
+
+            logs = self._graylog.extract_latest_logs(5)
+            notification_identifier1 = self._parse_notification_log(logs)
+
+            gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
+            gelf_inputs.send({'_stream': 'input', '_user': 'b'})
+            time.sleep(_PERIOD)
+
+            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
+            time.sleep(_PERIOD)
+
+            logs = self._graylog.extract_latest_logs(5)
+            notification_identifier2 = self._parse_notification_log(logs)
+
+            self.assertNotEqual(notification_identifier2, notification_identifier1)
+
+    # This is the same test as the preceding one, but without a backlog => this may be a bug!!!!
+    @skip
+    def test_aggregation_should_not_reuse_the_notification_identifier_when_there_is_a_split_field_with_a_different_value_when_there_is_no_backlog(self):
+        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
+        plugin_configuration = {
+            'aggregation_stream': stream_log_identifier,
+            'aggregation_time': '10',
+            'alert_tag': 'LoggingAlert',
+            'field_alert_id': 'id',
+            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+            'overflow_tag': 'LoggingOverflow',
+            'separator': ' | ',
+            'severity': 'LOW'
+        }
+        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
+        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
         with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input', '_user': 'a'})

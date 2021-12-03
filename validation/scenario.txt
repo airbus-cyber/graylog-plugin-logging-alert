@@ -1,6 +1,3 @@
-* split fields
-** value a, bc should not be aggregated with value ab, c
-
 * singleMessage
 ** with option singleMessage
 => check the log is sent once
