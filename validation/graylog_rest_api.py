@@ -105,19 +105,24 @@ class GraylogRestApi:
         notification = response.json()
         return notification['id']
 
-    def create_event_definition(self, notification_identifier, streams=None, backlog_size=None, period=5):
+    def create_event_definition(self, notification_identifier, streams=None, backlog_size=None, conditions=None,
+                                series=None, period=5):
+        if series is None:
+            series = []
+        if conditions is None:
+            conditions = {}
         if streams is None:
             streams = []
         events_definition_configuration = {
             'alert': True,
             'config': {
-                'conditions': {},
+                'conditions': conditions,
                 'execute_every_ms': period*1000,
                 'group_by': [],
                 'query': '',
                 'query_parameters': [],
                 'search_within_ms': period*1000,
-                'series': [],
+                'series': series,
                 'streams': streams,
                 'type': 'aggregation-v1'
             },

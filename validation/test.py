@@ -85,7 +85,7 @@ class Test(TestCase):
         }
         self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
         notification_definition_identifier = self._graylog_rest_api.create_notification()
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], backlog_size=50, period=_PERIOD)
+        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
         with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input'})
@@ -127,10 +127,10 @@ class Test(TestCase):
         self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
         notification_definition_identifier = self._graylog_rest_api.create_notification()
         self._graylog_rest_api.create_event_definition(notification_definition_identifier,
-                                                       streams=[stream_input1_identifier], backlog_size=50,
+                                                       streams=[stream_input1_identifier],
                                                        period=_PERIOD)
         self._graylog_rest_api.create_event_definition(notification_definition_identifier,
-                                                       streams=[stream_input2_identifier], backlog_size=50,
+                                                       streams=[stream_input2_identifier],
                                                        period=_PERIOD)
 
         with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
@@ -210,7 +210,7 @@ class Test(TestCase):
         }
         self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
         notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], backlog_size=50, period=_PERIOD)
+        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
         with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input', '_user': 'a'})
