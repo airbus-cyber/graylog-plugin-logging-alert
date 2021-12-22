@@ -19,7 +19,6 @@ package com.airbus_cyber_security.graylog;
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingAlert;
-import com.airbus_cyber_security.graylog.events.notifications.types.LoggingAlertUtils;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
@@ -34,14 +33,10 @@ import org.graylog.scheduler.JobTriggerDto;
 import org.graylog.scheduler.JobTriggerLock;
 import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.indexer.searches.Searches;
-import org.graylog2.plugin.Message;
-import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.rest.ValidationResult;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.*;
-import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import uk.org.lidalia.slf4jtest.TestLogger;
@@ -51,11 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static uk.org.lidalia.slf4jext.Level.INFO;
 
 public class LoggingAlertNotificationTest {
 
@@ -175,179 +166,6 @@ public class LoggingAlertNotificationTest {
     @Test(expected = Exception.class)
     public void testExecuteWithNullContext() {
         loggingAlert.execute(null);
-    }
-
-    @Ignore
-    @Test
-    public void testExecuteWithContext() throws EventNotificationException {
-        LoggingNotificationConfig config = getConfig(BODY_TEMPLATE, "LoggingAlert", false);
-        //list of MessageSummary
-        final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
-                new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))
-        );
-
-        UUID uuid = UUID.randomUUID();
-        mockStatic(UUID.class);
-        when(UUID.randomUUID()).thenReturn(uuid);
-
-        EventNotificationContext context = getContext(config);
-        when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
-        loggingAlert.execute(context);
-
-        assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
-                tuple(INFO, "alert_id: " + uuid.toString() + " | "
-                        + "title: " + context.eventDefinition().get().title() + " | "
-                        + "description: " + context.eventDefinition().get().description() + " | "
-                        + "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-                        + "messages_url: http://localhost:8080"
-                        + "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))));
-    }
-
-    @Ignore
-    @Test
-    public void testExecuteWithContextAndStreams() throws EventNotificationException {
-        LoggingNotificationConfig config = getConfig(BODY_TEMPLATE, "LoggingAlert", false);
-        //list of MessageSummary
-        final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
-                new MessageSummary("graylog_1", new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC)))
-        );
-
-        UUID uuid = UUID.randomUUID();
-        mockStatic(UUID.class);
-        when(UUID.randomUUID()).thenReturn(uuid);
-
-        EventNotificationContext context = getContextWithStream(config);
-        when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
-        loggingAlert.execute(context);
-
-        String concatStreams = LoggingAlertUtils.getConcatStreams(context.event().sourceStreams());
-
-        assertThat(TEST_LOGGER.getLoggingEvents()).extracting("level", "message").contains(
-                tuple(INFO, "alert_id: " + uuid.toString() + " | "
-                        + "title: " + context.eventDefinition().get().title() + " | "
-                        + "description: " + context.eventDefinition().get().description() + " | "
-                        + "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-                        + "messages_url: http://localhost:8080"
-                        + "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)) + "&streams=" + concatStreams));
-    }
-
-    @Ignore
-    @Test
-    public void testExecuteWithAdditionalFields() throws EventNotificationException {
-        Message message = new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC));
-        message.addField("sensor", "sensor");
-        message.addField("classification", "classification");
-        message.addField("ip_src", "192.168.2.10");
-        message.addField("port_src", "50000");
-        message.addField("ip_dst", "192.168.2.20");
-        message.addField("port_dst", "60000");
-
-        Message message2 = new Message("Test message 2", "source1", new DateTime(2017, 9, 6, 17, 1, DateTimeZone.UTC));
-        message2.addField("sensor", "sensor");
-        message2.addField("classification", "classification");
-        message2.addField("ip_src", "192.168.2.11");
-        message2.addField("port_src", "50001");
-        message2.addField("ip_dst", "192.168.2.21");
-        message2.addField("port_dst", "60001");
-        final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
-                new MessageSummary("graylog_1", message),
-                new MessageSummary("graylog_1", message2));
-
-        String tag = "TestWithFields";
-        LoggingNotificationConfig config = getConfig(BODY_TEMPLATE_ADDITIONAL_FIELDS, tag, false);
-
-        EventNotificationContext context = getContext(config);
-        when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
-
-        UUID uuid = UUID.randomUUID();
-        mockStatic(UUID.class);
-        when(UUID.randomUUID()).thenReturn(uuid);
-
-        loggingAlert.execute(context);
-
-        TestLogger testLogger = TestLoggerFactory.getTestLogger(tag);
-        assertThat(testLogger.getLoggingEvents()).extracting("level", "message").contains(
-                tuple(INFO, "alert_id: " + uuid.toString() + " | "
-                        + "title: " + context.eventDefinition().get().title() + " | "
-                        + "description: " + context.eventDefinition().get().description() + " | "
-                        + "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-                        + "analyzer: Graylog | sensor: sensor | classification: classification | "
-                        + "source_ip_address: 192.168.2.10 | "
-                        + "source_port: 50000 | "
-                        + "target_ip_address: 192.168.2.20 | "
-                        + "target_port: 60000 | "
-                        + "messages_url: http://localhost:8080"
-                        + "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1))),
-                tuple(INFO, "alert_id: " + context.event().eventDefinitionId() + " | "
-                        + "title: " + context.eventDefinition().get().title() + " | "
-                        + "description: " + context.eventDefinition().get().description() + " | "
-                        + "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-                        + "analyzer: Graylog | sensor: sensor | classification: classification | "
-                        + "source_ip_address: 192.168.2.11 | "
-                        + "source_port: 50001 | "
-                        + "target_ip_address: 192.168.2.21 | "
-                        + "target_port: 60001 | "
-                        + "messages_url: http://localhost:8080"
-                        + "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(jobTriggerEndTime.plusMinutes(1)))
-        );
-    }
-
-    @Ignore
-    @Test
-    public void testExecuteWithAdditionalFieldsSingleMessage() throws EventNotificationException {
-        Message message = new Message("Test message 1", "source1", new DateTime(2017, 9, 6, 17, 0, DateTimeZone.UTC));
-        message.addField("sensor", "sensor");
-        message.addField("classification", "classification");
-        message.addField("ip_src", "192.168.1.10");
-        message.addField("port_src", "50000");
-        message.addField("ip_dst", "192.168.1.20");
-        message.addField("port_dst", "60000");
-
-        Message message2 = new Message("Test message 2", "source1", new DateTime(2017, 9, 6, 17, 1, DateTimeZone.UTC));
-        message2.addField("sensor", "sensor");
-        message2.addField("classification", "classification");
-        message2.addField("ip_src", "192.168.1.11");
-        message2.addField("port_src", "50001");
-        message2.addField("ip_dst", "192.168.1.21");
-        message2.addField("port_dst", "60001");
-
-        final ImmutableList<MessageSummary> messageSummaries = ImmutableList.of(
-                new MessageSummary("graylog_1", message),
-                new MessageSummary("graylog_1", message2));
-
-        String tag = "TestSingle";
-        LoggingNotificationConfig config = getConfig(BODY_TEMPLATE_ADDITIONAL_FIELDS_SINGLE_MESSAGE, tag, true);
-
-        EventNotificationContext context = getContext(config);
-        when(notificationCallbackService.getBacklogForEvent(context)).thenReturn(messageSummaries);
-
-        UUID uuid = UUID.randomUUID();
-        mockStatic(UUID.class);
-        when(UUID.randomUUID()).thenReturn(uuid);
-
-        loggingAlert.execute(context);
-
-        TestLogger testLogger = TestLoggerFactory.getTestLogger(tag);
-        assertThat(testLogger.getLoggingEvents()).extracting("level", "message").contains(
-                tuple(INFO, "alert_id: " + uuid.toString() + " | "
-                        + "title: " + context.eventDefinition().get().title() + " | "
-                        + "description: " + context.eventDefinition().get().description() + " | "
-                        + "severity: low | create_time: 2017-09-06T17:00:00.000Z | detect_time: 2017-09-06T17:00:00.000Z | "
-                        + "analyzer: Graylog | "
-                        + "messages_url: http://localhost:8080"
-                        + "/search?rangetype=absolute&from=2017-09-06T17%3A00%3A00.000Z&to=" + formatDate(dateForTest.plusMinutes(1))
-                        + " | sensor: sensor | classification: classification | "
-                        + "source_ip_address: 192.168.1.10 | "
-                        + "source_port: 50000 | "
-                        + "target_ip_address: 192.168.1.20 | "
-                        + "target_port: 60000 | "
-                        + "sensor: sensor | classification: classification | "
-                        + "source_ip_address: 192.168.1.11 | "
-                        + "source_port: 50001 | "
-                        + "target_ip_address: 192.168.1.21 | "
-                        + "target_port: 60001 | "
-                ));
-
     }
 
     private String formatDate(DateTime date) {
