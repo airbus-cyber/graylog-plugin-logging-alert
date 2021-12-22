@@ -41,7 +41,6 @@ import org.graylog2.plugin.rest.ValidationResult;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -109,9 +108,6 @@ public class LoggingAlertNotificationTest {
                     "${end}";
 
     private static final TestLogger TEST_LOGGER = TestLoggerFactory.getTestLogger("LoggingAlert");
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();

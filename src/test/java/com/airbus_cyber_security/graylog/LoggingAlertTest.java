@@ -49,7 +49,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -140,9 +139,6 @@ public class LoggingAlertTest {
 	private static final String USER = "user";
 
 	private AlertService alertService;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 
 	@Rule
 	public final MockitoRule mockitoRule = MockitoJUnit.rule();
