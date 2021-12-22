@@ -6,13 +6,13 @@
 
 #### Alert notification plugin for Graylog to generate log messages from alerts
 
-The alert notification generate a log message when an alert is triggered.  
+The alert notification generate a log message when an alert is triggered.
 
-Perfect for example to record alerts as internal log messages in Graylog itself using the [Internal Logs Input Plugin for Graylog](https://github.com/graylog-labs/graylog-plugin-internal-logs). Thus you can create a stream to receive and manage alerts.  
+Perfect for example to record alerts as internal log messages in Graylog itself using the [Internal Logs Input Plugin for Graylog](https://github.com/graylog-labs/graylog-plugin-internal-logs). Thus you can create a stream to receive and manage alerts.
 
-Also perfect for example to forward alerts via log messages to a Security Incident Response Platform.  
+Also perfect for example to forward alerts via log messages to a Security Incident Response Platform.
 
-Please also take note that if message field values are included in the log message template and these values vary based on the messages that triggered the alert, then multiple log messages may be generated per alert.  
+Please also take note that if message field values are included in the log message template and these values vary based on the messages that triggered the alert, then multiple log messages may be generated per alert.
 
 Alert example recorded as an internal log message:
 
@@ -20,12 +20,13 @@ Alert example recorded as an internal log message:
 
 ## Version Compatibility
 
-|  Plugin Version | Graylog Version | 
-| --------------- | --------------- | 
-| 4.0.x           | 4.1.x           | 
-| 2.2.x           | 3.3.x           | 
-| 2.1.x           | 3.2.x           | 
-| 2.0.x           | 3.2.x           | 
+|  Plugin Version | Graylog Version |
+| --------------- | --------------- |
+| 4.1.x           | 4.2.x           |
+| 4.0.x           | 4.1.x           |
+| 2.2.x           | 3.3.x           |
+| 2.1.x           | 3.2.x           |
+| 2.0.x           | 3.2.x           |
 | 1.3.x           | 3.0.x           |
 | 1.2.x           | 3.0.x           |
 | 1.1.x           | 2.5.x           |
@@ -48,14 +49,14 @@ First you have to select **Logging Alert Notification** as the notification type
 
 ![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-logging-alert/master/images/select_notification.png)
 
-Then, in the popup that occurs, you can configure the **Title** of the notification.  
+Then, in the popup that occurs, you can configure the **Title** of the notification.
 
-You can configure the **Alert Severity**. You have the choice between 4 levels of severity.  
+You can configure the **Alert Severity**. You have the choice between 4 levels of severity.
 
 You can also configure the **Log Content** to log the information you want. 
 Please see the [Graylog Documentation](https://docs.graylog.org/en/3.2/pages/alerts.html#data-available-to-notifications)
 
-Some plugin-specific fields values can be added to the log content.  
+Some plugin-specific fields values can be added to the log content.
 
 | Plugin-specific Fields     | Description                                             |
 | -------------------------- | ------------------------------------------------------- |
@@ -74,24 +75,24 @@ The parameter **Single message** allow you to sent only one notification by aler
 
 ![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-logging-alert/master/images/edit_notification2.png)
 
-You can optionally add any **Comment** about the configuration of the notification.  
+You can optionally add any **Comment** about the configuration of the notification.
 
 
-Make sure you also configured alert conditions for the stream so that the alerts are actually triggered.  
+Make sure you also configured alert conditions for the stream so that the alerts are actually triggered.
 
 ### Configure the plugin parameters
 
-Click on **Configure** in the **System / Configurations** section to update the plugin configuration.  
+Click on **Configure** in the **System / Configurations** section to update the plugin configuration.
  
-In the popup that occurs, you can configure the default value of the parameters that are set when adding a new notification: **Default Alert Severity**, **Default Log Content** and **Default Aggregation Time Range**.  
+In the popup that occurs, you can configure the default value of the parameters that are set when adding a new notification: **Default Alert Severity**, **Default Log Content** and **Default Aggregation Time Range**.
 
-You can define a **Line Break Substitution** of the log content in order to help parsing log fields and their values. Thus a separator can be inserted between the fields of the log content.  
+You can define a **Line Break Substitution** of the log content in order to help parsing log fields and their values. Thus a separator can be inserted between the fields of the log content.
 
-You can also configure the **Alerts Stream**. This stream must receive the log messages of alerts to enable the alert aggregation feature. Use the [Internal Logs Input Plugin for Graylog](https://github.com/graylog-labs/graylog-plugin-internal-logs) for this purpose.  
+You can also configure the **Alerts Stream**. This stream must receive the log messages of alerts to enable the alert aggregation feature. Use the [Internal Logs Input Plugin for Graylog](https://github.com/graylog-labs/graylog-plugin-internal-logs) for this purpose.
 
-You can also set the **Alert ID Field** which is the field that is checked to get the alert id in the log messages of the Alerts Stream.  
+You can also set the **Alert ID Field** which is the field that is checked to get the alert id in the log messages of the Alerts Stream.
 
-You can optionally define an **Overflow Limit**. From this given number of log messages per triggered alert, all the following log messages generated by the notification are tagged as overflow. This limit prevents you from forwarding too many log messages per alert to a Security Incident Response Platform by filtering the log messages according to their tag. For this purpose you can choose the name of the tags: **Alert Tag** and **Overflow Tag**.  
+You can optionally define an **Overflow Limit**. From this given number of log messages per triggered alert, all the following log messages generated by the notification are tagged as overflow. This limit prevents you from forwarding too many log messages per alert to a Security Incident Response Platform by filtering the log messages according to their tag. For this purpose you can choose the name of the tags: **Alert Tag** and **Overflow Tag**.
 
 ![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-logging-alert/master/images/edit_plugin_configuration.png)
 
