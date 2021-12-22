@@ -124,8 +124,6 @@ public class LoggingAlertNotificationTest {
         final Searches searches = mock(Searches.class);
 
         LoggingAlertConfig configGeneral = mock(LoggingAlertConfig.class);
-        when(configGeneral.accessSeparator()).thenReturn(" | ");
-        when(clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault())).thenReturn(configGeneral);
         loggingAlert = new LoggingAlert(clusterConfigService, notificationCallbackService, objectMapper, searches);
     }
 
