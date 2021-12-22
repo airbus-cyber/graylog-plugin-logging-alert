@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.4....4.1.0)
+### Features
+* Add compatibility with Graylog 4.2
+
 ## [4.0.4](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.3....4.0.4) (2021-11-29)
 ### Bug Fixes
 * Missing license header
