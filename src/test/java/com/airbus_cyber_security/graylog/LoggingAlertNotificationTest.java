@@ -44,8 +44,6 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
@@ -59,8 +57,6 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static uk.org.lidalia.slf4jext.Level.INFO;
 
-@PrepareForTest({LoggingAlert.class})
-@RunWith(PowerMockRunner.class)
 public class LoggingAlertNotificationTest {
 
     private static final String SEPARATOR_TEMPLATE = " | ";
