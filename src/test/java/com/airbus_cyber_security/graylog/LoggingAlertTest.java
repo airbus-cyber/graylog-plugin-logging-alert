@@ -70,7 +70,7 @@ import static org.assertj.core.groups.Tuple.tuple;
 import static uk.org.lidalia.slf4jext.Level.INFO;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
