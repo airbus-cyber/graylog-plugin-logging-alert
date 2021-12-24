@@ -155,7 +155,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            time.sleep(_PERIOD)
+            time.sleep(2*_PERIOD)
 
             logs = self._graylog.extract_latest_logs(5)
             notification_identifier2 = self._parse_notification_log(logs)
