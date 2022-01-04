@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [4.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.0....4.1.1)
 ### Bug Fixes
-* Publication to maven central repository with the Github Actions
+* Fixed color of Configure button (issue #33)
 
 ## [4.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.4....4.1.0)
 ### Features
