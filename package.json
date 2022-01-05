@@ -7,7 +7,8 @@
     "url": "https://github.com/airbus-cyber/graylog-plugin-logging-alert"
   },
   "scripts": {
-    "build": "webpack --bail"
+    "build": "webpack --bail",
+    "test": "jest"
   },
   "keywords": [
     "graylog"
