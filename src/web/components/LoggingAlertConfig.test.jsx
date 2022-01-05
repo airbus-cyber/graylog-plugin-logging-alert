@@ -14,8 +14,22 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
- 
- describe('<LoggingAlertConfig>', () => {
-   it('should display the button with the correct color', () => {
-   });
- });
+
+import React from 'react';
+import { render } from 'wrappedTestingLibrary';
+import { StoreMock as MockStore } from 'helpers/mocking';
+import StoreProvider from 'injection/StoreProvider';
+
+import LoggingAlertConfig from './LoggingAlertConfig';
+
+const mockListStreams = jest.fn((...args) => Promise.resolve([]));
+
+jest.mock('injection/CombinedProvider', () => ({
+  get: jest.fn(() => ({ StreamsStore: { listStreams: (...args) => mockListStreams(...args) } })),
+}));
+
+describe('<LoggingAlertConfig>', () => {
+  it('should display the button with the correct color', () => {
+    render(<LoggingAlertConfig updateConfig={jest.fn()} />);
+  });
+});

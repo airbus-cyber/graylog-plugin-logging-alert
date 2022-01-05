@@ -18,10 +18,12 @@
   "dependencies": {},
   "devDependencies": {
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
-    "reflux": "^6.4.1"
+    "reflux": "^6.4.1",
+    "@babel/preset-react": "7.12.10",
+    "@babel/plugin-transform-runtime": "7.11.5"
   },
   "resolutions": {
     "upath": "1.1.2"
-  }
-
+  },
+  "private": true
 }
