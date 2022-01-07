@@ -18,7 +18,10 @@
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
 import { StoreMock as MockStore } from 'helpers/mocking';
+import { adminUser } from 'fixtures/users';
+
 import StoreProvider from 'injection/StoreProvider';
+import CurrentUserContext from 'contexts/CurrentUserContext';
 
 import LoggingAlertConfig from './LoggingAlertConfig';
 
@@ -29,7 +32,12 @@ jest.mock('injection/CombinedProvider', () => ({
 }));
 
 describe('<LoggingAlertConfig>', () => {
-  it('should display the button with the correct color', () => {
-    render(<LoggingAlertConfig updateConfig={jest.fn()} />);
+  it('should display the button with the correct color (issue 33)', async () => {
+    const { findByText } = render(<CurrentUserContext.Provider value={adminUser}>
+                                    <LoggingAlertConfig updateConfig={jest.fn()} />
+                                  </CurrentUserContext.Provider>);
+    // TODO: I don't understand why getByText does not work here
+    const elem = await findByText('Configure');
+    expect(elem).toHaveStyle('background-color: rgb(0, 99, 190)')
   });
 });
