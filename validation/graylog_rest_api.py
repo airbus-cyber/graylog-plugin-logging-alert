@@ -6,7 +6,7 @@ from graylog_inputs import GraylogInputs
 
 STREAM_ALL_MESSAGES = "000000000000000000000001"
 _AUTH = ('admin', 'admin')
-_HEADERS = {"X-Requested-By": "test-program"}
+_HEADERS = {'X-Requested-By': 'test-program'}
 
 
 class GraylogRestApi:
