@@ -1,5 +1,4 @@
 import subprocess
-from threading import Thread
 
 
 class GraylogServer:
