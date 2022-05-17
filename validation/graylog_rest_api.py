@@ -24,6 +24,7 @@ class GraylogRestApi:
         url = self._build_url(path)
         response = requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
         print('PUT {} {} => {}'.format(url, payload, response.status_code))
+        return response
 
     def post(self, path, payload=None):
         url = self._build_url(path)
