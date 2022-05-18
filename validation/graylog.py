@@ -19,8 +19,6 @@ class Graylog:
         """
         print('Waiting for graylog to start...')
 
-        # TODO move as a method in _graylog_rest_api
-        #only for 60s maximum
         while True:
             try:
                 response = self._api.get('system/deflector')
