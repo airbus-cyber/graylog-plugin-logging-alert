@@ -9,29 +9,24 @@ _HEADERS = {'X-Requested-By': 'test-program'}
 
 class GraylogRestApi:
 
-    def __init__(self):
-        self._session = requests.Session()
-        self._session.auth = _AUTH
-        self._session.headers.update(_HEADERS)
-
     def _build_url(self, path):
         return parse.urljoin('http://127.0.0.1:9000/api/', path)
 
     def _get(self, path):
         url = self._build_url(path)
-        response = self._session.get(url)
+        response = requests.get(url, auth=_AUTH, headers=_HEADERS)
         print('GET {} => {}'.format(url, response.status_code))
         return response
 
     def _put(self, path, payload):
         url = self._build_url(path)
-        response = self._session.put(url, json=payload)
+        response = requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
         print('PUT {} {} => {}'.format(url, payload, response.status_code))
         return response
 
     def _post(self, path, payload=None):
         url = self._build_url(path)
-        response = self._session.post(url, json=payload)
+        response = requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
         print('POST {} {} => {}'.format(url, payload, response.status_code))
         return response
 
