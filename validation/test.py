@@ -81,17 +81,7 @@ class Test(TestCase):
         stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
         self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        plugin_configuration = {
-            'aggregation_stream': stream_log_identifier,
-            'aggregation_time': '10',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
         notification_definition_identifier = self._graylog_rest_api.create_notification()
         self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
@@ -122,17 +112,7 @@ class Test(TestCase):
         stream_input2_identifier = self._graylog_rest_api.create_stream_with_rule('input2', 'stream', 'input2')
         stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
         self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        plugin_configuration = {
-            'aggregation_stream': stream_log_identifier,
-            'aggregation_time': '10',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
         notification_definition_identifier = self._graylog_rest_api.create_notification()
         self._graylog_rest_api.create_event_definition(notification_definition_identifier,
                                                        streams=[stream_input1_identifier],
@@ -166,17 +146,7 @@ class Test(TestCase):
         stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
         self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        plugin_configuration = {
-            'aggregation_stream': stream_log_identifier,
-            'aggregation_time': '10',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
         notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
         self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], backlog_size=50, period=_PERIOD)
 
@@ -209,17 +179,7 @@ class Test(TestCase):
         stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
         self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        plugin_configuration = {
-            'aggregation_stream': stream_log_identifier,
-            'aggregation_time': '10',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
         notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
         self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
@@ -249,17 +209,7 @@ class Test(TestCase):
         stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
         self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        plugin_configuration = {
-            'aggregation_stream': stream_log_identifier,
-            'aggregation_time': '10',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
         notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
         self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
@@ -293,17 +243,7 @@ class Test(TestCase):
         stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
         self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        plugin_configuration = {
-            'aggregation_stream': stream_log_identifier,
-            'aggregation_time': '10',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
         notification_definition_identifier = self._graylog_rest_api.create_notification()
         conditions = {
             'expression': {
@@ -345,17 +285,7 @@ class Test(TestCase):
         stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
         self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        plugin_configuration = {
-            'aggregation_stream': stream_log_identifier,
-            'aggregation_time': '10',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
         notification_definition_identifier = self._graylog_rest_api.create_notification(single_message=True)
         conditions = {
             'expression': {

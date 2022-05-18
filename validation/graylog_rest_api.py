@@ -164,3 +164,16 @@ class GraylogRestApi:
         self.post('streams/{}/rules'.format(stream_identifier), rule)
         self.post('streams/{}/resume'.format(stream_identifier))
         return stream_identifier
+
+    def update_plugin_configuration(self, aggregation_stream):
+        plugin_configuration = {
+            'aggregation_stream': aggregation_stream,
+            'aggregation_time': '10',
+            'alert_tag': 'LoggingAlert',
+            'field_alert_id': 'id',
+            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+            'overflow_tag': 'LoggingOverflow',
+            'separator': ' | ',
+            'severity': 'LOW'
+        }
+        self.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
