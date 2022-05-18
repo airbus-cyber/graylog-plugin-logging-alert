@@ -10,8 +10,7 @@
 
 from unittest import TestCase, skip
 import time
-from graylog_server import GraylogServer
-from graylog_rest_api import GraylogRestApi
+from graylog import Graylog
 
 _PERIOD = 5
 
@@ -19,11 +18,8 @@ _PERIOD = 5
 class Test(TestCase):
 
     def setUp(self) -> None:
-        # TODO maybe merge _graylog and _graylog_rest_api
-        self._graylog = GraylogServer('../runtime')
+        self._graylog = Graylog()
         self._graylog.start()
-        self._graylog_rest_api = GraylogRestApi()
-        self._graylog_rest_api.wait_until_graylog_has_started()
 
     def tearDown(self) -> None:
         self._graylog.stop()
@@ -46,10 +42,10 @@ class Test(TestCase):
         raise AssertionError('Notification log not found in logs: \'{}\''.format(logs))
 
     def test_process_an_event_should_not_fail_for_a_notification_with_aggregation_issue30(self):
-        notification_identifier = self._graylog_rest_api.create_notification()
-        self._graylog_rest_api.create_event_definition(notification_identifier, period=_PERIOD)
+        notification_identifier = self._graylog.create_notification()
+        self._graylog.create_event_definition(notification_identifier, period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({})
             time.sleep(2*_PERIOD)
 
@@ -63,10 +59,10 @@ class Test(TestCase):
             self.assertNotIn('ElasticsearchException', logs)
 
     def test_notification_identifier_should_not_be_from_the_message_in_the_backlog_issue22(self):
-        notification_definition_identifier = self._graylog_rest_api.create_notification()
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier, backlog_size=50, period=_PERIOD)
+        notification_definition_identifier = self._graylog.create_notification()
+        self._graylog.create_event_definition(notification_definition_identifier, backlog_size=50, period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_id': 'message_identifier'})
             time.sleep(_PERIOD)
 
@@ -78,14 +74,14 @@ class Test(TestCase):
             self.assertNotEqual(notification_identifier, 'message_identifier')
 
     def test_aggregation_should_reuse_the_notification_identifier(self):
-        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
-        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
-        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._graylog_rest_api.create_notification()
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
+        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        self._graylog.update_plugin_configuration(stream_log_identifier)
+        notification_definition_identifier = self._graylog.create_notification()
+        self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input'})
             time.sleep(_PERIOD)
 
@@ -108,20 +104,20 @@ class Test(TestCase):
             self.assertEqual(notification_identifier2, notification_identifier1)
 
     def test_aggregation_should_not_reuse_identifier_from_different_event_definition(self):
-        stream_input1_identifier = self._graylog_rest_api.create_stream_with_rule('input1', 'stream', 'input1')
-        stream_input2_identifier = self._graylog_rest_api.create_stream_with_rule('input2', 'stream', 'input2')
-        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
-        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._graylog_rest_api.create_notification()
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier,
+        stream_input1_identifier = self._graylog.create_stream_with_rule('input1', 'stream', 'input1')
+        stream_input2_identifier = self._graylog.create_stream_with_rule('input2', 'stream', 'input2')
+        stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        self._graylog.update_plugin_configuration(stream_log_identifier)
+        notification_definition_identifier = self._graylog.create_notification()
+        self._graylog.create_event_definition(notification_definition_identifier,
                                                        streams=[stream_input1_identifier],
                                                        period=_PERIOD)
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier,
+        self._graylog.create_event_definition(notification_definition_identifier,
                                                        streams=[stream_input2_identifier],
                                                        period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input1'})
             time.sleep(_PERIOD)
 
@@ -143,14 +139,14 @@ class Test(TestCase):
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
     def test_aggregation_should_not_reuse_the_notification_identifier_when_there_is_a_split_field_with_a_different_value(self):
-        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
-        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
-        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], backlog_size=50, period=_PERIOD)
+        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        self._graylog.update_plugin_configuration(stream_log_identifier)
+        notification_definition_identifier = self._graylog.create_notification(split_fields=['user'])
+        self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], backlog_size=50, period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input', '_user': 'a'})
             time.sleep(_PERIOD)
 
@@ -176,14 +172,14 @@ class Test(TestCase):
     # TODO try to put this test back...
     @skip
     def test_aggregation_should_not_reuse_the_notification_identifier_when_there_is_a_split_field_with_a_different_value_when_there_is_no_backlog(self):
-        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
-        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
-        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
+        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        self._graylog.update_plugin_configuration(stream_log_identifier)
+        notification_definition_identifier = self._graylog.create_notification(split_fields=['user'])
+        self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input', '_user': 'a'})
             time.sleep(_PERIOD)
 
@@ -206,14 +202,14 @@ class Test(TestCase):
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
     def test_aggregation_should_reuse_the_notification_identifier_when_there_is_a_split_field_with_the_same_value(self):
-        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
-        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
-        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._graylog_rest_api.create_notification(split_fields=['user'])
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
+        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        self._graylog.update_plugin_configuration(stream_log_identifier)
+        notification_definition_identifier = self._graylog.create_notification(split_fields=['user'])
+        self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input', '_user': 'a'})
             time.sleep(_PERIOD)
 
@@ -240,11 +236,11 @@ class Test(TestCase):
     #      => should probably take some more log lines/or wait a little bit longer
     @skip
     def test_aggregation_should_send_several_messages_when_there_is_a_backlog(self):
-        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
-        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
-        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._graylog_rest_api.create_notification()
+        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        self._graylog.update_plugin_configuration(stream_log_identifier)
+        notification_definition_identifier = self._graylog.create_notification()
         conditions = {
             'expression': {
                 'expr': '>',
@@ -262,13 +258,13 @@ class Test(TestCase):
             'function': 'count',
             'id': 'count-'
         }
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier,
+        self._graylog.create_event_definition(notification_definition_identifier,
                                                        streams=[stream_input_identifier], backlog_size=50,
                                                        conditions=conditions,
                                                        series=[serie],
                                                        period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input'})
             gelf_inputs.send({'_stream': 'input'})
             time.sleep(_PERIOD)
@@ -282,11 +278,11 @@ class Test(TestCase):
     #      => should probably take some more log lines/or wait a little bit longer
     @skip
     def test_aggregation_should_send_one_messages_when_there_is_a_backlog_and_single_message(self):
-        stream_input_identifier = self._graylog_rest_api.create_stream_with_rule('input', 'stream', 'input')
-        stream_log_identifier = self._graylog_rest_api.create_stream_with_rule('log', 'stream', 'log')
-        self._graylog_rest_api.create_stream_with_rule('pop', 'stream', 'pop')
-        self._graylog_rest_api.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._graylog_rest_api.create_notification(single_message=True)
+        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
+        stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        self._graylog.update_plugin_configuration(stream_log_identifier)
+        notification_definition_identifier = self._graylog.create_notification(single_message=True)
         conditions = {
             'expression': {
                 'expr': '>',
@@ -304,13 +300,13 @@ class Test(TestCase):
             'function': 'count',
             'id': 'count-'
         }
-        self._graylog_rest_api.create_event_definition(notification_definition_identifier,
+        self._graylog.create_event_definition(notification_definition_identifier,
                                                        streams=[stream_input_identifier], backlog_size=50,
                                                        conditions=conditions,
                                                        series=[serie],
                                                        period=_PERIOD)
 
-        with self._graylog_rest_api.create_gelf_input() as gelf_inputs:
+        with self._graylog.create_gelf_input() as gelf_inputs:
             gelf_inputs.send({'_stream': 'input'})
             gelf_inputs.send({'_stream': 'input'})
             time.sleep(_PERIOD)
