@@ -39,7 +39,7 @@ class Graylog:
         self._server.stop()
 
     def extract_latest_logs(self, line_count=None):
-        self._server.extract_latest_logs(line_count)
+        return self._server.extract_latest_logs(line_count)
 
     def create_notification(self, split_fields=None, single_message=False):
         if split_fields is None:
