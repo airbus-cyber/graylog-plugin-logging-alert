@@ -280,13 +280,14 @@ class Test(TestCase):
                                                        period=_PERIOD)
 
         with self._graylog.create_gelf_input() as gelf_inputs:
+            self._graylog.start_logs_capture()
             gelf_inputs.send({'_stream': 'input'})
             gelf_inputs.send({'_stream': 'input'})
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
             time.sleep(_PERIOD)
-            logs = self._graylog.extract_latest_logs(5)
+            logs = self._graylog.extract_logs()
             self.assertEqual(self._count_notification_log(logs), 2)
 
     # TODO try to put this test back: it works locally, but not on CI (maybe because the machine is not powerful enough)
