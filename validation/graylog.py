@@ -32,7 +32,13 @@ class Graylog:
 
     def extract_latest_logs(self, line_count=None):
         return self._server.extract_latest_logs(line_count)
-
+    
+    def start_logs_capture(self):
+        self._server.start_logs_capture()
+    
+    def extract_logs(self):
+        return self._server.extract_logs()
+    
     def create_notification(self, split_fields=None, single_message=False):
         return self._api.create_notification(split_fields, single_message)
 

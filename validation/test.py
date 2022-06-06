@@ -68,10 +68,11 @@ class Test(TestCase):
             gelf_inputs.send({'_id': 'message_identifier'})
             time.sleep(_PERIOD)
 
+            self._graylog.start_logs_capture()
             gelf_inputs.send({'short_message': 'pop'})
             # wait long enough for processing to terminate (even on slow machines)
             time.sleep(2*_PERIOD)
-            logs = self._graylog.extract_latest_logs(5)
+            logs = self._graylog.extract_logs()
             notification_identifier = self._parse_notification_log(logs)
             self.assertNotEqual(notification_identifier, 'message_identifier')
 
