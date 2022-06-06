@@ -43,6 +43,19 @@ class Test(TestCase):
             return identifier
         raise AssertionError('Notification log not found in logs: \'{}\''.format(logs))
 
+    def _wait_until_notification(self):
+        notification_identifier = None
+        while notification_identifier is None:
+            time.sleep(1)
+            logs = self._graylog.extract_logs()
+            for log in logs.splitlines():
+                if 'INFO : LoggingAlert' not in log:
+                    continue
+                log_sections = log.split(' | ')
+                _, identifier = log_sections[1].split(': ')
+                notification_identifier = identifier
+        return notification_identifier
+
     def test_process_an_event_should_not_fail_for_a_notification_with_aggregation_issue30(self):
         notification_identifier = self._graylog.create_notification()
         self._graylog.create_event_definition(notification_identifier, period=_PERIOD)
@@ -71,10 +84,8 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop'})
-            # wait long enough for processing to terminate (even on slow machines)
-            time.sleep(2*_PERIOD)
-            logs = self._graylog.extract_logs()
-            notification_identifier = self._parse_notification_log(logs)
+            notification_identifier = self._wait_until_notification()
+            
             self.assertNotEqual(notification_identifier, 'message_identifier')
 
     def test_aggregation_should_reuse_the_notification_identifier(self):
