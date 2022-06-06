@@ -223,15 +223,17 @@ class Test(TestCase):
         self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
 
         with self._graylog.create_gelf_input() as gelf_inputs:
+            self._graylog.start_logs_capture()
             gelf_inputs.send({'_stream': 'input', '_user': 'a'})
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
             time.sleep(2 * _PERIOD)
 
-            logs = self._graylog.extract_latest_logs(5)
+            logs = self._graylog.extract_logs()
             notification_identifier1 = self._parse_notification_log(logs)
 
+            self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
             gelf_inputs.send({'_stream': 'input', '_user': 'a'})
             time.sleep(_PERIOD)
@@ -240,7 +242,7 @@ class Test(TestCase):
             # It seems that waiting for only one PERIOD here is insufficient and the test episodically fails
             time.sleep(2*_PERIOD)
 
-            logs = self._graylog.extract_latest_logs(5)
+            logs = self._graylog.extract_logs()
             notification_identifier2 = self._parse_notification_log(logs)
 
             self.assertEqual(notification_identifier2, notification_identifier1)
