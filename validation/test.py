@@ -48,7 +48,7 @@ class Test(TestCase):
         while notification_identifier is None:
             time.sleep(1)
             logs = self._graylog.extract_logs()
-            notification_identifier = _parse_notification_log(logs)
+            notification_identifier = self._parse_notification_log(logs)
         return notification_identifier
 
     def test_process_an_event_should_not_fail_for_a_notification_with_aggregation_issue30(self):
