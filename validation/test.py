@@ -41,19 +41,14 @@ class Test(TestCase):
             log_sections = log.split(' | ')
             _, identifier = log_sections[1].split(': ')
             return identifier
-        raise AssertionError('Notification log not found in logs: \'{}\''.format(logs))
+        return None
 
     def _wait_until_notification(self):
         notification_identifier = None
         while notification_identifier is None:
             time.sleep(1)
             logs = self._graylog.extract_logs()
-            for log in logs.splitlines():
-                if 'INFO : LoggingAlert' not in log:
-                    continue
-                log_sections = log.split(' | ')
-                _, identifier = log_sections[1].split(': ')
-                notification_identifier = identifier
+            notification_identifier = _parse_notification_log(logs)
         return notification_identifier
 
     def test_process_an_event_should_not_fail_for_a_notification_with_aggregation_issue30(self):
