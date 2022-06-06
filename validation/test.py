@@ -124,14 +124,17 @@ class Test(TestCase):
                                                        period=_PERIOD)
 
         with self._graylog.create_gelf_input() as gelf_inputs:
+            self._graylog.start_logs_capture()
             gelf_inputs.send({'_stream': 'input1'})
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
             time.sleep(2 * _PERIOD)
 
-            logs = self._graylog.extract_latest_logs(5)
+            logs = self._graylog.extract_logs(5)
             notification_identifier1 = self._parse_notification_log(logs)
+
+            self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
             gelf_inputs.send({'_stream': 'input2'})
             time.sleep(_PERIOD)
@@ -139,7 +142,7 @@ class Test(TestCase):
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
             time.sleep(2*_PERIOD)
 
-            logs = self._graylog.extract_latest_logs(5)
+            logs = self._graylog.extract_logs(5)
             notification_identifier2 = self._parse_notification_log(logs)
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
