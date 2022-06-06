@@ -222,9 +222,6 @@ class Test(TestCase):
 
             self.assertEqual(notification_identifier2, notification_identifier1)
 
-    # TODO try to put this test back: it works locally, but not on CI (maybe because the machine is not powerful enough)
-    #      => should probably take some more log lines/or wait a little bit longer
-    @skip
     def test_aggregation_should_send_several_messages_when_there_is_a_backlog(self):
         stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
@@ -261,7 +258,8 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            time.sleep(_PERIOD)
+            self._wait_until_notification()
+            
             logs = self._graylog.extract_logs()
             self.assertEqual(self._count_notification_log(logs), 2)
 
@@ -304,7 +302,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            time.sleep(_PERIOD)
+            self._wait_until_notification()
 
             logs = self._graylog.extract_logs()
             self.assertEqual(self._count_notification_log(logs), 1)
