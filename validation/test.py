@@ -48,6 +48,7 @@ class Test(TestCase):
         self._graylog.create_event_definition(notification_identifier, period=_PERIOD)
 
         with self._graylog.create_gelf_input() as gelf_inputs:
+            self._graylog.start_logs_capture()
             gelf_inputs.send({})
             time.sleep(2*_PERIOD)
 
@@ -57,7 +58,7 @@ class Test(TestCase):
             gelf_inputs.send({'short_message': 'pop'})
             # wait long enough for potential exception to occur (even on slow machines)
             time.sleep(2*_PERIOD)
-            logs = self._graylog.extract_latest_logs()
+            logs = self._graylog.extract_logs()
             self.assertNotIn('ElasticsearchException', logs)
 
     def test_notification_identifier_should_not_be_from_the_message_in_the_backlog_issue22(self):
@@ -65,10 +66,10 @@ class Test(TestCase):
         self._graylog.create_event_definition(notification_definition_identifier, backlog_size=50, period=_PERIOD)
 
         with self._graylog.create_gelf_input() as gelf_inputs:
+            self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': 'message_identifier'})
             time.sleep(_PERIOD)
 
-            self._graylog.start_logs_capture()
             gelf_inputs.send({'short_message': 'pop'})
             # wait long enough for processing to terminate (even on slow machines)
             time.sleep(2*_PERIOD)
