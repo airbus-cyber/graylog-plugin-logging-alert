@@ -134,10 +134,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            time.sleep(2 * _PERIOD)
-
-            logs = self._graylog.extract_logs()
-            notification_identifier1 = self._parse_notification_log(logs)
+            notification_identifier1 = self._wait_until_notification()
 
             self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
@@ -145,10 +142,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            time.sleep(2*_PERIOD)
-
-            logs = self._graylog.extract_logs()
-            notification_identifier2 = self._parse_notification_log(logs)
+            notification_identifier2 = self._wait_until_notification()
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
