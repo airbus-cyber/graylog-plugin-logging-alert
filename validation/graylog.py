@@ -30,9 +30,6 @@ class Graylog:
     def stop(self):
         self._server.stop()
 
-    def extract_latest_logs(self, line_count=None):
-        return self._server.extract_latest_logs(line_count)
-    
     def start_logs_capture(self):
         self._server.start_logs_capture()
     

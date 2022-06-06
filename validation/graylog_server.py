@@ -21,11 +21,5 @@ class GraylogServer:
         logs = self._extract_all_logs()
         return logs[self._log_offset:]
     
-    def extract_latest_logs(self, line_count=None):
-        if line_count is None:
-            line_count = 'all'
-        tail_option = '--tail={}'.format(line_count)
-        return subprocess.check_output(['docker-compose', 'logs', tail_option, '--no-log-prefix', '--no-color', 'graylog'], cwd=self._docker_compose_path, universal_newlines=True)
-
     def stop(self):
         subprocess.run(['docker-compose', 'down'], cwd=self._docker_compose_path)
