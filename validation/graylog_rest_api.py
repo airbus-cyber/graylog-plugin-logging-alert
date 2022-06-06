@@ -6,6 +6,8 @@ STREAM_ALL_MESSAGES = "000000000000000000000001"
 _AUTH = ('admin', 'admin')
 _HEADERS = {'X-Requested-By': 'test-program'}
 
+_DEFAULT_LOG_BODY = 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}'
+
 
 class GraylogRestApi:
 
@@ -40,11 +42,12 @@ class GraylogRestApi:
         except ConnectionError:
             return False
 
-    def create_notification(self, split_fields=None, single_message=False):
+    def create_notification(self, split_fields=None, single_message=False, log_body=_DEFAULT_LOG_BODY):
         if split_fields is None:
             split_fields = []
         notification_configuration = {
         'config': {
+                'log_body': log_body,
                 'single_notification': single_message,
                 'split_fields': split_fields,
                 'aggregation_time': 10,
@@ -156,8 +159,7 @@ class GraylogRestApi:
             'aggregation_time': '10',
             'alert_tag': 'LoggingAlert',
             'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
+            'log_body': _DEFAULT_LOG_BODY,
             'separator': ' | ',
             'severity': 'LOW'
         }

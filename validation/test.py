@@ -34,6 +34,15 @@ class Test(TestCase):
             result += 1
         return result
 
+    def _parse_url_in_notification_log(self, logs):
+        for log in logs.splitlines():
+            if 'INFO : LoggingAlert' not in log:
+                continue
+            log_sections = log.split(' | ')
+            _, url = log_sections[2].split(': ')
+            return url
+        return None
+
     def _parse_notification_log(self, logs):
         for log in logs.splitlines():
             if 'INFO : LoggingAlert' not in log:
@@ -303,4 +312,24 @@ class Test(TestCase):
 
             logs = self._graylog.extract_logs()
             self.assertEqual(self._count_notification_log(logs), 1)
+
+    def test_notifier_should_escape_backslashes_in_messages_url_issue14(self):
+        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
+        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
+        notification_definition_identifier = self._graylog.create_notification(split_fields=['filename'], log_body='type: alert\nid: ${logging_alert.id}\nurl: ${logging_alert.messages_url}')
+        self._graylog.create_event_definition(notification_definition_identifier, backlog_size=50)
+
+        with self._graylog.create_gelf_input() as gelf_inputs:
+            self._graylog.start_logs_capture()
+            # there are two backslashes here to escape the backslash (in python)
+            gelf_inputs.send({'_filename': 'C:\\File.exe'})
+            time.sleep(_PERIOD)
+
+            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
+            self._wait_until_notification()
+
+            logs = self._graylog.extract_logs()
+            url = self._parse_url_in_notification_log(logs)
+            # TODO make this test pass to fix the issue
+            #self.assertIn('C:\\\\File.exe', url)
 
