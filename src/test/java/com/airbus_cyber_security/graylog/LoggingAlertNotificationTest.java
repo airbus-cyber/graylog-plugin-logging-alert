@@ -39,17 +39,6 @@ public class LoggingAlertNotificationTest {
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Before
-    public void setUp() {
-        final ClusterConfigService clusterConfigService = mock(ClusterConfigService.class);
-        EventNotificationService notificationCallbackService = mock(EventNotificationService.class);
-        final ObjectMapper objectMapper = new ObjectMapper();
-        final Searches searches = mock(Searches.class);
-
-        LoggingAlertConfig configGeneral = mock(LoggingAlertConfig.class);
-        LoggingAlert loggingAlert = new LoggingAlert(clusterConfigService, notificationCallbackService, objectMapper, searches);
-    }
-
     private NotificationDto getEmptyLoggingAlertNotification() {
         return NotificationDto.builder()
                 .title("")
