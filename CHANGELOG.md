@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [4.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.0....4.1.1)
 ### Bug Fixes
-* Fixed color of Configure button (issue #33)
+* Escape special characters \ and " in graylog url ([issue #14](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/14))
+* Fixed color of Configure button ([issue #33](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/33))
 
 ## [4.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.4....4.1.0)
 ### Features
@@ -16,10 +17,10 @@ All notable changes to this project will be documented in this file.
 
 ## [4.0.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.2....4.0.3) (2021-11-29)
 ### Features
-* New page for the notification detail (issue #31)
+* New page for the notification detail ([issue #31](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/31))
 ### Bug Fixes
-* Do not reuse the logging identifier when it is already present in messages of the backlog (issue #22)
-* Exception when looking for the logging identifier to perform aggregation (issue #30)
+* Do not reuse the logging identifier when it is already present in messages of the backlog ([issue #22](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/22))
+* Exception when looking for the logging identifier to perform aggregation ([issue #30](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/30))
 
 ## [4.0.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.0.1....4.0.2) (2021-10-22)
 ### Bug Fixes
