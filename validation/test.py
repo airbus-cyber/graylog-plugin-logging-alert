@@ -317,12 +317,12 @@ class Test(TestCase):
         stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
         self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
         notification_definition_identifier = self._graylog.create_notification(split_fields=['filename'], log_body='type: alert\nid: ${logging_alert.id}\nurl: ${logging_alert.messages_url}')
-        self._graylog.create_event_definition(notification_definition_identifier, backlog_size=50)
+        self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], backlog_size=50)
 
         with self._graylog.create_gelf_input() as gelf_inputs:
             self._graylog.start_logs_capture()
             # there are two backslashes here to escape the backslash (in python)
-            gelf_inputs.send({'_filename': 'C:\\File.exe'})
+            gelf_inputs.send({'_filename': 'C:\\File.exe', '_stream': 'input'})
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
