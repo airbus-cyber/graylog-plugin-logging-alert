@@ -32,6 +32,18 @@ public class LoggingAlertUtilsTest {
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         String query = subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
-        Assert.assertEquals("&q=filename%3A\"C:\\File.exe\"", query);
+        Assert.assertEquals("&q=filename%3A\"C:\\\\File.exe\"", query);
+    }
+
+    @Test
+    public void buildSplitFieldsSearchQueryShouldEscapeDoubleQuotes() {
+        List<String> splitFields = Collections.singletonList("key");
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("_id", "identifier");
+        fields.put("key", "\"");
+        Message message = new Message(fields);
+        MessageSummary messageSummary = new MessageSummary("index", message);
+        String query = subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        Assert.assertEquals("&q=key%3A\"\\\"\"", query);
     }
 }

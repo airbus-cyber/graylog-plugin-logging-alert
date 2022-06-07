@@ -149,7 +149,9 @@ public class LoggingAlertUtils {
                 prefix = "+AND+";
             }
             if (valueAggregationField != null && !valueAggregationField.isEmpty()) {
-                searchFields.append(prefix + field + "%3A\"" + valueAggregationField + "\"");
+                String escapedValue = valueAggregationField.replace("\\", "\\\\");
+                escapedValue = escapedValue.replace("\"", "\\\"");
+                searchFields.append(prefix + field + "%3A\"" + escapedValue + "\"");
                 i++;
             }
         }

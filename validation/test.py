@@ -330,6 +330,6 @@ class Test(TestCase):
 
             logs = self._graylog.extract_logs()
             url = self._parse_url_in_notification_log(logs)
-            # TODO make this test pass to fix the issue
-            #self.assertIn('C:\\\\File.exe', url)
+            print(url)
+            self.assertIn('C:\\\\File.exe', url)
 
