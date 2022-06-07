@@ -137,7 +137,7 @@ public class LoggingAlertUtils {
         return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + getConcatStreams(ctx.event().sourceStreams());
     }
 
-    private String buildSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
+    String buildSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
         StringBuilder searchFields = new StringBuilder();
         int i = 0;
         for (String field: splitFields) {
