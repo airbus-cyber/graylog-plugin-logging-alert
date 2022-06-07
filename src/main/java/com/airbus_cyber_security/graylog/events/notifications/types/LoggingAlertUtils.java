@@ -137,8 +137,28 @@ public class LoggingAlertUtils {
         return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + getConcatStreams(ctx.event().sourceStreams());
     }
 
-    public static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
-                                        DateTime timeBeginSearch) {
+    private String buildSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
+        StringBuilder searchFields = new StringBuilder();
+        int i = 0;
+        for (String field: splitFields) {
+            String valueAggregationField = (String) messageSummary.getField(field);
+            String prefix;
+            if (i == 0) {
+                prefix = "&q=";
+            } else {
+                prefix = "+AND+";
+            }
+            if (valueAggregationField != null && !valueAggregationField.isEmpty()) {
+                searchFields.append(prefix + field + "%3A\"" + valueAggregationField + "\"");
+                i++;
+            }
+        }
+
+        return searchFields.toString();
+    }
+
+    public String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
+                                 DateTime timeBeginSearch) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         if (ctx.eventDefinition().isPresent()) {
             DateTime endTime;
@@ -163,27 +183,13 @@ public class LoggingAlertUtils {
                 search = MSGS_URL_STREAM + concatStream;
             }
 
-            StringBuilder searchFields = new StringBuilder();
-            int i = 0;
-            for (String field : config.splitFields()) {
-                String valueAggregationField = (String) messageSummary.getField(field);
-                String prefix;
-                if (i == 0) {
-                    prefix = "&q=";
-                } else {
-                    prefix = "+AND+";
-                }
-                if (valueAggregationField != null && !valueAggregationField.isEmpty()) {
-                    searchFields.append(prefix + field + "%3A\"" + valueAggregationField + "\"");
-                    i++;
-                }
-            }
+            String searchQuery = buildSearchQuery(config.splitFields(), messageSummary);
 
             return MSGS_URL_BEGIN
                     + beginTime.toString(timeFormatter) + MSGS_URL_TO
                     + endTime.toString(timeFormatter)
                     + search
-                    + searchFields.toString();
+                    + searchQuery;
         }
 
         return getStreamSearchUrl(ctx, timeBeginSearch);
