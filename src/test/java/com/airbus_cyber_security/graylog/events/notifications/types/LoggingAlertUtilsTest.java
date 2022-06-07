@@ -24,14 +24,14 @@ public class LoggingAlertUtilsTest {
     }
 
     @Test
-    public void buildSearchQueryShouldEscapeBackslash() {
+    public void buildSplitFieldsSearchQueryShouldEscapeBackslash() {
         List<String> splitFields = Collections.singletonList("filename");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("filename", "C:\\File.exe");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = subject.buildSearchQuery(splitFields, messageSummary);
+        String query = subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
         Assert.assertEquals("&q=filename%3A\"C:\\File.exe\"", query);
     }
 }
