@@ -39,7 +39,7 @@ class Test(TestCase):
             if 'INFO : LoggingAlert' not in log:
                 continue
             log_sections = log.split(' | ')
-            _, url = log_sections[2].split(': ')
+            _, url = log_sections[3].split(': ')
             return url
         return None
 
@@ -48,7 +48,7 @@ class Test(TestCase):
             if 'INFO : LoggingAlert' not in log:
                 continue
             log_sections = log.split(' | ')
-            _, identifier = log_sections[1].split(': ')
+            _, identifier = log_sections[2].split(': ')
             return identifier
         return None
 
