@@ -16,14 +16,9 @@
  */
 package com.airbus_cyber_security.graylog;
 
-import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
-import com.airbus_cyber_security.graylog.events.notifications.types.LoggingAlert;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.graylog.events.notifications.*;
-import org.graylog2.indexer.searches.Searches;
-import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.rest.ValidationResult;
 import org.junit.*;
 import org.mockito.junit.MockitoJUnit;
@@ -32,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class LoggingAlertNotificationTest {
 
