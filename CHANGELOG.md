@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.1...4.1.2)
+### Bug Fixes
+
 ## [4.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.0...4.1.1)
 ### Bug Fixes
 * Escape special characters \ and " in graylog url ([issue #14](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/14))
