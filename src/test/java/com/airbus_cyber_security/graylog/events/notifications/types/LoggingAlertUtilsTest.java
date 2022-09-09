@@ -61,4 +61,15 @@ public class LoggingAlertUtilsTest {
         String query = subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
         Assert.assertEquals("&q=key%3A\"\\\"\"", query);
     }
+
+    @Test
+    public void buildSplitFieldsSearchQueryShouldNotFailWhenSplitFieldIsInteger() {
+        List<String> splitFields = Collections.singletonList("key");
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("_id", "identifier");
+        fields.put("key", new Integer(48));
+        Message message = new Message(fields);
+        MessageSummary messageSummary = new MessageSummary("index", message);
+        subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+    }
 }

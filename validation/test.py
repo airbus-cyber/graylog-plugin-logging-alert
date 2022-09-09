@@ -330,6 +330,20 @@ class Test(TestCase):
 
             logs = self._graylog.extract_logs()
             url = self._parse_url_in_notification_log(logs)
-            print(url)
             self.assertIn('C:\\\\File.exe', url)
+
+    def test_process_an_event_should_not_fail_when_split_field_is_numeric_issue38(self):
+        notification_definition_identifier = self._graylog.create_notification(split_fields=['dest_port'])
+        self._graylog.create_event_definition(notification_definition_identifier, backlog_size=50)
+
+        with self._graylog.create_gelf_input() as gelf_inputs:
+            self._graylog.start_logs_capture()
+            gelf_inputs.send({'_dest_port': 48})
+            time.sleep(_PERIOD)
+            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
+            # wait long enough for potential exception to occur (even on slow machines)
+            time.sleep(2*_PERIOD)
+            logs = self._graylog.extract_logs()
+
+            self.assertNotIn('ERROR', logs)
 

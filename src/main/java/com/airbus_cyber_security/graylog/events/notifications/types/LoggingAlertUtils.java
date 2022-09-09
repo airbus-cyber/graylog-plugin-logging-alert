@@ -142,7 +142,7 @@ public class LoggingAlertUtils {
         int i = 0;
         for (String field: splitFields) {
             // TODO should rather do .toString here (try to reproduce, check if there are other casts elsewhere and remove them+add a unit test)
-            String valueAggregationField = (String) messageSummary.getField(field);
+            String valueAggregationField = messageSummary.getField(field).toString();
             String prefix;
             if (i == 0) {
                 prefix = "&q=";
