@@ -134,7 +134,7 @@ public class LoggingAlertUtils {
         String message_url = MSGS_URL_BEGIN
                 + timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
                 + ctx.event().eventTimestamp().plusMinutes(1).toString(timeFormatter);
-        return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + getConcatStreams(ctx.event().sourceStreams());
+        return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + concatenateStreams(ctx.event().sourceStreams());
     }
 
     String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
@@ -181,7 +181,7 @@ public class LoggingAlertUtils {
             DateTime beginTime = timeBeginSearch;
 
             String search = "";
-            String concatStream = getConcatStreams(ctx.event().sourceStreams());
+            String concatStream = concatenateStreams(ctx.event().sourceStreams());
             if (!concatStream.isEmpty()) {
                 search = MSGS_URL_STREAM + concatStream;
             }
@@ -252,13 +252,17 @@ public class LoggingAlertUtils {
         return this.templateEngine.transform(logTemplate, model);
     }
 
-    public static String getConcatStreams(Set<String> setStreams) {
-        String concatStream = "";
-        if (!setStreams.isEmpty()) {
-            for (String stream: setStreams) {
-                concatStream = concatStream.isEmpty() ? concatStream.concat(stream) : concatStream.concat("%2C" + stream);
-            }
+    private static String concatenateStreams(Set<String> setStreams) {
+        if (setStreams.isEmpty()) {
+            return "";
         }
-        return concatStream;
+        StringBuilder result = new StringBuilder();
+        for (String stream: setStreams) {
+            if (result.length() != 0) {
+                result.append("%2C")
+            }
+            result = result.append(stream);
+        }
+        return result.toString();
     }
 }
