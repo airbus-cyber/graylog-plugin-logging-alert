@@ -163,7 +163,7 @@ public class LoggingAlertUtils {
         return searchFields.toString();
     }
 
-    private String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
+    private static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
                                  DateTime timeBeginSearch) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         EventDto event = ctx.event();
