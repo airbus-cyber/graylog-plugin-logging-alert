@@ -213,7 +213,7 @@ public class LoggingAlertUtils {
                                                                       DateTime date) {
         Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 
-        for (MessageSummary messageSummary : backlog) {
+        for (MessageSummary messageSummary: backlog) {
             String key = getValuesAggregationField(messageSummary, config);
             String messagesUrl = getMessagesUrl(ctx, config, messageSummary, date);
 
