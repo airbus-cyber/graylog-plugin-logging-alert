@@ -135,7 +135,10 @@ public class LoggingAlertUtils {
         String message_url = MSGS_URL_BEGIN
                 + timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
                 + event.eventTimestamp().plusMinutes(1).toString(timeFormatter);
-        return event.sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + concatenateStreams(event.sourceStreams());
+        if (event.sourceStreams().isEmpty()) {
+            return message_url;
+        }
+        return message_url + MSGS_URL_STREAM + concatenateStreams(event.sourceStreams());
     }
 
     String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
