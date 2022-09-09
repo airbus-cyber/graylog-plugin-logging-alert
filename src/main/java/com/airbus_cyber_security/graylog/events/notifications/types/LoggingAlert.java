@@ -72,7 +72,7 @@ public class LoggingAlert implements EventNotification {
 
         DateTime date = ctx.event().eventTimestamp();
 
-        for (MessageSummary messageSummary : backlog) {
+        for (MessageSummary messageSummary: backlog) {
             if (messageSummary.getTimestamp().isBefore(date))
                 date = messageSummary.getTimestamp();
         }
@@ -107,7 +107,7 @@ public class LoggingAlert implements EventNotification {
 
         /* Log each messages */
         int iter = 0;
-        for (String message : listMessagesToLog) {
+        for (String message: listMessagesToLog) {
             if (generalConfig.accessLimitOverflow() <= 0 || iter < generalConfig.accessLimitOverflow()) {
                 localLogger.info(message);
             } else {
