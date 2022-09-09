@@ -235,9 +235,9 @@ public class LoggingAlertUtils {
     }
 
     private Map<String, Object> getModel(EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
-        final Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
-        final Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
-        final EventNotificationModelData modelData = EventNotificationModelData.builder()
+        Optional<EventDefinitionDto> definitionDto = context.eventDefinition();
+        Optional<JobTriggerDto> jobTriggerDto = context.jobTrigger();
+        EventNotificationModelData modelData = EventNotificationModelData.builder()
                 .eventDefinitionId(definitionDto.map(EventDefinitionDto::id).orElse(UNKNOWN))
                 .eventDefinitionType(definitionDto.map(d -> d.config().type()).orElse(UNKNOWN))
                 .eventDefinitionTitle(definitionDto.map(EventDefinitionDto::title).orElse(UNKNOWN))
