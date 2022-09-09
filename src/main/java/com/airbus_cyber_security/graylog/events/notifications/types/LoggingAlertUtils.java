@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
 import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.event.EventDto;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.indexer.results.SearchResult;
 import org.graylog2.indexer.searches.Searches;
@@ -130,11 +131,12 @@ public class LoggingAlertUtils {
     }
 
     public static String getStreamSearchUrl(EventNotificationContext ctx, DateTime timeBeginSearch) {
+        EventDto event = ctx.event();
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         String message_url = MSGS_URL_BEGIN
                 + timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
-                + ctx.event().eventTimestamp().plusMinutes(1).toString(timeFormatter);
-        return ctx.event().sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + concatenateStreams(ctx.event().sourceStreams());
+                + event.eventTimestamp().plusMinutes(1).toString(timeFormatter);
+        return event.sourceStreams().isEmpty() ? message_url : message_url + MSGS_URL_STREAM + concatenateStreams(event.sourceStreams());
     }
 
     String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
