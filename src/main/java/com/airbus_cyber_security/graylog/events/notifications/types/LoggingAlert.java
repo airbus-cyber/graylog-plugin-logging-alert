@@ -65,9 +65,9 @@ public class LoggingAlert implements EventNotification {
     @Override
     public void execute(EventNotificationContext ctx) {
         LOGGER.debug("Start of execute...");
-        final LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault());
-        final LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
-        final ImmutableList<MessageSummary> backlog = this.notificationCallbackService.getBacklogForEvent(ctx);
+        LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault());
+        LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
+        ImmutableList<MessageSummary> backlog = this.notificationCallbackService.getBacklogForEvent(ctx);
         String logTemplate = config.logBody().replace(SEPARATOR_TEMPLATE, generalConfig.accessSeparator());
 
         DateTime date = ctx.event().eventTimestamp();
@@ -102,8 +102,8 @@ public class LoggingAlert implements EventNotification {
             }
         }
 
-        final Logger localLogger = LoggerFactory.getLogger(config.alertTag());
-        final Logger loggerOverflow = LoggerFactory.getLogger(generalConfig.accessOverflowTag());
+        Logger localLogger = LoggerFactory.getLogger(config.alertTag());
+        Logger loggerOverflow = LoggerFactory.getLogger(generalConfig.accessOverflowTag());
 
         /* Log each messages */
         int iter = 0;
