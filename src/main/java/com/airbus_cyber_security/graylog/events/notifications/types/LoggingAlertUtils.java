@@ -98,7 +98,7 @@ public class LoggingAlertUtils {
         return null;
     }
 
-    public String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
+    private String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
                                        EventNotificationContext ctx, String key) {
         String events_definition_id = ctx.eventDefinition().get().id();
         String suffix = "-" + getHashFromString(events_definition_id + "-" + key);
