@@ -140,7 +140,7 @@ public class LoggingAlertUtils {
         return message_url + MSGS_URL_STREAM + concatenateStreams(event.sourceStreams());
     }
 
-    String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
+    static String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
         StringBuilder searchFields = new StringBuilder();
         int i = 0;
         for (String field: splitFields) {

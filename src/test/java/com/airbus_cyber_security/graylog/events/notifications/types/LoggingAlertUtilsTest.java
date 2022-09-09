@@ -46,7 +46,7 @@ public class LoggingAlertUtilsTest {
         fields.put("filename", "C:\\File.exe");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        String query = LoggingAlertUtils.buildSplitFieldsSearchQuery(splitFields, messageSummary);
         Assert.assertEquals("&q=filename%3A\"C:\\\\File.exe\"", query);
     }
 
@@ -58,7 +58,7 @@ public class LoggingAlertUtilsTest {
         fields.put("key", "\"");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        String query = LoggingAlertUtils.buildSplitFieldsSearchQuery(splitFields, messageSummary);
         Assert.assertEquals("&q=key%3A\"\\\"\"", query);
     }
 
@@ -70,6 +70,6 @@ public class LoggingAlertUtilsTest {
         fields.put("key", new Integer(48));
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        LoggingAlertUtils.buildSplitFieldsSearchQuery(splitFields, messageSummary);
     }
 }
