@@ -79,19 +79,6 @@ public class LoggingAlertUtils {
         return loggingAlertID;
     }
 
-    public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig, EventNotificationContext ctx) {
-        return this.getAlertIDWithSuffix(config, generalConfig, ctx, "");
-    }
-
-    public static String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
-        StringBuilder valuesAggregationField = new StringBuilder();
-        for (String field: config.splitFields()) {
-            // TODO should probably add a separator: field1=a, field2=ab <=> field1=aa, field2=b!!!
-            valuesAggregationField.append(messageSummary.getField(field));
-        }
-        return valuesAggregationField.toString();
-    }
-
     private static String concatenateSourceStreams(EventDto event) {
         Set<String> setStreams = event.sourceStreams();
         if (setStreams.isEmpty()) {
@@ -105,17 +92,6 @@ public class LoggingAlertUtils {
             result.append(stream);
         }
         return result.toString();
-    }
-
-    public static String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
-        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
-        String message_url = MSGS_URL_BEGIN
-                + timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
-                + event.eventTimestamp().plusMinutes(1).toString(timeFormatter);
-        if (event.sourceStreams().isEmpty()) {
-            return message_url;
-        }
-        return message_url + MSGS_URL_STREAM + concatenateSourceStreams(event);
     }
 
     static String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
@@ -139,6 +115,17 @@ public class LoggingAlertUtils {
         }
 
         return searchFields.toString();
+    }
+
+    public static String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
+        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
+        String message_url = MSGS_URL_BEGIN
+                + timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
+                + event.eventTimestamp().plusMinutes(1).toString(timeFormatter);
+        if (event.sourceStreams().isEmpty()) {
+            return message_url;
+        }
+        return message_url + MSGS_URL_STREAM + concatenateSourceStreams(event);
     }
 
     private static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
@@ -186,6 +173,19 @@ public class LoggingAlertUtils {
             return "a" + Math.abs(hash);
         }
         return String.valueOf(hash);
+    }
+
+    public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig, EventNotificationContext ctx) {
+        return this.getAlertIDWithSuffix(config, generalConfig, ctx, "");
+    }
+
+    public static String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
+        StringBuilder valuesAggregationField = new StringBuilder();
+        for (String field: config.splitFields()) {
+            // TODO should probably add a separator: field1=a, field2=ab <=> field1=aa, field2=b!!!
+            valuesAggregationField.append(messageSummary.getField(field));
+        }
+        return valuesAggregationField.toString();
     }
 
     public Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx,
