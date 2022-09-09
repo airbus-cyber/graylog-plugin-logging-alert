@@ -141,6 +141,7 @@ public class LoggingAlertUtils {
         StringBuilder searchFields = new StringBuilder();
         int i = 0;
         for (String field: splitFields) {
+            // TODO should rather do .toString here (try to reproduce, check if there are other casts elsewhere and remove them+add a unit test)
             String valueAggregationField = (String) messageSummary.getField(field);
             String prefix;
             if (i == 0) {
@@ -159,7 +160,7 @@ public class LoggingAlertUtils {
         return searchFields.toString();
     }
 
-    public String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
+    private String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
                                  DateTime timeBeginSearch) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         if (ctx.eventDefinition().isPresent()) {
