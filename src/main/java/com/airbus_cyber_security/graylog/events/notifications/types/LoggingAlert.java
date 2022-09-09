@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import org.graylog.events.notifications.EventNotification;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationService;
+import org.graylog.events.event.EventDto;
 import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.cluster.ClusterConfigService;
@@ -70,7 +71,8 @@ public class LoggingAlert implements EventNotification {
         ImmutableList<MessageSummary> backlog = this.notificationCallbackService.getBacklogForEvent(ctx);
         String logTemplate = config.logBody().replace(SEPARATOR_TEMPLATE, generalConfig.accessSeparator());
 
-        DateTime date = ctx.event().eventTimestamp();
+        EventDto event = ctx.event();
+        DateTime date = event.eventTimestamp();
 
         for (MessageSummary messageSummary: backlog) {
             if (messageSummary.getTimestamp().isBefore(date))
@@ -84,7 +86,7 @@ public class LoggingAlert implements EventNotification {
                     this.loggingAlertUtils.getAlertID(config, generalConfig, ctx),
                     config.severity().getType(),
                     date,
-                    LoggingAlertUtils.getStreamSearchUrl(ctx, date));
+                    LoggingAlertUtils.getStreamSearchUrl(event, date));
 
             String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, ctx, backlog, loggingAlertFields);
             listMessagesToLog.add(messageToLog);

@@ -130,8 +130,7 @@ public class LoggingAlertUtils {
         return valuesAggregationField.toString();
     }
 
-    public static String getStreamSearchUrl(EventNotificationContext ctx, DateTime timeBeginSearch) {
-        EventDto event = ctx.event();
+    public static String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         String message_url = MSGS_URL_BEGIN
                 + timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
@@ -165,6 +164,7 @@ public class LoggingAlertUtils {
     private String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
                                  DateTime timeBeginSearch) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
+        EventDto event = ctx.event();
         if (ctx.eventDefinition().isPresent()) {
             DateTime endTime;
             /* If the alert is interval and resolved */
@@ -183,7 +183,7 @@ public class LoggingAlertUtils {
             DateTime beginTime = timeBeginSearch;
 
             String search = "";
-            String concatStream = concatenateStreams(ctx.event().sourceStreams());
+            String concatStream = concatenateStreams(event.sourceStreams());
             if (!concatStream.isEmpty()) {
                 search = MSGS_URL_STREAM + concatStream;
             }
@@ -197,7 +197,7 @@ public class LoggingAlertUtils {
                     + searchQuery;
         }
 
-        return getStreamSearchUrl(ctx, timeBeginSearch);
+        return getStreamSearchUrl(event, timeBeginSearch);
     }
 
     public static String getHashFromString(String value) {
