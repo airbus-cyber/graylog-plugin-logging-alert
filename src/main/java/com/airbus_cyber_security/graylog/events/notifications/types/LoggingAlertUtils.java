@@ -259,7 +259,7 @@ public class LoggingAlertUtils {
         StringBuilder result = new StringBuilder();
         for (String stream: setStreams) {
             if (result.length() != 0) {
-                result.append("%2C")
+                result.append("%2C");
             }
             result = result.append(stream);
         }
