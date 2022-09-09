@@ -202,7 +202,7 @@ public class LoggingAlertUtils {
         return getStreamSearchUrl(event, timeBeginSearch);
     }
 
-    public static String getHashFromString(String value) {
+    private static String getHashFromString(String value) {
         int hash = value.hashCode();
         if (hash < 0) {
             return "a" + Math.abs(hash);
