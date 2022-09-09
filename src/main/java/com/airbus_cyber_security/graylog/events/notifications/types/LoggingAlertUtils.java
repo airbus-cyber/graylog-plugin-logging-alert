@@ -74,7 +74,7 @@ public class LoggingAlertUtils {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
             RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
-            final AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
+            AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
             String fieldAlertId = generalConfig.accessFieldAlertId();
 
             String query = MessageFormat.format("{0}: /.*{1}/", fieldAlertId, suffixID);
@@ -85,8 +85,7 @@ public class LoggingAlertUtils {
             LOGGER.debug("Alert filter: {}", filter);
 
             // Execute query
-            final SearchResult result = this.searches.search(query, filter,
-                    range, 50, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
+            SearchResult result = this.searches.search(query, filter, range, 50, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
 
             if (result != null && !result.getResults().isEmpty()) {
                 LOGGER.debug(result.getResults().size() + " Alert found");
