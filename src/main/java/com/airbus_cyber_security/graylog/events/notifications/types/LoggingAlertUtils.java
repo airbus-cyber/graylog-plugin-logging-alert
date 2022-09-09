@@ -129,6 +129,21 @@ public class LoggingAlertUtils {
         return valuesAggregationField.toString();
     }
 
+    private static String concatenateSourceStreams(EventDto event) {
+        Set<String> setStreams = event.sourceStreams();
+        if (setStreams.isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        for (String stream: setStreams) {
+            if (result.length() != 0) {
+                result.append("%2C");
+            }
+            result = result.append(stream);
+        }
+        return result.toString();
+    }
+
     public static String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         String message_url = MSGS_URL_BEGIN
@@ -137,7 +152,7 @@ public class LoggingAlertUtils {
         if (event.sourceStreams().isEmpty()) {
             return message_url;
         }
-        return message_url + MSGS_URL_STREAM + concatenateStreams(event.sourceStreams());
+        return message_url + MSGS_URL_STREAM + concatenateSourceStreams(event);
     }
 
     static String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
@@ -185,7 +200,7 @@ public class LoggingAlertUtils {
             DateTime beginTime = timeBeginSearch;
 
             String search = "";
-            String concatStream = concatenateStreams(event.sourceStreams());
+            String concatStream = concatenateSourceStreams(event);
             if (!concatStream.isEmpty()) {
                 search = MSGS_URL_STREAM + concatStream;
             }
@@ -254,19 +269,5 @@ public class LoggingAlertUtils {
     public String buildMessageBody(String logTemplate, EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
         Map<String, Object> model = this.getModel(context, backlog, loggingAlertFields);
         return this.templateEngine.transform(logTemplate, model);
-    }
-
-    private static String concatenateStreams(Set<String> setStreams) {
-        if (setStreams.isEmpty()) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder();
-        for (String stream: setStreams) {
-            if (result.length() != 0) {
-                result.append("%2C");
-            }
-            result = result.append(stream);
-        }
-        return result.toString();
     }
 }
