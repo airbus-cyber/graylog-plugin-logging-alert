@@ -249,7 +249,7 @@ public class LoggingAlertUtils {
 
     public String buildMessageBody(String logTemplate, EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
         Map<String, Object> model = this.getModel(context, backlog, loggingAlertFields);
-        return templateEngine.transform(logTemplate, model);
+        return this.templateEngine.transform(logTemplate, model);
     }
 
     public static String getConcatStreams(Set<String> setStreams) {
