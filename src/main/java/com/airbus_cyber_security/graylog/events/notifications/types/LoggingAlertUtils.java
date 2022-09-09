@@ -122,7 +122,7 @@ public class LoggingAlertUtils {
 
     public static String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
         StringBuilder valuesAggregationField = new StringBuilder();
-        for (String field : config.splitFields()) {
+        for (String field: config.splitFields()) {
             // TODO should probably add a separator: field1=a, field2=ab <=> field1=aa, field2=b!!!
             valuesAggregationField.append(messageSummary.getField(field));
         }
@@ -255,7 +255,7 @@ public class LoggingAlertUtils {
     public static String getConcatStreams(Set<String> setStreams) {
         String concatStream = "";
         if (!setStreams.isEmpty()) {
-            for (String stream : setStreams) {
+            for (String stream: setStreams) {
                 concatStream = concatStream.isEmpty() ? concatStream.concat(stream) : concatStream.concat("%2C" + stream);
             }
         }
