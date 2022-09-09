@@ -107,7 +107,7 @@ public class LoggingAlertUtils {
         String aggregationStream = generalConfig.accessAggregationStream();
 
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-            loggingAlertID = getAggregationAlertID(config, generalConfig, suffix);
+            loggingAlertID = this.getAggregationAlertID(config, generalConfig, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
@@ -169,11 +169,11 @@ public class LoggingAlertUtils {
         EventDto event = ctx.event();
         if (ctx.eventDefinition().isPresent()) {
             DateTime endTime;
-            /* If the alert is interval and resolved */
-            if (ctx.jobTrigger().isPresent() && ctx.jobTrigger().get().endTime().isPresent()) {
-                endTime = ctx.jobTrigger().get().endTime().get().plusMinutes(1);
+            JobTriggerDto jobTrigger = ctx.jobTrigger().get();
+            if (jobTrigger.endTime().isPresent()) {
+                endTime = jobTrigger.endTime().get().plusMinutes(1);
             } else {
-                endTime = ctx.jobTrigger().get().triggeredAt().get().plusMinutes(1);
+                endTime = jobTrigger.triggeredAt().get().plusMinutes(1);
             }
 
             /* when the alert is unresolved and the repeat notification is active */
