@@ -28,7 +28,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LoggingAlertNotificationTest {
+public class LoggingNotificationConfigTest {
 
     @Rule
     public final MockitoRule mockitoRule = MockitoJUnit.rule();
