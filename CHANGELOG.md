@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [4.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.1...4.1.2)
 ### Bug Fixes
-* put back generation of signed rpms
+* Exception on numeric split fields ([issue #38](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/38))
+* Missing generation of signed rpms
 
 ## [4.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.0...4.1.1)
 ### Bug Fixes
