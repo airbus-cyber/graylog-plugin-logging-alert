@@ -70,18 +70,17 @@ public class LoggingAlertUtils {
         this.searches = searches;
     }
 
-    private String getAggregationAlertID(int aggregationTime, LoggingAlertConfig generalConfig, String suffixID) {
+    private String getAggregationAlertID(int aggregationTime, String alertIdentifierFieldName, String aggregationStream, String suffixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
             RelativeRange relativeRange = RelativeRange.create(aggregationTime * 60);
             AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
-            String fieldAlertId = generalConfig.accessFieldAlertId();
 
-            String query = MessageFormat.format("{0}: /.*{1}/", fieldAlertId, suffixID);
+            String query = MessageFormat.format("{0}: /.*{1}/", alertIdentifierFieldName, suffixID);
             LOGGER.debug("Alert Query: {}", query);
 
             // Add stream filter
-            String filter = "streams:" + generalConfig.accessAggregationStream();
+            String filter = "streams:" + aggregationStream;
             LOGGER.debug("Alert filter: {}", filter);
 
             // Execute query
@@ -90,7 +89,7 @@ public class LoggingAlertUtils {
             if (result != null && !result.getResults().isEmpty()) {
                 LOGGER.debug(result.getResults().size() + " Alert found");
                 // return the first matching alert
-                return result.getResults().get(0).getMessage().getField(fieldAlertId).toString();
+                return result.getResults().get(0).getMessage().getField(alertIdentifierFieldName).toString();
             }
         } catch (InvalidRangeParametersException e) {
             LOGGER.error("[getAggregationAlertID] - ERROR!", e);
@@ -108,7 +107,8 @@ public class LoggingAlertUtils {
 
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
             int aggregationTime = config.aggregationTime();
-            loggingAlertID = this.getAggregationAlertID(aggregationTime, generalConfig, suffix);
+            String alertIdentifierFieldName = generalConfig.accessFieldAlertId();
+            loggingAlertID = this.getAggregationAlertID(aggregationTime, alertIdentifierFieldName, aggregationStream, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
