@@ -139,7 +139,7 @@ public class LoggingAlertUtils {
             if (result.length() != 0) {
                 result.append("%2C");
             }
-            result = result.append(stream);
+            result.append(stream);
         }
         return result.toString();
     }
