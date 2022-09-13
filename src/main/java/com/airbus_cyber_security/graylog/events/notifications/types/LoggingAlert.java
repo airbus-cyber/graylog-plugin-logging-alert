@@ -17,20 +17,20 @@
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.inject.Inject;
 import org.graylog.events.notifications.EventNotification;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationService;
 import org.graylog.events.event.EventDto;
-import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -57,7 +57,7 @@ public class LoggingAlert implements EventNotification {
 
     @Inject
     public LoggingAlert(ClusterConfigService clusterConfigService, EventNotificationService notificationCallbackService,
-                        ObjectMapper objectMapper, Searches searches) {
+                        ObjectMapper objectMapper, MessagesSearches searches) {
         this.notificationCallbackService = notificationCallbackService;
         this.clusterConfigService = clusterConfigService;
         this.loggingAlertUtils = new LoggingAlertUtils(objectMapper, searches);

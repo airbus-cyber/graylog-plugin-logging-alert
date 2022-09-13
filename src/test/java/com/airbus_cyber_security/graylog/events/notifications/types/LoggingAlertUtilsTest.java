@@ -18,8 +18,8 @@ package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import java.util.*;
 
+import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.graylog2.indexer.searches.Searches;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
 import org.junit.Assert;
@@ -34,7 +34,7 @@ public class LoggingAlertUtilsTest {
     @Before
     public void setup() {
         ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
-        Searches searches = Mockito.mock(Searches.class);
+        MessagesSearches searches = Mockito.mock(MessagesSearches.class);
         this.subject = new LoggingAlertUtils(objectMapper, searches);
     }
 

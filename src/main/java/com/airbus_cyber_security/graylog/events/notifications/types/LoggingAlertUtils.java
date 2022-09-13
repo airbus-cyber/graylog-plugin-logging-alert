@@ -17,6 +17,7 @@
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floreysoft.jmte.Engine;
 import com.google.common.collect.ImmutableList;
@@ -26,31 +27,19 @@ import org.graylog.events.notifications.EventNotificationModelData;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.event.EventDto;
 import org.graylog.scheduler.JobTriggerDto;
-import org.graylog2.indexer.results.SearchResult;
-import org.graylog2.indexer.searches.Searches;
-import org.graylog2.indexer.searches.Sorting;
 import org.graylog2.jackson.TypeReferences;
-import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.Tools;
-import org.graylog2.plugin.indexer.searches.timeranges.AbsoluteRange;
-import org.graylog2.plugin.indexer.searches.timeranges.InvalidRangeParametersException;
-import org.graylog2.plugin.indexer.searches.timeranges.RelativeRange;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 
 public class LoggingAlertUtils {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingAlertUtils.class);
 
     private static final String MSGS_URL_BEGIN = "/search?rangetype=absolute&from=";
     private static final String MSGS_URL_TO = "&to=";
@@ -60,41 +49,14 @@ public class LoggingAlertUtils {
 
     private final Engine templateEngine;
 
-    private final Searches searches;
+    private final MessagesSearches searches;
 
     private final ObjectMapper objectMapper;
 
-    public LoggingAlertUtils(ObjectMapper objectMapper, Searches searches) {
+    public LoggingAlertUtils(ObjectMapper objectMapper, MessagesSearches searches) {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
         this.searches = searches;
-    }
-
-    private String getAggregationAlertID(int aggregationTime, String alertIdentifierFieldName, String aggregationStream, String suffixID) {
-        LOGGER.debug("Start of getAggregationAlertID...");
-        try {
-            RelativeRange relativeRange = RelativeRange.create(aggregationTime * 60);
-            AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
-
-            String query = MessageFormat.format("{0}: /.*{1}/", alertIdentifierFieldName, suffixID);
-            LOGGER.debug("Alert Query: {}", query);
-
-            // Add stream filter
-            String filter = "streams:" + aggregationStream;
-            LOGGER.debug("Alert filter: {}", filter);
-
-            // Execute query
-            SearchResult result = this.searches.search(query, filter, range, 1, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
-
-            if (result != null && !result.getResults().isEmpty()) {
-                LOGGER.debug(result.getResults().size() + " Alert found");
-                // return the first matching alert
-                return result.getResults().get(0).getMessage().getField(alertIdentifierFieldName).toString();
-            }
-        } catch (InvalidRangeParametersException e) {
-            LOGGER.error("[getAggregationAlertID] - ERROR!", e);
-        }
-        return null;
     }
 
     private String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
@@ -108,7 +70,7 @@ public class LoggingAlertUtils {
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
             int aggregationTime = config.aggregationTime();
             String alertIdentifierFieldName = generalConfig.accessFieldAlertId();
-            loggingAlertID = this.getAggregationAlertID(aggregationTime, alertIdentifierFieldName, aggregationStream, suffix);
+            loggingAlertID = this.searches.getAggregationAlertIdentifier(aggregationTime, alertIdentifierFieldName, aggregationStream, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
