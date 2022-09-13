@@ -93,7 +93,7 @@ public class LoggingAlertUtils {
                 return result.getResults().get(0).getMessage().getField(fieldAlertId).toString();
             }
         } catch (InvalidRangeParametersException e) {
-            LOGGER.debug("[getAggregationAlertID] - ERROR!", e);
+            LOGGER.error("[getAggregationAlertID] - ERROR!", e);
         }
         return null;
     }
