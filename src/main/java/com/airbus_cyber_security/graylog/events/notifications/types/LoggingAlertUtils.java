@@ -85,7 +85,7 @@ public class LoggingAlertUtils {
             LOGGER.debug("Alert filter: {}", filter);
 
             // Execute query
-            SearchResult result = this.searches.search(query, filter, range, 50, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
+            SearchResult result = this.searches.search(query, filter, range, 1, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
 
             if (result != null && !result.getResults().isEmpty()) {
                 LOGGER.debug(result.getResults().size() + " Alert found");
