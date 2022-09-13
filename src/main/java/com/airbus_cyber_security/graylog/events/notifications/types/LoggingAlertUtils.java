@@ -70,10 +70,10 @@ public class LoggingAlertUtils {
         this.searches = searches;
     }
 
-    private String getAggregationAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig, String suffixID) {
+    private String getAggregationAlertID(int aggregationTime, LoggingAlertConfig generalConfig, String suffixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
-            RelativeRange relativeRange = RelativeRange.create(config.aggregationTime() * 60);
+            RelativeRange relativeRange = RelativeRange.create(aggregationTime * 60);
             AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
             String fieldAlertId = generalConfig.accessFieldAlertId();
 
@@ -107,7 +107,8 @@ public class LoggingAlertUtils {
         String aggregationStream = generalConfig.accessAggregationStream();
 
         if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-            loggingAlertID = this.getAggregationAlertID(config, generalConfig, suffix);
+            int aggregationTime = config.aggregationTime();
+            loggingAlertID = this.getAggregationAlertID(aggregationTime, generalConfig, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
