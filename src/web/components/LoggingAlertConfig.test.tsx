@@ -15,21 +15,18 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this code: pages/ShowMessagePage.test.tsx
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
-import { StoreMock as MockStore } from 'helpers/mocking';
 import { adminUser } from 'fixtures/users';
 
-import StoreProvider from 'injection/StoreProvider';
 import CurrentUserContext from 'contexts/CurrentUserContext';
 
 import LoggingAlertConfig from './LoggingAlertConfig';
 
 const mockListStreams = jest.fn((...args) => Promise.resolve([]));
 
-jest.mock('injection/CombinedProvider', () => ({
-  get: jest.fn(() => ({ StreamsStore: { listStreams: (...args) => mockListStreams(...args) } })),
-}));
+jest.mock('stores/streams/StreamsStore', () => ({ listStreams: (...args) => mockListStreams(...args) }));
 
 describe('<LoggingAlertConfig>', () => {
   it('should display the button with the correct color (issue 33)', async () => {

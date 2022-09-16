@@ -17,17 +17,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { Button } from 'components/graylog';
-import { BootstrapModalForm, Input } from 'components/bootstrap';
+import { BootstrapModalForm, Button, Input } from 'components/bootstrap';
 import IfPermitted from 'components/common/IfPermitted';
 import Select from 'components/common/Select';
 import Spinner from 'components/common/Spinner';
 import ObjectUtils from 'util/ObjectUtils';
 import naturalSort from 'javascript-natural-sort';
-import StoreProvider from 'injection/StoreProvider';
+// TODO: should it be done like this with the singleton import (like in pages/ShowMessagePage.tsx), or like in views/components/SearchBar with a connect? => coding recommandation. Seems easier with a singleton...
+import StreamsStore from 'stores/streams/StreamsStore';
 
-// TODO: should it be done like this with the StoreProvider (like in pages/ShowMessagePage.tsx), or like in views/components/SearchBar with a connect? => coding recommandation
-const StreamsStore = StoreProvider.getStore('Streams');
 export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "id: ${logging_alert.id}"  + "\n" +
     "severity: ${logging_alert.severity}" + "\n" +
@@ -67,14 +65,14 @@ const LoggingAlertConfig = createReactClass({
         };
     },
 
-    componentWillReceiveProps(newProps) {
-        this.setState({ config: ObjectUtils.clone(newProps.config) });
+    // TODO is this still working? Remove?
+    componentDidUpdate(newProps) {
+        //this.setState({ config: ObjectUtils.clone(newProps.config) });
     },
 
     componentDidMount() {
         StreamsStore.listStreams().then((streams) => {
-            this.setState({
-                streams: streams });
+            this.setState({ streams: streams });
         });
     },
 

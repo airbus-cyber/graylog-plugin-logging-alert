@@ -17,7 +17,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { ControlLabel, FormGroup, HelpBlock } from 'components/graylog';
+import { ControlLabel, FormGroup, HelpBlock } from 'components/bootstrap';
 import lodash from 'lodash';
 import naturalSort from 'javascript-natural-sort';
 import { Select, MultiSelect } from 'components/common';
@@ -28,13 +28,10 @@ import SourceCodeEditor from 'components/common/SourceCodeEditor';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
 import Reflux from 'reflux';
-import StoreProvider from 'injection/StoreProvider';
-import ActionsProvider from 'injection/ActionsProvider';
+import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
 import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
 
 import connect from 'stores/connect';
-const ConfigurationsStore = StoreProvider.getStore('Configurations');
-const ConfigurationActions = ActionsProvider.getActions('Configuration');
 
 import { defaultCompare } from 'views/logic/DefaultCompare';
 
@@ -228,6 +225,7 @@ class LoggingAlertForm extends React.Component {
     }
 }
 
+// TODO rather than connect, should maybe use useStore (see graylog components/common/URLWhiteListFormModal.tsx)
 export default connect(LoggingAlertForm, {
     configurationsStore: ConfigurationsStore
 });
