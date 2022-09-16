@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.2...4.2.0)
+### Features
+
+
 ## [4.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.1...4.1.2)
 ### Bug Fixes
 * Exception on numeric split fields ([issue #38](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/38))
