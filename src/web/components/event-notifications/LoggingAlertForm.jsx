@@ -27,8 +27,7 @@ import { Select, MultiSelect } from 'components/common';
 import SourceCodeEditor from 'components/common/SourceCodeEditor';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
-import Reflux from 'reflux';
-import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
+import { ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
 import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
 
 import connect from 'stores/connect';
