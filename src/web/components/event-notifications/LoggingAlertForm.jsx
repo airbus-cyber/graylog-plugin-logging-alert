@@ -19,7 +19,6 @@ import PropTypes from 'prop-types';
 
 import { ControlLabel, FormGroup, HelpBlock } from 'components/bootstrap';
 import lodash from 'lodash';
-import naturalSort from 'javascript-natural-sort';
 import { Select, MultiSelect } from 'components/common';
 // TODO this works, but should rather load the SourceCodeEditor from the index (it will then use lazy-loading)
 //      => import { SourceCodeEditor } from 'components/common';
@@ -27,7 +26,7 @@ import { Select, MultiSelect } from 'components/common';
 import SourceCodeEditor from 'components/common/SourceCodeEditor';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
-import { ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
+import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
 import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
 
 import connect from 'stores/connect';
@@ -67,7 +66,8 @@ class LoggingAlertForm extends React.Component {
     }
 
 	componentDidMount() {
-		ConfigurationActions.list(LOGGING_ALERT_CONFIG);
+        // TODO add a test when ConfigurationsActions is misstyped into ConfigurationActions
+		ConfigurationsActions.list(LOGGING_ALERT_CONFIG);
 	}
   
     propagateChange = (key, value) => {

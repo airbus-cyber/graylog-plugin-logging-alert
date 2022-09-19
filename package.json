@@ -15,12 +15,13 @@
   ],
   "author": "Airbus CyberSecurity",
   "license": "GPL-3.0",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
-    "reflux": "^6.4.1",
+    "reflux": "^6.4.1"
+  },
+  "devDependencies": {
     "@babel/preset-react": "7.12.10",
-    "@babel/plugin-transform-runtime": "7.11.5"
+    "@babel/plugin-transform-runtime": "7.18.2"
   },
   "resolutions": {
     "upath": "1.1.2"

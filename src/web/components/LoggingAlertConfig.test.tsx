@@ -33,7 +33,9 @@ describe('<LoggingAlertConfig>', () => {
     const { findByText } = render(<CurrentUserContext.Provider value={adminUser}>
                                     <LoggingAlertConfig updateConfig={jest.fn()} />
                                   </CurrentUserContext.Provider>);
-    // TODO: I don't understand why getByText does not work here
+    // TODO: I don't understand why getByText does not work here.
+    // note: findByText is a getByText+waitFor (https://testing-library.com/docs/dom-testing-library/api-async#findby-queries)
+    // so there must be a reason for waitFor to be necessary
     const elem = await findByText('Configure');
     expect(elem).toHaveStyle('background-color: rgb(0, 99, 190)')
   });
