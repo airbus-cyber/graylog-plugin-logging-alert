@@ -14,7 +14,9 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-import 'webpack-entry';
+// sources of inspiration for this code:
+// * graylog-plugin-integrations, src/web/index.jsx (see https://github.com/Graylog2/graylog-plugin-integrations/pull/964)
+import './webpack-entry';
 import packageJson from '../../package.json';
 import { PluginManifest, PluginStore } from 'graylog-web-plugin/plugin';
 import LoggingAlertConfig from 'components/LoggingAlertConfig';

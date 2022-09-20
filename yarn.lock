@@ -4304,11 +4304,11 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.2.4
     "@babel/preset-env" "7.16.11"
     "@babel/preset-typescript" "7.16.7"
     create-react-class "15.7.0"
-    eslint-config-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-2c7d9752-9b2a-4aab-9cd2-6a2b9c7fb8e8-1663600967873/node_modules/eslint-config-graylog"
+    eslint-config-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-ebfb6428-d1e5-46a2-b4b5-899ec443d59c-1663662599988/node_modules/eslint-config-graylog"
     formik "2.2.9"
     html-webpack-plugin "^5.5.0"
     javascript-natural-sort "0.7.1"
-    jest-preset-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-2c7d9752-9b2a-4aab-9cd2-6a2b9c7fb8e8-1663600967873/node_modules/jest-preset-graylog"
+    jest-preset-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-ebfb6428-d1e5-46a2-b4b5-899ec443d59c-1663662599988/node_modules/jest-preset-graylog"
     jquery "3.5.1"
     moment "2.29.1"
     moment-timezone "0.5.34"
@@ -8095,6 +8095,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+urijs@^1.19.10:
+  version "1.19.11"
+  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.19.11.tgz#204b0d6b605ae80bea54bea39280cdb7c9f923cc"
+  integrity sha512-HXgFDgDommxn5/bIv0cnQZsPhHDA90NPHD6+c/v21U5+Sx5hoP8+dP9IZXBU1gIfvdRfhG8cel9QNPeionfcCQ==
 
 urix@^0.1.0:
   version "0.1.0"

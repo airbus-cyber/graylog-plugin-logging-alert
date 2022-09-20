@@ -17,7 +17,8 @@
   "license": "GPL-3.0",
   "dependencies": {
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
-    "reflux": "^6.4.1"
+    "reflux": "^6.4.1",
+    "urijs": "^1.19.10"
   },
   "devDependencies": {
     "@babel/preset-react": "7.12.10",
