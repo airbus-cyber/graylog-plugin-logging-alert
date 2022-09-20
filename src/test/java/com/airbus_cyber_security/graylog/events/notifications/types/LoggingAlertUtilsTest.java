@@ -67,7 +67,7 @@ public class LoggingAlertUtilsTest {
         List<String> splitFields = Collections.singletonList("key");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
-        fields.put("key", new Integer(48));
+        fields.put("key", 48);
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         LoggingAlertUtils.buildSplitFieldsSearchQuery(splitFields, messageSummary);
