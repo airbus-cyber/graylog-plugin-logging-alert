@@ -32,9 +32,11 @@ import java.util.Map;
 import java.util.Set;
 
 @AutoValue
-@JsonTypeName(LoggingNotificationConfig.TYPE_NAME)
+@JsonTypeName(LoggingNotificationConfigEntity.TYPE_NAME)
 @JsonDeserialize(builder = LoggingNotificationConfigEntity.Builder.class)
 public abstract class LoggingNotificationConfigEntity implements EventNotificationConfigEntity {
+
+    public static final String TYPE_NAME = "logging-alert-notification";
 
     private static final String FIELD_SEVERITY = "severity";
     private static final String FIELD_SPLIT_FIELDS = "split_fields";
@@ -72,7 +74,7 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
     	@JsonCreator
         public static Builder create() {
             return new AutoValue_LoggingNotificationConfigEntity.Builder()
-                    .type(LoggingNotificationConfig.TYPE_NAME);
+                    .type(TYPE_NAME);
         }
     	
     	@JsonProperty(FIELD_SEVERITY)
