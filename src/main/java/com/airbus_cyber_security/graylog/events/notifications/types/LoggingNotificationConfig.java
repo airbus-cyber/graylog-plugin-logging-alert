@@ -147,9 +147,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     }
 
     private boolean isValidSeverity(SeverityType severityType) {
-        if (severityType == null) {
-            return false;
-        }
-        return true;
+        return severityType != null;
     }
 }
