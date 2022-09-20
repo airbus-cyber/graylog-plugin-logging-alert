@@ -44,6 +44,7 @@ public class LoggingAlertUtils {
     private static final String MSGS_URL_BEGIN = "/search?rangetype=absolute&from=";
     private static final String MSGS_URL_TO = "&to=";
     private static final String MSGS_URL_STREAM = "&streams=";
+    private static final String COMMA_SEPARATOR = "%2C";
 
     private static final String UNKNOWN = "<unknown>";
 
@@ -87,7 +88,7 @@ public class LoggingAlertUtils {
         StringBuilder result = new StringBuilder();
         for (String stream: setStreams) {
             if (result.length() != 0) {
-                result.append("%2C");
+                result.append(COMMA_SEPARATOR);
             }
             result.append(stream);
         }
