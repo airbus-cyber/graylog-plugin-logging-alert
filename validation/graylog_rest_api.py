@@ -42,7 +42,7 @@ class GraylogRestApi:
         except ConnectionError:
             return False
 
-    def create_notification(self, split_fields=None, single_message=False, log_body=_DEFAULT_LOG_BODY):
+    def create_notification(self, split_fields=None, single_message=False, log_body=_DEFAULT_LOG_BODY, description=''):
         if split_fields is None:
             split_fields = []
         notification_configuration = {
@@ -53,7 +53,7 @@ class GraylogRestApi:
                 'aggregation_time': 10,
                 'type': 'logging-alert-notification'
             },
-            'description': '',
+            'description': description,
             'title': 'N'
         }
         response = self._post('events/notifications', notification_configuration)
