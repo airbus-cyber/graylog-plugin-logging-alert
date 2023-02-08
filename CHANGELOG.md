@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.2.0...4.3.0)
+### Features
+
 ## [4.2.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.2...4.2.0)
 ### Features
 * Add compatibility with [Graylog 4.3](https://www.graylog.org/post/announcing-graylog-v4-3-graylog-operations-graylog-security)
