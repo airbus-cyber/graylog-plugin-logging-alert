@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.2.0...4.3.0)
 ### Features
+* Variable `${logging_alert.description}` can now be used in the body template to insert the notification description 
 
 ## [4.2.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.1.2...4.2.0)
 ### Features
