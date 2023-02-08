@@ -130,7 +130,7 @@ public class LoggingAlertUtils {
     }
 
     private static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
-                                 DateTime timeBeginSearch) {
+                                 DateTime beginTime) {
         DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         EventDto event = ctx.event();
         if (ctx.eventDefinition().isPresent()) {
@@ -144,11 +144,9 @@ public class LoggingAlertUtils {
 
             /* when the alert is unresolved and the repeat notification is active */
             int timeRange = Tools.getNumber(ctx.jobTrigger().get().createdAt(), 1).intValue();
-            if (endTime.isBefore(timeBeginSearch.plusMinutes(timeRange))) {
-                endTime = timeBeginSearch.plusMinutes(timeRange);
+            if (endTime.isBefore(beginTime.plusMinutes(timeRange))) {
+                endTime = beginTime.plusMinutes(timeRange);
             }
-
-            DateTime beginTime = timeBeginSearch;
 
             String search = "";
             String concatStream = concatenateSourceStreams(event);
@@ -165,7 +163,7 @@ public class LoggingAlertUtils {
                     + searchQuery;
         }
 
-        return getStreamSearchUrl(event, timeBeginSearch);
+        return getStreamSearchUrl(event, beginTime);
     }
 
     private static String getHashFromString(String value) {
