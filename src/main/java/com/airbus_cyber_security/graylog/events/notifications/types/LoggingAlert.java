@@ -65,16 +65,16 @@ public class LoggingAlert implements EventNotification {
     }
 
     @Override
-    public void execute(EventNotificationContext ctx) {
+    public void execute(EventNotificationContext context) {
         LOGGER.debug("Start of execute...");
         LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class, LoggingAlertConfig.createDefault());
-        LoggingNotificationConfig config = (LoggingNotificationConfig) ctx.notificationConfig();
-        ImmutableList<MessageSummary> backlog = this.notificationCallbackService.getBacklogForEvent(ctx);
+        LoggingNotificationConfig config = (LoggingNotificationConfig) context.notificationConfig();
+        ImmutableList<MessageSummary> backlog = this.notificationCallbackService.getBacklogForEvent(context);
         String logTemplate = config.logBody().replace(SEPARATOR_TEMPLATE, generalConfig.accessSeparator());
 
-        EventDto event = ctx.event();
+        EventDto event = context.event();
         DateTime date = event.eventTimestamp();
-        String description = this.requestNotificationDescription(ctx.notificationId());
+        String description = this.requestNotificationDescription(context.notificationId());
 
         for (MessageSummary messageSummary: backlog) {
             if (messageSummary.getTimestamp().isBefore(date))
@@ -85,24 +85,24 @@ public class LoggingAlert implements EventNotification {
         if (backlog.isEmpty() || config.singleMessage()) {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
             LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
-                    this.loggingAlertUtils.getAlertID(config, generalConfig, ctx),
+                    this.loggingAlertUtils.getAlertID(config, generalConfig, context),
                     description,
                     config.severity().getType(),
                     date,
                     LoggingAlertUtils.getStreamSearchUrl(event, date));
 
-            String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, ctx, backlog, loggingAlertFields);
+            String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);
             listMessagesToLog.add(messageToLog);
         } else {
             LOGGER.debug("Add log to list message for backlog...");
             Map<String, LoggingAlertFields> listOfloggingAlertField =
-                    this.loggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date, description);
+                    this.loggingAlertUtils.getListOfLoggingAlertField(context, backlog, config, generalConfig, date, description);
             for (MessageSummary message: backlog) {
                 String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(message, config);
                 LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
                 ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
-                String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, ctx, backlogWithMessage, loggingAlertFields);
+                String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, context, backlogWithMessage, loggingAlertFields);
                 listMessagesToLog.add(messageToLog);
             }
         }
