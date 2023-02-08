@@ -34,23 +34,22 @@ class Test(TestCase):
             result += 1
         return result
 
-    def _parse_url_in_notification_log(self, logs):
-        for log in logs.splitlines():
-            if 'INFO : LoggingAlert' not in log:
-                continue
-            log_sections = log.split(' | ')
-            _, url = log_sections[3].split(': ')
-            return url
-        return None
-
     def _parse_notification_log(self, logs):
         for log in logs.splitlines():
             if 'INFO : LoggingAlert' not in log:
                 continue
-            log_sections = log.split(' | ')
-            _, identifier = log_sections[2].split(': ')
-            return identifier
+            return log
         return None
+
+    def _parse_notification_identifier(self, log):
+        log_sections = log.split(' | ')
+        _, identifier = log_sections[2].split(': ')
+        return identifier
+
+    def _parse_notification_url(self, log):
+        log_sections = log.split(' | ')
+        _, url = log_sections[3].split(': ')
+        return url
 
     def _wait_until_notification(self):
         notification_identifier = None
@@ -88,7 +87,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop'})
-            notification_identifier = self._wait_until_notification()
+            notification_identifier = self._parse_notification_identifier(self._wait_until_notification())
             
             self.assertNotEqual(notification_identifier, 'message_identifier')
 
@@ -106,7 +105,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier1 = self._wait_until_notification()
+            notification_identifier1 = self._parse_notification_identifier(self._wait_until_notification())
 
             self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
@@ -114,7 +113,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier2 = self._wait_until_notification()
+            notification_identifier2 = self._parse_notification_identifier(self._wait_until_notification())
 
             self.assertEqual(notification_identifier2, notification_identifier1)
 
@@ -138,7 +137,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier1 = self._wait_until_notification()
+            notification_identifier1 = self._parse_notification_identifier(self._wait_until_notification())
 
             self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
@@ -146,7 +145,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier2 = self._wait_until_notification()
+            notification_identifier2 = self._parse_notification_identifier(self._wait_until_notification())
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
@@ -164,7 +163,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier1 = self._wait_until_notification()
+            notification_identifier1 = self._parse_notification_identifier(self._wait_until_notification())
 
             self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
@@ -172,7 +171,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier2 = self._wait_until_notification()
+            notification_identifier2 = self._parse_notification_identifier(self._wait_until_notification())
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
@@ -193,7 +192,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier1 = self._wait_until_notification()
+            notification_identifier1 = self._parse_notification_identifier(self._wait_until_notification())
 
             self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
@@ -201,7 +200,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier2 = self._wait_until_notification()
+            notification_identifier2 = self._parse_notification_identifier(self._wait_until_notification())
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
@@ -219,7 +218,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier1 = self._wait_until_notification()
+            notification_identifier1 = self._parse_notification_identifier(self._wait_until_notification())
 
             self._graylog.start_logs_capture()
             gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
@@ -227,7 +226,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier2 = self._wait_until_notification()
+            notification_identifier2 = self._parse_notification_identifier(self._wait_until_notification())
 
             self.assertEqual(notification_identifier2, notification_identifier1)
 
@@ -326,10 +325,9 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            self._wait_until_notification()
+            log = self._wait_until_notification()
 
-            logs = self._graylog.extract_logs()
-            url = self._parse_url_in_notification_log(logs)
+            url = self._parse_notification_url(log)
             self.assertIn('C:\\\\File.exe', url)
 
     def test_process_an_event_should_not_fail_when_split_field_is_numeric_issue38(self):
@@ -347,11 +345,12 @@ class Test(TestCase):
 
             self.assertNotIn('ERROR', logs)
 
-    @skip
     def test_notification_body_template_should_accept_variable_description_issue43(self):
         stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
         self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
-        notification_definition_identifier = self._graylog.create_notification(log_body='${logging_alert.description}', description='TEST_DESCRIPTION')
+        notification_definition_identifier = self._graylog.create_notification(
+            log_body='type: alert\nid: ${logging_alert.id}\n${logging_alert.description}',
+            description='TEST_DESCRIPTION')
         self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier])
 
         with self._graylog.create_gelf_input() as gelf_inputs:
@@ -360,7 +359,6 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            self._wait_until_notification()
-
-            logs = self._graylog.extract_logs()
-            print(logs)
+            log = self._wait_until_notification()
+            log_sections = log.split(' | ')
+            self.assertEqual(log_sections[3], 'TEST_DESCRIPTION')

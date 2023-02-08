@@ -20,9 +20,7 @@ import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import org.graylog.events.notifications.EventNotification;
-import org.graylog.events.notifications.EventNotificationContext;
-import org.graylog.events.notifications.EventNotificationService;
+import org.graylog.events.notifications.*;
 import org.graylog.events.event.EventDto;
 import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.cluster.ClusterConfigService;
@@ -48,6 +46,8 @@ public class LoggingAlert implements EventNotification {
 
     private final ClusterConfigService clusterConfigService;
 
+    private final DBNotificationService notificationService;
+
     private final LoggingAlertUtils loggingAlertUtils;
 
     public interface Factory extends EventNotification.Factory {
@@ -57,10 +57,11 @@ public class LoggingAlert implements EventNotification {
 
     @Inject
     public LoggingAlert(ClusterConfigService clusterConfigService, EventNotificationService notificationCallbackService,
-                        ObjectMapper objectMapper, MessagesSearches searches) {
+                        ObjectMapper objectMapper, MessagesSearches searches, DBNotificationService notificationService) {
         this.notificationCallbackService = notificationCallbackService;
         this.clusterConfigService = clusterConfigService;
         this.loggingAlertUtils = new LoggingAlertUtils(objectMapper, searches);
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -73,6 +74,7 @@ public class LoggingAlert implements EventNotification {
 
         EventDto event = ctx.event();
         DateTime date = event.eventTimestamp();
+        String description = this.requestNotificationDescription(ctx.notificationId());
 
         for (MessageSummary messageSummary: backlog) {
             if (messageSummary.getTimestamp().isBefore(date))
@@ -84,6 +86,7 @@ public class LoggingAlert implements EventNotification {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
             LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
                     this.loggingAlertUtils.getAlertID(config, generalConfig, ctx),
+                    description,
                     config.severity().getType(),
                     date,
                     LoggingAlertUtils.getStreamSearchUrl(event, date));
@@ -93,7 +96,7 @@ public class LoggingAlert implements EventNotification {
         } else {
             LOGGER.debug("Add log to list message for backlog...");
             Map<String, LoggingAlertFields> listOfloggingAlertField =
-                    this.loggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date);
+                    this.loggingAlertUtils.getListOfLoggingAlertField(ctx, backlog, config, generalConfig, date, description);
             for (MessageSummary message: backlog) {
                 String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(message, config);
                 LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
@@ -119,5 +122,15 @@ public class LoggingAlert implements EventNotification {
         }
 
         LOGGER.debug("End of execute...");
+    }
+
+    private String requestNotificationDescription(String identifier) {
+        Optional<NotificationDto> notification = this.notificationService.get(identifier);
+        if (!notification.isPresent()) {
+            String errorMessage = "No notification found for identifier " + identifier;
+            LOGGER.error(errorMessage);
+            return errorMessage;
+        }
+        return notification.get().description();
     }
 }
