@@ -45,8 +45,8 @@ public class LoggingAlertUtils {
     private static final String MSGS_URL_TO = "&to=";
     private static final String MSGS_URL_STREAM = "&streams=";
     private static final String COMMA_SEPARATOR = "%2C";
-
     private static final String UNKNOWN = "<unknown>";
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
 
     private final Engine templateEngine;
 
@@ -119,10 +119,9 @@ public class LoggingAlertUtils {
     }
 
     public static String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
-        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         String message_url = MSGS_URL_BEGIN
-                + timeBeginSearch.toString(timeFormatter) + MSGS_URL_TO
-                + event.eventTimestamp().plusMinutes(1).toString(timeFormatter);
+                + timeBeginSearch.toString(TIME_FORMATTER) + MSGS_URL_TO
+                + event.eventTimestamp().plusMinutes(1).toString(TIME_FORMATTER);
         if (event.sourceStreams().isEmpty()) {
             return message_url;
         }
@@ -131,39 +130,39 @@ public class LoggingAlertUtils {
 
     private static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
                                  DateTime beginTime) {
-        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
         EventDto event = ctx.event();
-        if (ctx.eventDefinition().isPresent()) {
-            DateTime endTime;
-            JobTriggerDto jobTrigger = ctx.jobTrigger().get();
-            if (jobTrigger.endTime().isPresent()) {
-                endTime = jobTrigger.endTime().get().plusMinutes(1);
-            } else {
-                endTime = jobTrigger.triggeredAt().get().plusMinutes(1);
-            }
-
-            /* when the alert is unresolved and the repeat notification is active */
-            int timeRange = Tools.getNumber(ctx.jobTrigger().get().createdAt(), 1).intValue();
-            if (endTime.isBefore(beginTime.plusMinutes(timeRange))) {
-                endTime = beginTime.plusMinutes(timeRange);
-            }
-
-            String search = "";
-            String concatStream = concatenateSourceStreams(event);
-            if (!concatStream.isEmpty()) {
-                search = MSGS_URL_STREAM + concatStream;
-            }
-
-            String searchQuery = buildSplitFieldsSearchQuery(config.splitFields(), messageSummary);
-
-            return MSGS_URL_BEGIN
-                    + beginTime.toString(timeFormatter) + MSGS_URL_TO
-                    + endTime.toString(timeFormatter)
-                    + search
-                    + searchQuery;
+        if (!ctx.eventDefinition().isPresent()) {
+            return getStreamSearchUrl(event, beginTime);
         }
 
-        return getStreamSearchUrl(event, beginTime);
+        DateTime endTime;
+        JobTriggerDto jobTrigger = ctx.jobTrigger().get();
+        if (jobTrigger.endTime().isPresent()) {
+            endTime = jobTrigger.endTime().get().plusMinutes(1);
+        } else {
+            endTime = jobTrigger.triggeredAt().get().plusMinutes(1);
+        }
+
+        /* when the alert is unresolved and the repeat notification is active */
+        int timeRange = Tools.getNumber(ctx.jobTrigger().get().createdAt(), 1).intValue();
+        if (endTime.isBefore(beginTime.plusMinutes(timeRange))) {
+            endTime = beginTime.plusMinutes(timeRange);
+        }
+
+        String search = "";
+        String concatStream = concatenateSourceStreams(event);
+        if (!concatStream.isEmpty()) {
+            search = MSGS_URL_STREAM + concatStream;
+        }
+
+        String searchQuery = buildSplitFieldsSearchQuery(config.splitFields(), messageSummary);
+
+        // TODO it should probably be possible to factor this more with code in getStreamSearchUrl
+        return MSGS_URL_BEGIN
+                + beginTime.toString(TIME_FORMATTER) + MSGS_URL_TO
+                + endTime.toString(TIME_FORMATTER)
+                + search
+                + searchQuery;
     }
 
     private static String getHashFromString(String value) {
