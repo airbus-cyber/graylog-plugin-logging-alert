@@ -41,6 +41,7 @@ class Test(TestCase):
             return log
         return None
 
+    # TODO try to simplify the default log body so that this parsing is easier
     def _parse_notification_identifier(self, log):
         log_sections = log.split(' | ')
         _, identifier = log_sections[2].split(': ')
