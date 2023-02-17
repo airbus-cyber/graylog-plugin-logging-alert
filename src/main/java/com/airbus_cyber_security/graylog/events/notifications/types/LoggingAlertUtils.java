@@ -190,8 +190,7 @@ public class LoggingAlertUtils {
                                                                       ImmutableList<MessageSummary> backlog,
                                                                       LoggingNotificationConfig config,
                                                                       LoggingAlertConfig generalConfig,
-                                                                      DateTime date,
-                                                                      String description) {
+                                                                      DateTime date) {
         Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
 
         for (MessageSummary messageSummary: backlog) {
@@ -204,7 +203,7 @@ public class LoggingAlertUtils {
 
             String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
 
-            LoggingAlertFields fields = new LoggingAlertFields(loggingAlertID, description, config.severity().getType(), date, messagesUrl);
+            LoggingAlertFields fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
             listOfLoggingAlertField.put(key, fields);
         }
 

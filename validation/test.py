@@ -345,21 +345,3 @@ class Test(TestCase):
             logs = self._graylog.extract_logs()
 
             self.assertNotIn('ERROR', logs)
-
-    def test_notification_body_template_should_accept_variable_description_issue43(self):
-        stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
-        self._graylog.create_stream_with_rule('pop', 'stream', 'pop')
-        notification_definition_identifier = self._graylog.create_notification(
-            log_body='type: alert\nid: ${logging_alert.id}\n${logging_alert.description}',
-            description='TEST_DESCRIPTION')
-        self._graylog.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier])
-
-        with self._graylog.create_gelf_input() as gelf_inputs:
-            self._graylog.start_logs_capture()
-            gelf_inputs.send({'_stream': 'input'})
-            time.sleep(_PERIOD)
-
-            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            log = self._wait_until_notification()
-            log_sections = log.split(' | ')
-            self.assertEqual(log_sections[3], 'TEST_DESCRIPTION')

@@ -63,7 +63,6 @@ Some plugin-specific fields values can be added to the log content.
 | Plugin-specific Fields     | Description                                             |
 |----------------------------|---------------------------------------------------------|
 | logging_alert.id           | ID of the alert                                         |
-| logging_alert.description  | Description of the alert                                |
 | logging_alert.severity     | Severity of the alert                                   |
 | logging_alert.detect_time  | Timestamp of the first message that triggered the alert |
 | logging_alert.messages_url | URI to the retrieve messages that triggered the alert   |

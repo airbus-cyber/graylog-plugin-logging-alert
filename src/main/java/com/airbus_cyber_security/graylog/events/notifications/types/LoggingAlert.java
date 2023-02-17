@@ -46,7 +46,6 @@ public class LoggingAlert implements EventNotification {
 
     private final ClusterConfigService clusterConfigService;
 
-    private final DBNotificationService notificationService;
 
     private final LoggingAlertUtils loggingAlertUtils;
 
@@ -57,11 +56,10 @@ public class LoggingAlert implements EventNotification {
 
     @Inject
     public LoggingAlert(ClusterConfigService clusterConfigService, EventNotificationService notificationCallbackService,
-                        ObjectMapper objectMapper, MessagesSearches searches, DBNotificationService notificationService) {
+                        ObjectMapper objectMapper, MessagesSearches searches) {
         this.notificationCallbackService = notificationCallbackService;
         this.clusterConfigService = clusterConfigService;
         this.loggingAlertUtils = new LoggingAlertUtils(objectMapper, searches);
-        this.notificationService = notificationService;
     }
 
     @Override
@@ -74,7 +72,6 @@ public class LoggingAlert implements EventNotification {
 
         EventDto event = context.event();
         DateTime date = event.eventTimestamp();
-        String description = this.requestNotificationDescription(context.notificationId());
 
         for (MessageSummary messageSummary: backlog) {
             if (messageSummary.getTimestamp().isBefore(date))
@@ -86,7 +83,6 @@ public class LoggingAlert implements EventNotification {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
             LoggingAlertFields loggingAlertFields = new LoggingAlertFields(
                     this.loggingAlertUtils.getAlertID(config, generalConfig, context),
-                    description,
                     config.severity().getType(),
                     date,
                     LoggingAlertUtils.getStreamSearchUrl(event, date));
@@ -96,7 +92,7 @@ public class LoggingAlert implements EventNotification {
         } else {
             LOGGER.debug("Add log to list message for backlog...");
             Map<String, LoggingAlertFields> listOfloggingAlertField =
-                    this.loggingAlertUtils.getListOfLoggingAlertField(context, backlog, config, generalConfig, date, description);
+                    this.loggingAlertUtils.getListOfLoggingAlertField(context, backlog, config, generalConfig, date);
             for (MessageSummary message: backlog) {
                 String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(message, config);
                 LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
@@ -122,15 +118,5 @@ public class LoggingAlert implements EventNotification {
         }
 
         LOGGER.debug("End of execute...");
-    }
-
-    private String requestNotificationDescription(String identifier) {
-        Optional<NotificationDto> notification = this.notificationService.get(identifier);
-        if (!notification.isPresent()) {
-            String errorMessage = "No notification found for identifier " + identifier;
-            LOGGER.error(errorMessage);
-            return errorMessage;
-        }
-        return notification.get().description();
     }
 }
