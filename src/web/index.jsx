@@ -25,7 +25,11 @@ import LoggingAlertSummary from 'components/event-notifications/LoggingAlertSumm
 import LoggingAlertNotificationDetails from 'components/event-notifications/LoggingAlertNotificationDetails';
 export {DEFAULT_BODY_TEMPLATE} from 'components/LoggingAlertConfig';
 
-PluginStore.register(new PluginManifest(packageJson, {
+const metadata = {
+  name: packageJson.name
+}
+
+PluginStore.register(new PluginManifest(metadata, {
   systemConfigurations: [
     {
       component: LoggingAlertConfig,
