@@ -22,6 +22,9 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65536 # Maximum number of open files for the opensearch user - set to at least 65536
+        hard: 65536
     networks:
       net:
         ipv4_address: 172.15.0.3
