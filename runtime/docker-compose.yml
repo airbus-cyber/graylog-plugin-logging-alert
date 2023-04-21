@@ -9,13 +9,14 @@ services:
       net:
         ipv4_address: 172.15.0.2
 
+  # OpenSearch: https://opensearch.org/docs/1.3/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
   opensearch:
     image: "opensearchproject/opensearch:1.3.9"
+    container_name: opensearch1.3
     environment:
       - plugins.security.disabled=true
       - discovery.type=single-node
       - action.auto_create_index=false
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
       - bootstrap.memory_lock=true
     ulimits:
       memlock:
