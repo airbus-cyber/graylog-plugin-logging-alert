@@ -14,6 +14,9 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+
+// sources of inspiration for this code:
+// * components/maps/configurations/GeoIpResolverConfig.tsx
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
