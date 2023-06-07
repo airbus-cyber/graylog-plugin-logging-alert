@@ -17,6 +17,9 @@
 
 // sources of inspiration for this code:
 // * components/maps/configurations/GeoIpResolverConfig.tsx
+// * views/components/messagelist/MessageTableEntry.tsx
+// * pages/ShowMessagePage.tsx
+// * components/pipelines/ProcessingTimelineComponent.tsx (with useEffect for StreamsStore
 import PropTypes from 'prop-types';
 import React, { useState, useRef } from 'react';
 import createReactClass from 'create-react-class';
@@ -27,8 +30,8 @@ import Select from 'components/common/Select';
 import Spinner from 'components/common/Spinner';
 import ObjectUtils from 'util/ObjectUtils';
 import naturalSort from 'javascript-natural-sort';
-// TODO: should it be done like this with the singleton import (like in pages/ShowMessagePage.tsx), or like in views/components/SearchBar with a connect? => coding recommandation. Seems easier with a singleton...
-import StreamsStore from 'stores/streams/StreamsStore';
+import { StreamsStore } from 'views/stores/StreamsStore';
+import { useStore } from 'stores/connect';
 
 export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "id: ${logging_alert.id}"  + "\n" +
@@ -60,11 +63,16 @@ const AVAILABLE_SEVERITY_TYPES = [
 
 const _displayActiveSeverityType = (type) => {
     return AVAILABLE_SEVERITY_TYPES.filter((t) => t.value === type)[0].label;
-}
+};
+
+const _formatOption = (key, value) => {
+    return { value: value, label: key };
+};
 
 // TODO factor all [not set] with a function displayConfigurationValue()
 const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
     const [nextConfiguration, setNextConfiguration] = useState(config);
+    const { streams: streamList = [] } = useStore(StreamsStore);
 
     // TODO try to avoid useRef (use Modal instead of BootsrapModalForm?)
     const configurationModal = useRef();
@@ -112,6 +120,14 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
     const _onAggregationStreamSelect = (value) => {
         _updateConfigurationField('aggregation_stream', value);
     };
+
+    if (!streamList) {
+        return <Spinner />;
+    }
+
+    const formattedStreams = streamList
+        .map(stream => _formatOption(stream.title, stream.id))
+        .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
 
     return (
         <div>
@@ -237,7 +253,7 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                             help="Stream receiving the logged alerts that allows to aggregate alerts"
                             name="aggregation_stream">
                         <Select placeholder="Select the stream for the aggregation"
-                                options={[]/* TODO formattedStreams */}
+                                options={formattedStreams}
                                 matchProp="value"
                                 value={nextConfiguration.aggregation_stream}
                                 onChange={_onAggregationStreamSelect} />
