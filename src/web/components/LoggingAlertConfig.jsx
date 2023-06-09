@@ -20,18 +20,15 @@
 // * views/components/messagelist/MessageTableEntry.tsx
 // * pages/ShowMessagePage.tsx
 // * components/pipelines/ProcessingTimelineComponent.tsx (with useEffect for StreamsStore
-import PropTypes from 'prop-types';
 import React, { useState, useRef } from 'react';
-import createReactClass from 'create-react-class';
+import { useStore } from 'stores/connect';
+import { StreamsStore } from 'views/stores/StreamsStore';
+import naturalSort from 'javascript-natural-sort';
 // TODO use Modal instead of BootstrapModalForm??
 import { BootstrapModalForm, Button, Input } from 'components/bootstrap';
 import IfPermitted from 'components/common/IfPermitted';
 import Select from 'components/common/Select';
 import Spinner from 'components/common/Spinner';
-import ObjectUtils from 'util/ObjectUtils';
-import naturalSort from 'javascript-natural-sort';
-import { StreamsStore } from 'views/stores/StreamsStore';
-import { useStore } from 'stores/connect';
 
 export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "id: ${logging_alert.id}"  + "\n" +
