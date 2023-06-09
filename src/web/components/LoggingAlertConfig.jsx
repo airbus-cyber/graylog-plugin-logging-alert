@@ -66,7 +66,13 @@ const _formatOption = (key, value) => {
     return { value: value, label: key };
 };
 
-// TODO factor all [not set] with a function displayConfigurationValue()
+const _displayOptionalConfigurationValue = (value) => {
+    if (!value) {
+        return '[not set]';
+    }
+    return value;
+};
+
 const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
     const [nextConfiguration, setNextConfiguration] = useState(config);
     const { streams: streamList = [] } = useStore(StreamsStore);
@@ -75,11 +81,11 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
     const configurationModal = useRef();
 
     const _openModal = () => {
-        configurationModal.current.open()
+        configurationModal.current.open();
     };
 
     const _closeModal = () => {
-        configurationModal.current.close()
+        configurationModal.current.close();
     };
 
 /* TODO is this necessary?
@@ -145,49 +151,49 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
             <dl className="deflist">
                 <dt>Log Content: </dt>
                 <dd>
-                    {config.log_body ? config.log_body : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.log_body)}
                 </dd>
             </dl>
             <dl className="deflist">
                 <dt>Line Break Substitution: </dt>
                 <dd>
-                    {config.separator ? config.separator : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.separator)}
                 </dd>
             </dl>
             <dl className="deflist">
                 <dt>Aggregation Time Range: </dt>
                 <dd>
-                    {config.aggregation_time ? config.aggregation_time : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.aggregation_time)}
                 </dd>
             </dl>
             <dl className="deflist">
                 <dt>Alerts Stream: </dt>
                 <dd>
-                    {config.aggregation_stream ? config.aggregation_stream : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.aggregation_stream)}
                 </dd>
             </dl>
             <dl className="deflist">
                 <dt>Alert ID Field: </dt>
                 <dd>
-                    {config.field_alert_id ? config.field_alert_id : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.field_alert_id)}
                 </dd>
             </dl>
             <dl className="deflist">
                 <dt>Overflow Limit: </dt>
                 <dd>
-                    {config.limit_overflow ? config.limit_overflow : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.limit_overflow)}
                 </dd>
             </dl>
             <dl className="deflist">
                 <dt>Alert Tag: </dt>
                 <dd>
-                    {config.alert_tag ? config.alert_tag : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.alert_tag)}
                 </dd>
             </dl>
             <dl className="deflist">
                 <dt>Overflow Tag: </dt>
                 <dd>
-                    {config.overflow_tag ? config.overflow_tag : '[not set]'}
+                    {_displayOptionalConfigurationValue(config.overflow_tag)}
                 </dd>
             </dl>
 
