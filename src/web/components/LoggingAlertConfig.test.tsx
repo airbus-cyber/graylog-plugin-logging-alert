@@ -20,27 +20,12 @@
 // * views/components/widgets/Widget.aggregations.test.tsx
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
+import MockStore from 'helpers/mocking/StoreMock';
+import CurrentUserContext from 'contexts/CurrentUserContext';
 import { adminUser } from 'fixtures/users';
 
-import CurrentUserContext from 'contexts/CurrentUserContext';
-
 import LoggingAlertConfig from './LoggingAlertConfig';
-import MockStore from 'helpers/mocking/StoreMock';
 
-
-
-//const mockListStreams = jest.fn((...args) => Promise.resolve([]));
-//jest.mock('stores/streams/StreamsStore', () => ({ listStreams: (...args) => mockListStreams(...args) }));
-/*
-jest.mock('views/stores/StreamsStore', () => ({
-  StreamsStore: MockStore(['getInitialState', () => ({
-    streams: [
-      { title: 'PFLog', id: '5c2e27d6ba33a9681ad62775' },
-      { title: 'DNS Logs', id: '5d2d9649e117dc4df84cf83c' },
-    ],
-  })]),
-}));
-*/
 jest.mock('views/stores/StreamsStore', () => ({
     StreamsStore: {
         listen: jest.fn(() => () => {}),
@@ -52,17 +37,6 @@ jest.mock('views/stores/StreamsStore', () => ({
     }
 }));
 
-/*
-jest.mock('views/stores/StreamsStore', () => ({
-  StreamsStore: MockStore(['getInitialState', () => ({
-    streams: [
-      { title: 'Stream 1', id: 'stream-id-1' },
-    ],
-  })]),
-}));
-*/
-
-//jest.mock('views/stores/StreamsStore');
 
 describe('<LoggingAlertConfig>', () => {
   it('should display the button with the correct color (issue 33)', async () => {
