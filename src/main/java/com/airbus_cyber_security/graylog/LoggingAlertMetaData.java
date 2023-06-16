@@ -52,7 +52,7 @@ public class LoggingAlertMetaData implements PluginMetaData {
 
     @Override
     public Version getVersion() {
-    	return Version.fromPluginProperties(getClass(), PLUGIN_PROPERTIES, "version", Version.from(0, 0, 1, "unknown"));
+        return Version.fromPluginProperties(getClass(), PLUGIN_PROPERTIES, "version", Version.from(0, 0, 1, "unknown"));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class LoggingAlertMetaData implements PluginMetaData {
 
     @Override
     public Version getRequiredVersion() {
-    	return Version.fromPluginProperties(getClass(), PLUGIN_PROPERTIES, "graylog.version", Version.from(4, 1, 0));
+        return Version.fromPluginProperties(getClass(), PLUGIN_PROPERTIES, "graylog.version", Version.from(5, 0, 0));
     }
 
     @Override
