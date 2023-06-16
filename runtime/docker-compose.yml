@@ -10,7 +10,9 @@ services:
     image: "mongo:5.0"
     container_name: mongo
 
-  # OpenSearch: https://opensearch.org/docs/1.3/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
+  # OpenSearch:
+  # * https://hub.docker.com/r/opensearchproject/opensearch
+  # * https://opensearch.org/docs/1.3/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
   opensearch:
     image: "opensearchproject/opensearch:1.3.9"
     container_name: opensearch1.3
