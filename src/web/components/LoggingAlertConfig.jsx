@@ -23,7 +23,7 @@
 import React, { useState, useRef } from 'react';
 import { useStore } from 'stores/connect';
 import { StreamsStore } from 'views/stores/StreamsStore';
-import naturalSort from 'javascript-natural-sort';
+import { defaultCompare } from 'logic/DefaultCompare'
 // TODO remove the ref and use property show when migrating to graylog >= 5.1
 import { BootstrapModalForm, Button, Input } from 'components/bootstrap';
 import IfPermitted from 'components/common/IfPermitted';
@@ -130,7 +130,7 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
 
     const formattedStreams = streamList
         .map(stream => _formatOption(stream.title, stream.id))
-        .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
+        .sort((s1, s2) => defaultCompare(s1.label.toLowerCase(), s2.label.toLowerCase()));
 
     return (
         <div>

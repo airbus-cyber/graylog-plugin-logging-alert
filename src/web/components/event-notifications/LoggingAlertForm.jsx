@@ -31,7 +31,7 @@ import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
 
 import connect from 'stores/connect';
 
-import { defaultCompare } from 'views/logic/DefaultCompare';
+import { defaultCompare } from 'logic/DefaultCompare';
 
 const LOGGING_ALERT_CONFIG = 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig';
 
