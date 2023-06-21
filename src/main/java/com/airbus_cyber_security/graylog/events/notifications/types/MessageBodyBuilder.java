@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 
 
-public class LoggingAlertUtils {
+public class MessageBodyBuilder {
 
     private static final String MSGS_URL_BEGIN = "/search?rangetype=absolute&from=";
     private static final String MSGS_URL_TO = "&to=";
@@ -54,7 +54,7 @@ public class LoggingAlertUtils {
 
     private final ObjectMapper objectMapper;
 
-    public LoggingAlertUtils(ObjectMapper objectMapper, MessagesSearches searches) {
+    public MessageBodyBuilder(ObjectMapper objectMapper, MessagesSearches searches) {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
         this.searches = searches;

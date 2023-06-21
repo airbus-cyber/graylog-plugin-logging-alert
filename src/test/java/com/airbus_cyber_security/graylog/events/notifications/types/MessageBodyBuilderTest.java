@@ -27,15 +27,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class LoggingAlertUtilsTest {
+public class MessageBodyBuilderTest {
 
-    private LoggingAlertUtils subject;
+    private MessageBodyBuilder subject;
 
     @Before
     public void setup() {
         ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
         MessagesSearches searches = Mockito.mock(MessagesSearches.class);
-        this.subject = new LoggingAlertUtils(objectMapper, searches);
+        this.subject = new MessageBodyBuilder(objectMapper, searches);
     }
 
     @Test
