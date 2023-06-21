@@ -87,15 +87,13 @@ public class LoggingAlert implements EventNotification {
                     date,
                     this.messageBodyBuilder.getStreamSearchUrl(event, date));
 
-            String messageToLog = this.messageBodyBuilder.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);
+            String messageToLog = this.messageBodyBuilder.buildMessageBodyForBacklog(logTemplate, context, backlog, loggingAlertFields);
             listMessagesToLog.add(messageToLog);
         } else {
             LOGGER.debug("Add log to list message for backlog...");
             for (MessageSummary message: backlog) {
                 LoggingAlertFields loggingAlertFields = this.messageBodyBuilder.buildLoggingAlertFields(context, config, generalConfig, date, message);
-                ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
-
-                String messageToLog = this.messageBodyBuilder.buildMessageBody(logTemplate, context, backlogWithMessage, loggingAlertFields);
+                String messageToLog = this.messageBodyBuilder.buildMessageBodyForMessage(logTemplate, context, message, loggingAlertFields);
                 listMessagesToLog.add(messageToLog);
             }
         }

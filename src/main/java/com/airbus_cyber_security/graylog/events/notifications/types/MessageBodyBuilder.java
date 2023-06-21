@@ -228,8 +228,14 @@ public class MessageBodyBuilder {
         return model;
     }
 
-    public String buildMessageBody(String logTemplate, EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
+    public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
         Map<String, Object> model = this.getModel(context, backlog, loggingAlertFields);
         return this.templateEngine.transform(logTemplate, model);
+    }
+
+    public String buildMessageBodyForMessage(String logTemplate, EventNotificationContext context, MessageSummary message,  LoggingAlertFields loggingAlertFields) {
+        ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
+
+        return this.buildMessageBodyForBacklog(logTemplate, context, backlogWithMessage, loggingAlertFields);
     }
 }
