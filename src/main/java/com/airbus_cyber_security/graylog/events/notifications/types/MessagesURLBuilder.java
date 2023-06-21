@@ -60,6 +60,7 @@ public class MessagesURLBuilder {
         return message_url + MSGS_URL_STREAM + this.concatenateSourceStreams(event);
     }
 
+    // TODO make this method private (convert test to use buildMessagesUrl)
     String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
         StringBuilder searchFields = new StringBuilder();
         int i = 0;

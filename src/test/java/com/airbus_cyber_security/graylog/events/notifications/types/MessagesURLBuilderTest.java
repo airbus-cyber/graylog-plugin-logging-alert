@@ -14,19 +14,42 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+
+// sources of inspiration:
+// * org.graylog.events.notifications.NotificationTestData.NotificationTestData
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import java.util.*;
 
+import org.graylog.events.contentpack.entities.EventProcessorConfigEntity;
+import org.graylog.events.event.EventDto;
+import org.graylog.events.notifications.EventNotificationConfig;
+import org.graylog.events.notifications.EventNotificationContext;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import org.graylog.events.notifications.EventNotificationSettings;
+import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.scheduler.JobSchedule;
+import org.graylog.scheduler.JobTriggerDto;
+import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
+import org.graylog2.plugin.rest.ValidationResult;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.graylog2.plugin.Tools;
+import org.graylog2.plugin.streams.Stream;
+import org.graylog.events.event.EventOriginContext;
 
 public class MessagesURLBuilderTest {
 
     private MessagesURLBuilder subject;
+
+    private static final String TEST_NOTIFICATION_ID = "NotificationTestId";
 
     @Before
     public void setup() {
@@ -34,15 +57,72 @@ public class MessagesURLBuilderTest {
     }
 
     @Test
-    public void buildSplitFieldsSearchQueryShouldEscapeBackslash() {
+    public void buildMessagesUrlShouldEscapeBackslash() {
+        DateTime dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
+        EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
+        EventDto event = EventDto.builder()
+                .alert(true)
+                .eventDefinitionId("EventDefinitionTestId")
+                .eventDefinitionType("notification-test-v1")
+                .eventTimestamp(Tools.nowUTC())
+                .processingTimestamp(Tools.nowUTC())
+                .id("TEST_NOTIFICATION_ID")
+                .streams(ImmutableSet.of(Stream.DEFAULT_EVENTS_STREAM_ID))
+                .message("Notification test message triggered from user")
+                .source(Stream.DEFAULT_STREAM_ID)
+                .keyTuple(ImmutableList.of("testkey"))
+                .key("testkey")
+                .originContext(EventOriginContext.elasticsearchMessage("testIndex_42", "b5e53442-12bb-4374-90ed-0deadbeefbaz"))
+                .priority(2)
+                .fields(ImmutableMap.of("field1", "value1", "field2", "value2"))
+                .build();
+        EventDefinitionDto eventDefinitionDto = EventDefinitionDto.builder()
+                .alert(true)
+                .id(TEST_NOTIFICATION_ID)
+                .title("Event Definition Test Title")
+                .description("Event Definition Test Description")
+                .config(new EventProcessorConfig.FallbackConfig())
+                .fieldSpec(ImmutableMap.of())
+                .priority(2)
+                .keySpec(ImmutableList.of())
+                .notificationSettings(new EventNotificationSettings() {
+                                          @Override
+                                          public long gracePeriodMs() {
+                                              return 0;
+                                          }
+                                          @Override
+                                          // disable to avoid errors in getBacklogForEvent()
+                                          public long backlogSize() {
+                                              return 0;
+                                          }
+                                          @Override
+                                          public Builder toBuilder() {
+                                              return null;
+                                          }
+                                      }
+
+                ).build();
+        JobTriggerDto jobTrigger = JobTriggerDto.builder()
+                .jobDefinitionId("jobDefinitionId")
+                .jobDefinitionType("jobDefinitionType")
+                .schedule(new JobSchedule.FallbackSchedule())
+                .triggeredAt(dummyTime)
+                .build();
+        EventNotificationContext context = EventNotificationContext.builder()
+                .notificationId(TEST_NOTIFICATION_ID)
+                .notificationConfig(notificationConfig)
+                .event(event)
+                .eventDefinition(eventDefinitionDto)
+                .jobTrigger(jobTrigger)
+                .build();
         List<String> splitFields = Collections.singletonList("filename");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("filename", "C:\\File.exe");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
-        Assert.assertEquals("&q=filename%3A\"C:\\\\File.exe\"", query);
+        String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, dummyTime);
+        Assert.assertEquals("/search?rangetype=absolute&from=2023-06-21T14%3A43%3A25.000Z&to=2023-06-21T14%3A44%3A25.000Z&q=filename%3A\"C:\\\\File.exe\"", query);
     }
 
     @Test
