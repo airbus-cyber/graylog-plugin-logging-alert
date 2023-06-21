@@ -56,10 +56,10 @@ public class LoggingAlert implements EventNotification {
 
     @Inject
     public LoggingAlert(ClusterConfigService clusterConfigService, EventNotificationService notificationCallbackService,
-                        ObjectMapper objectMapper, MessagesSearches searches) {
+                        MessageBodyBuilder messageBodyBuilder) {
         this.notificationCallbackService = notificationCallbackService;
         this.clusterConfigService = clusterConfigService;
-        this.messageBodyBuilder = new MessageBodyBuilder(objectMapper, searches);
+        this.messageBodyBuilder = messageBodyBuilder;
     }
 
     @Override

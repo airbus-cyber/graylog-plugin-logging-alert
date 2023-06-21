@@ -34,6 +34,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -54,6 +55,7 @@ public class MessageBodyBuilder {
 
     private final ObjectMapper objectMapper;
 
+    @Inject
     public MessageBodyBuilder(ObjectMapper objectMapper, MessagesSearches searches) {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
