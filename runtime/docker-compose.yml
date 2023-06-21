@@ -7,7 +7,7 @@ services:
 
   # MongoDB: https://hub.docker.com/_/mongo/
   mongo:
-    image: "mongo:5.0"
+    image: "mongo:6.0"
     container_name: mongo
 
   # OpenSearch:
