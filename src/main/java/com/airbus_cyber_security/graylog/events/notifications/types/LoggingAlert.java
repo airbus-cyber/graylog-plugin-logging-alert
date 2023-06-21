@@ -91,11 +91,8 @@ public class LoggingAlert implements EventNotification {
             listMessagesToLog.add(messageToLog);
         } else {
             LOGGER.debug("Add log to list message for backlog...");
-            Map<String, LoggingAlertFields> listOfloggingAlertField =
-                    this.messageBodyBuilder.getListOfLoggingAlertField(context, backlog, config, generalConfig, date);
             for (MessageSummary message: backlog) {
-                String valuesAggregationField = this.messageBodyBuilder.getValuesAggregationField(message, config);
-                LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
+                LoggingAlertFields loggingAlertFields = this.messageBodyBuilder.buildLoggingAlertFields(context, config, generalConfig, date, message);
                 ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
                 String messageToLog = this.messageBodyBuilder.buildMessageBody(logTemplate, context, backlogWithMessage, loggingAlertFields);

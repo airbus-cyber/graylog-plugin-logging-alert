@@ -55,11 +55,14 @@ public class MessageBodyBuilder {
 
     private final ObjectMapper objectMapper;
 
+    private final Map<String, LoggingAlertFields> loggingAlertFieldsCache;
+
     @Inject
     public MessageBodyBuilder(ObjectMapper objectMapper, MessagesSearches searches) {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
         this.searches = searches;
+        this.loggingAlertFieldsCache = Maps.newHashMap();
     }
 
     private String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
@@ -183,7 +186,7 @@ public class MessageBodyBuilder {
         return this.getAlertIDWithSuffix(config, generalConfig, ctx, "");
     }
 
-    public String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
+    private String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
         StringBuilder valuesAggregationField = new StringBuilder();
         for (String field: config.splitFields()) {
             // TODO should probably add a separator: field1=a, field2=ab <=> field1=aa, field2=b!!!
@@ -192,31 +195,19 @@ public class MessageBodyBuilder {
         return valuesAggregationField.toString();
     }
 
-    public Map<String, LoggingAlertFields> getListOfLoggingAlertField(EventNotificationContext ctx,
-                                                                      ImmutableList<MessageSummary> backlog,
-                                                                      LoggingNotificationConfig config,
-                                                                      LoggingAlertConfig generalConfig,
-                                                                      DateTime date) {
-        Map<String, LoggingAlertFields> cacheOfLoggingAlertFields = Maps.newHashMap();
-
-        for (MessageSummary messageSummary: backlog) {
-            String key = getValuesAggregationField(messageSummary, config);
-            if (cacheOfLoggingAlertFields.containsKey(key)) {
-                continue;
-            }
-
-            LoggingAlertFields fields = buildLoggingAlertFields(ctx, config, generalConfig, date, messageSummary, key);
-            cacheOfLoggingAlertFields.put(key, fields);
+    public LoggingAlertFields buildLoggingAlertFields(EventNotificationContext ctx, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary) {
+        String key = getValuesAggregationField(messageSummary, config);
+        LoggingAlertFields fields = this.loggingAlertFieldsCache.get(key);
+        if (fields != null) {
+            return fields;
         }
 
-        return cacheOfLoggingAlertFields;
-    }
-
-    private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext ctx, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary, String key) {
         String messagesUrl = buildMessagesUrl(ctx, config, messageSummary, date);
         String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
 
-        return new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
+        fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
+        this.loggingAlertFieldsCache.put(key, fields);
+        return fields;
     }
 
     private Map<String, Object> getModel(EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
