@@ -112,7 +112,7 @@ public class MessageBodyBuilder {
             return fields;
         }
 
-        String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(ctx, config, messageSummary, date);
+        String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(ctx, config.splitFields(), messageSummary, date);
         String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
 
         fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);

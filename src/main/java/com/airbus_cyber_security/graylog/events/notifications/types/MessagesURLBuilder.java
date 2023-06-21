@@ -87,7 +87,7 @@ public class MessagesURLBuilder {
         return searchFields.toString();
     }
 
-    public String buildMessagesUrl(EventNotificationContext context, LoggingNotificationConfig config, MessageSummary messageSummary,
+    public String buildMessagesUrl(EventNotificationContext context, Iterable<String> splitFields, MessageSummary messageSummary,
                                     DateTime beginTime) {
         EventDto event = context.event();
         if (!context.eventDefinition().isPresent()) {
@@ -114,7 +114,7 @@ public class MessagesURLBuilder {
             search = MSGS_URL_STREAM + concatStream;
         }
 
-        String searchQuery = this.buildSplitFieldsSearchQuery(config.splitFields(), messageSummary);
+        String searchQuery = this.buildSplitFieldsSearchQuery(splitFields, messageSummary);
 
         // TODO it should probably be possible to factor this more with code in getStreamSearchUrl
         return MSGS_URL_BEGIN
