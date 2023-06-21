@@ -40,10 +40,12 @@ public class LoggingAlertFields {
 		return severity;
 	}
 
+	// Note: do not remove this field, if I am understanding well, it is required by jmte (see: https://github.com/DJCordhose/jmte/blob/5.0.0/src/com/floreysoft/jmte/DefaultModelAdaptor.java#L352)
 	public DateTime getDetect_time() {
 		return detect_time;
 	}
 
+	// Note: do not remove this field, if I am understanding well, it is required by jmte (see: https://github.com/DJCordhose/jmte/blob/5.0.0/src/com/floreysoft/jmte/DefaultModelAdaptor.java#L352)
 	public String getMessages_url() {
 		return messages_url;
 	}
