@@ -18,24 +18,19 @@ package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import java.util.*;
 
-import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-public class MessageBodyBuilderTest {
+public class MessagesURLBuilderTest {
 
-    private MessageBodyBuilder subject;
+    private MessagesURLBuilder subject;
 
     @Before
     public void setup() {
-        ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
-        MessagesSearches searches = Mockito.mock(MessagesSearches.class);
-        this.subject = new MessageBodyBuilder(objectMapper, searches);
+        this.subject = new MessagesURLBuilder();
     }
 
     @Test
