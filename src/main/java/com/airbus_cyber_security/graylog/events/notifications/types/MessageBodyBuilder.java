@@ -132,8 +132,8 @@ public class MessageBodyBuilder {
         return message_url + MSGS_URL_STREAM + concatenateSourceStreams(event);
     }
 
-    private String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
-                                 DateTime beginTime) {
+    private String buildMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
+                                    DateTime beginTime) {
         EventDto event = ctx.event();
         if (!ctx.eventDefinition().isPresent()) {
             return getStreamSearchUrl(event, beginTime);
@@ -199,7 +199,7 @@ public class MessageBodyBuilder {
 
         for (MessageSummary messageSummary: backlog) {
             String key = getValuesAggregationField(messageSummary, config);
-            String messagesUrl = getMessagesUrl(ctx, config, messageSummary, date);
+            String messagesUrl = buildMessagesUrl(ctx, config, messageSummary, date);
 
             if (result.containsKey(key)) {
                 continue;
