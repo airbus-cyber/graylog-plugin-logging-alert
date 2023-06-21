@@ -92,6 +92,7 @@ class Test(TestCase):
             
             self.assertNotEqual(notification_identifier, 'message_identifier')
 
+    # Seems like this test may sometimes block?
     def test_aggregation_should_reuse_the_notification_identifier(self):
         stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
@@ -150,6 +151,7 @@ class Test(TestCase):
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
+    # Seems like this test may sometimes block?
     def test_aggregation_should_not_reuse_the_notification_identifier_when_there_is_a_split_field_with_a_different_value(self):
         stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
@@ -205,6 +207,7 @@ class Test(TestCase):
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
 
+    # Seems like this test may sometimes block?
     def test_aggregation_should_reuse_the_notification_identifier_when_there_is_a_split_field_with_the_same_value(self):
         stream_input_identifier = self._graylog.create_stream_with_rule('input', 'stream', 'input')
         stream_log_identifier = self._graylog.create_stream_with_rule('log', 'stream', 'log')
