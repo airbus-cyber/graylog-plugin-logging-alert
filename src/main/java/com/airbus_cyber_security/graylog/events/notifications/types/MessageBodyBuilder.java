@@ -195,19 +195,19 @@ public class MessageBodyBuilder {
                                                                       LoggingNotificationConfig config,
                                                                       LoggingAlertConfig generalConfig,
                                                                       DateTime date) {
-        Map<String, LoggingAlertFields> result = Maps.newHashMap();
+        Map<String, LoggingAlertFields> cacheOfLoggingAlertFields = Maps.newHashMap();
 
         for (MessageSummary messageSummary: backlog) {
             String key = getValuesAggregationField(messageSummary, config);
-            if (result.containsKey(key)) {
+            if (cacheOfLoggingAlertFields.containsKey(key)) {
                 continue;
             }
 
             LoggingAlertFields fields = buildLoggingAlertFields(ctx, config, generalConfig, date, messageSummary, key);
-            result.put(key, fields);
+            cacheOfLoggingAlertFields.put(key, fields);
         }
 
-        return result;
+        return cacheOfLoggingAlertFields;
     }
 
     private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext ctx, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary, String key) {
