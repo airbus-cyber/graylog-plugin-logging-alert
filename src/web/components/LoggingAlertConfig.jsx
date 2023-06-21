@@ -20,6 +20,7 @@
 // * views/components/messagelist/MessageTableEntry.tsx
 // * pages/ShowMessagePage.tsx
 // * components/pipelines/ProcessingTimelineComponent.tsx (with useEffect for StreamsStore
+// * https://github.com/Graylog2/graylog-plugin-threatintel, components/ThreatIntelPluginConfig.jsx
 import React, { useState, useRef } from 'react';
 import { useStore } from 'stores/connect';
 import { StreamsStore } from 'views/stores/StreamsStore';
@@ -199,7 +200,7 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
 
             <IfPermitted permissions="clusterconfigentry:edit">
                 <Button bsStyle="info" bsSize="xs" onClick={_openModal}>
-                    Configure
+                    Edit configuration
                 </Button>
             </IfPermitted>
 

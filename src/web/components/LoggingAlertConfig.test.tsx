@@ -48,7 +48,7 @@ describe('<LoggingAlertConfig>', () => {
     // note: findByText is a getByText+waitFor (https://testing-library.com/docs/dom-testing-library/api-async#findby-queries)
     // so there must be a reason for waitFor to be necessary
     // maybe because of the wrap with CurrentUserContext.Provider
-    const elem = await findByText('Configure');
-    expect(elem).toHaveStyle('background-color: rgb(0, 99, 190)')
+    const elem = await findByText('Edit configuration');
+    expect(elem).toHaveStyle('background-color: rgb(87, 141, 204)')
   });
 });
