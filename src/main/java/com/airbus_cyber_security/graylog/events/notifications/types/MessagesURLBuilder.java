@@ -87,15 +87,15 @@ public class MessagesURLBuilder {
         return searchFields.toString();
     }
 
-    public String buildMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
+    public String buildMessagesUrl(EventNotificationContext context, LoggingNotificationConfig config, MessageSummary messageSummary,
                                     DateTime beginTime) {
-        EventDto event = ctx.event();
-        if (!ctx.eventDefinition().isPresent()) {
+        EventDto event = context.event();
+        if (!context.eventDefinition().isPresent()) {
             return getStreamSearchUrl(event, beginTime);
         }
 
         DateTime endTime;
-        JobTriggerDto jobTrigger = ctx.jobTrigger().get();
+        JobTriggerDto jobTrigger = context.jobTrigger().get();
         if (jobTrigger.endTime().isPresent()) {
             endTime = jobTrigger.endTime().get().plusMinutes(1);
         } else {
@@ -103,7 +103,7 @@ public class MessagesURLBuilder {
         }
 
         /* when the alert is unresolved and the repeat notification is active */
-        int timeRange = Tools.getNumber(ctx.jobTrigger().get().createdAt(), 1).intValue();
+        int timeRange = Tools.getNumber(context.jobTrigger().get().createdAt(), 1).intValue();
         if (endTime.isBefore(beginTime.plusMinutes(timeRange))) {
             endTime = beginTime.plusMinutes(timeRange);
         }
