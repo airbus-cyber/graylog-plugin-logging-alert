@@ -35,7 +35,7 @@ public class MessagesURLBuilder {
     private static final String COMMA_SEPARATOR = "%2C";
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
 
-    private static String concatenateSourceStreams(EventDto event) {
+    private String concatenateSourceStreams(EventDto event) {
         Set<String> setStreams = event.sourceStreams();
         if (setStreams.isEmpty()) {
             return "";
