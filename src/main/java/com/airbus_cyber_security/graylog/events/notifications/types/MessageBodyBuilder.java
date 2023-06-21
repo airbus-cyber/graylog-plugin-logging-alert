@@ -199,19 +199,22 @@ public class MessageBodyBuilder {
 
         for (MessageSummary messageSummary: backlog) {
             String key = getValuesAggregationField(messageSummary, config);
-            String messagesUrl = buildMessagesUrl(ctx, config, messageSummary, date);
-
             if (result.containsKey(key)) {
                 continue;
             }
 
-            String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
-
-            LoggingAlertFields fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
+            LoggingAlertFields fields = buildLoggingAlertFields(ctx, config, generalConfig, date, messageSummary, key);
             result.put(key, fields);
         }
 
         return result;
+    }
+
+    private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext ctx, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary, String key) {
+        String messagesUrl = buildMessagesUrl(ctx, config, messageSummary, date);
+        String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
+
+        return new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
     }
 
     private Map<String, Object> getModel(EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
