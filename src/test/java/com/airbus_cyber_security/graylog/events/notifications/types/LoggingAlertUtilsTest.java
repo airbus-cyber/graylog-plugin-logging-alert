@@ -46,7 +46,7 @@ public class LoggingAlertUtilsTest {
         fields.put("filename", "C:\\File.exe");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = LoggingAlertUtils.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        String query = this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
         Assert.assertEquals("&q=filename%3A\"C:\\\\File.exe\"", query);
     }
 
@@ -58,7 +58,7 @@ public class LoggingAlertUtilsTest {
         fields.put("key", "\"");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = LoggingAlertUtils.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        String query = this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
         Assert.assertEquals("&q=key%3A\"\\\"\"", query);
     }
 
@@ -70,6 +70,16 @@ public class LoggingAlertUtilsTest {
         fields.put("key", 48);
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        LoggingAlertUtils.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+    }
+
+    @Test
+    public void buildSplitFieldsSearchQueryShouldNotFailWhenSplitFieldIsNotPresent() {
+        List<String> splitFields = Collections.singletonList("key");
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("_id", "identifier");
+        Message message = new Message(fields);
+        MessageSummary messageSummary = new MessageSummary("index", message);
+        this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
     }
 }

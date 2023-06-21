@@ -85,7 +85,7 @@ public class LoggingAlert implements EventNotification {
                     this.loggingAlertUtils.getAlertID(config, generalConfig, context),
                     config.severity().getType(),
                     date,
-                    LoggingAlertUtils.getStreamSearchUrl(event, date));
+                    this.loggingAlertUtils.getStreamSearchUrl(event, date));
 
             String messageToLog = this.loggingAlertUtils.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);
             listMessagesToLog.add(messageToLog);
@@ -94,7 +94,7 @@ public class LoggingAlert implements EventNotification {
             Map<String, LoggingAlertFields> listOfloggingAlertField =
                     this.loggingAlertUtils.getListOfLoggingAlertField(context, backlog, config, generalConfig, date);
             for (MessageSummary message: backlog) {
-                String valuesAggregationField = LoggingAlertUtils.getValuesAggregationField(message, config);
+                String valuesAggregationField = this.loggingAlertUtils.getValuesAggregationField(message, config);
                 LoggingAlertFields loggingAlertFields = listOfloggingAlertField.get(valuesAggregationField);
                 ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 

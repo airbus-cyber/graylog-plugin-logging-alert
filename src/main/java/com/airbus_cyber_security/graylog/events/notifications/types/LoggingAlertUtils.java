@@ -95,30 +95,34 @@ public class LoggingAlertUtils {
         return result.toString();
     }
 
-    static String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
+    String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
         StringBuilder searchFields = new StringBuilder();
         int i = 0;
         for (String field: splitFields) {
-            // TODO should rather do .toString here (try to reproduce, check if there are other casts elsewhere and remove them+add a unit test)
-            String valueAggregationField = messageSummary.getField(field).toString();
+            Object value = messageSummary.getField(field);
+            if (value == null) {
+                continue;
+            }
+            String valueAsString = value.toString();
+            if (valueAsString.isEmpty()) {
+                continue;
+            }
             String prefix;
             if (i == 0) {
                 prefix = "&q=";
             } else {
                 prefix = "+AND+";
             }
-            if (valueAggregationField != null && !valueAggregationField.isEmpty()) {
-                String escapedValue = valueAggregationField.replace("\\", "\\\\");
-                escapedValue = escapedValue.replace("\"", "\\\"");
-                searchFields.append(prefix + field + "%3A\"" + escapedValue + "\"");
-                i++;
-            }
+            String escapedValue = valueAsString.replace("\\", "\\\\");
+            escapedValue = escapedValue.replace("\"", "\\\"");
+            searchFields.append(prefix + field + "%3A\"" + escapedValue + "\"");
+            i++;
         }
 
         return searchFields.toString();
     }
 
-    public static String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
+    public String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
         String message_url = MSGS_URL_BEGIN
                 + timeBeginSearch.toString(TIME_FORMATTER) + MSGS_URL_TO
                 + event.eventTimestamp().plusMinutes(1).toString(TIME_FORMATTER);
@@ -128,7 +132,7 @@ public class LoggingAlertUtils {
         return message_url + MSGS_URL_STREAM + concatenateSourceStreams(event);
     }
 
-    private static String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
+    private String getMessagesUrl(EventNotificationContext ctx, LoggingNotificationConfig config, MessageSummary messageSummary,
                                  DateTime beginTime) {
         EventDto event = ctx.event();
         if (!ctx.eventDefinition().isPresent()) {
@@ -165,7 +169,7 @@ public class LoggingAlertUtils {
                 + searchQuery;
     }
 
-    private static String getHashFromString(String value) {
+    private String getHashFromString(String value) {
         int hash = value.hashCode();
         if (hash < 0) {
             return "a" + Math.abs(hash);
@@ -177,7 +181,7 @@ public class LoggingAlertUtils {
         return this.getAlertIDWithSuffix(config, generalConfig, ctx, "");
     }
 
-    public static String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
+    public String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
         StringBuilder valuesAggregationField = new StringBuilder();
         for (String field: config.splitFields()) {
             // TODO should probably add a separator: field1=a, field2=ab <=> field1=aa, field2=b!!!
@@ -191,23 +195,23 @@ public class LoggingAlertUtils {
                                                                       LoggingNotificationConfig config,
                                                                       LoggingAlertConfig generalConfig,
                                                                       DateTime date) {
-        Map<String, LoggingAlertFields> listOfLoggingAlertField = Maps.newHashMap();
+        Map<String, LoggingAlertFields> result = Maps.newHashMap();
 
         for (MessageSummary messageSummary: backlog) {
             String key = getValuesAggregationField(messageSummary, config);
             String messagesUrl = getMessagesUrl(ctx, config, messageSummary, date);
 
-            if (listOfLoggingAlertField.containsKey(key)) {
+            if (result.containsKey(key)) {
                 continue;
             }
 
             String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
 
             LoggingAlertFields fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
-            listOfLoggingAlertField.put(key, fields);
+            result.put(key, fields);
         }
 
-        return listOfLoggingAlertField;
+        return result;
     }
 
     private Map<String, Object> getModel(EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
