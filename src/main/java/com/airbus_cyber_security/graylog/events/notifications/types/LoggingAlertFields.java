@@ -22,14 +22,14 @@ public class LoggingAlertFields {
 	
 	private final String id;
 	private final String severity;
-	private final DateTime detect_time;
-	private final String messages_url;
+	private final DateTime detectTime;
+	private final String messagesURL;
 
 	public LoggingAlertFields(String id, String severity, DateTime detectTime, String messagesURL)	{
 		this.id = id;
 		this.severity = severity;
-		this.detect_time = detectTime;
-		this.messages_url = messagesURL;
+		this.detectTime = detectTime;
+		this.messagesURL = messagesURL;
 	}
 
 	public String getId() {
@@ -42,11 +42,11 @@ public class LoggingAlertFields {
 
 	// Note: do not remove this field, if I am understanding well, it is required by jmte (see: https://github.com/DJCordhose/jmte/blob/5.0.0/src/com/floreysoft/jmte/DefaultModelAdaptor.java#L352)
 	public DateTime getDetect_time() {
-		return detect_time;
+		return detectTime;
 	}
 
 	// Note: do not remove this field, if I am understanding well, it is required by jmte (see: https://github.com/DJCordhose/jmte/blob/5.0.0/src/com/floreysoft/jmte/DefaultModelAdaptor.java#L352)
 	public String getMessages_url() {
-		return messages_url;
+		return messagesURL;
 	}
 }
