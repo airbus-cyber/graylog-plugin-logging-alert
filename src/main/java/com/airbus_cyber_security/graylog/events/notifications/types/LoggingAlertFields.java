@@ -25,11 +25,11 @@ public class LoggingAlertFields {
 	private final DateTime detect_time;
 	private final String messages_url;
 
-	public LoggingAlertFields(String id, String severity, DateTime detectTime, String messages_url)	{
+	public LoggingAlertFields(String id, String severity, DateTime detectTime, String messagesURL)	{
 		this.id = id;
 		this.severity = severity;
 		this.detect_time = detectTime;
-		this.messages_url = messages_url;
+		this.messages_url = messagesURL;
 	}
 
 	public String getId() {

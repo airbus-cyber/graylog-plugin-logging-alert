@@ -59,30 +59,24 @@ public class MessageBodyBuilder {
         this.messagesURLBuilder = new MessagesURLBuilder();
     }
 
-    private String getAlertIDWithSuffix(LoggingNotificationConfig config, LoggingAlertConfig generalConfig,
-                                       EventNotificationContext ctx, String key) {
-        String events_definition_id = ctx.eventDefinition().get().id();
+    private String getAlertIDWithSuffix(int aggregationTime, LoggingAlertConfig generalConfig,
+                                       EventNotificationContext context, String key) {
+        String events_definition_id = context.eventDefinition().get().id();
         String suffix = "-" + getHashFromString(events_definition_id + "-" + key);
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
 
-        if (config.aggregationTime() > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
-            int aggregationTime = config.aggregationTime();
+        if (aggregationTime > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
             String alertIdentifierFieldName = generalConfig.accessFieldAlertId();
             loggingAlertID = this.searches.getAggregationAlertIdentifier(aggregationTime, alertIdentifierFieldName, aggregationStream, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {
-            loggingAlertID = ctx.event().id() + suffix;
+            loggingAlertID = context.event().id() + suffix;
         }
         return loggingAlertID;
     }
-
-    public String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
-        return this.messagesURLBuilder.getStreamSearchUrl(event, timeBeginSearch);
-    }
-
 
     private String getHashFromString(String value) {
         int hash = value.hashCode();
@@ -92,8 +86,8 @@ public class MessageBodyBuilder {
         return String.valueOf(hash);
     }
 
-    public String getAlertID(LoggingNotificationConfig config, LoggingAlertConfig generalConfig, EventNotificationContext ctx) {
-        return this.getAlertIDWithSuffix(config, generalConfig, ctx, "");
+    private String getAlertID(int aggregationTime, LoggingAlertConfig generalConfig, EventNotificationContext context) {
+        return this.getAlertIDWithSuffix(aggregationTime, generalConfig, context, "");
     }
 
     private String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
@@ -113,7 +107,7 @@ public class MessageBodyBuilder {
         }
 
         String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(ctx, config.splitFields(), messageSummary, date);
-        String loggingAlertID = getAlertIDWithSuffix(config, generalConfig, ctx, key);
+        String loggingAlertID = getAlertIDWithSuffix(config.aggregationTime(), generalConfig, ctx, key);
 
         fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
         this.loggingAlertFieldsCache.put(key, fields);
@@ -138,15 +132,23 @@ public class MessageBodyBuilder {
         return model;
     }
 
-    public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
+    private String buildMessageBody(String logTemplate, EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
         Map<String, Object> model = this.getModel(context, backlog, loggingAlertFields);
         return this.templateEngine.transform(logTemplate, model);
+    }
+
+    public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, ImmutableList<MessageSummary> backlog) {
+        String identifier = this.getAlertID(config.aggregationTime(), generalConfig, context);
+        String severity = config.severity().getType();
+        String messagesURL = this.messagesURLBuilder.getStreamSearchUrl(context.event(), date);
+        LoggingAlertFields loggingAlertFields = new LoggingAlertFields(identifier, severity, date, messagesURL);
+        return this.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);
     }
 
     public String buildMessageBodyForMessage(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary message) {
         LoggingAlertFields loggingAlertFields = this.buildLoggingAlertFields(context, config, generalConfig, date, message);
         ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
-        return this.buildMessageBodyForBacklog(logTemplate, context, backlogWithMessage, loggingAlertFields);
+        return this.buildMessageBody(logTemplate, context, backlogWithMessage, loggingAlertFields);
     }
 }
