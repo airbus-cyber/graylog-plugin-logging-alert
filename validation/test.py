@@ -61,7 +61,7 @@ class Test(TestCase):
             if notification_identifier is not None:
                 return notification_identifier
         print('All logs')
-        print(self._graylog._server._extract_all_logs()
+        print(self._graylog._server._extract_all_logs())
         print('Latest logs')
         print(logs)
         self.fail(f'Notification not logged within {duration} seconds')
