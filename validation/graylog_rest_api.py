@@ -161,6 +161,7 @@ class GraylogRestApi:
             'field_alert_id': 'id',
             'log_body': _DEFAULT_LOG_BODY,
             'separator': ' | ',
-            'severity': 'LOW'
+            'severity': 'LOW',
+            'overflow_tag': 'LoggingOverflow'
         }
         self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
