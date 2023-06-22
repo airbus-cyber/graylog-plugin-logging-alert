@@ -53,12 +53,18 @@ class Test(TestCase):
         return url
 
     def _wait_until_notification(self):
-        notification_identifier = None
-        while notification_identifier is None:
+        duration = 60
+        for i in range(duration):
             time.sleep(1)
             logs = self._graylog.extract_logs()
             notification_identifier = self._parse_notification_log(logs)
-        return notification_identifier
+            if notification_identifier is not None:
+                return notification_identifier
+        print('All logs')
+        print(self._graylog._server._extract_all_logs()
+        print('Latest logs')
+        print(logs)
+        self.fail(f'Notification not logged within {duration} seconds')
 
     def test_process_an_event_should_not_fail_for_a_notification_with_aggregation_issue30(self):
         notification_identifier = self._graylog.create_notification()
