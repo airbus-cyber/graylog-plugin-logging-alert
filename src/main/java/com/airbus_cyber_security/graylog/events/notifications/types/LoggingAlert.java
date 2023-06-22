@@ -92,8 +92,7 @@ public class LoggingAlert implements EventNotification {
         } else {
             LOGGER.debug("Add log to list message for backlog...");
             for (MessageSummary message: backlog) {
-                LoggingAlertFields loggingAlertFields = this.messageBodyBuilder.buildLoggingAlertFields(context, config, generalConfig, date, message);
-                String messageToLog = this.messageBodyBuilder.buildMessageBodyForMessage(logTemplate, context, message, loggingAlertFields);
+                String messageToLog = this.messageBodyBuilder.buildMessageBodyForMessage(logTemplate, context, config, generalConfig, date, message);
                 listMessagesToLog.add(messageToLog);
             }
         }

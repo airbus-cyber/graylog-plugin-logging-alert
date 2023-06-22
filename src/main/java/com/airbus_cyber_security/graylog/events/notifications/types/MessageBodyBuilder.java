@@ -105,7 +105,7 @@ public class MessageBodyBuilder {
         return valuesAggregationField.toString();
     }
 
-    public LoggingAlertFields buildLoggingAlertFields(EventNotificationContext ctx, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary) {
+    private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext ctx, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary) {
         String key = getValuesAggregationField(messageSummary, config);
         LoggingAlertFields fields = this.loggingAlertFieldsCache.get(key);
         if (fields != null) {
@@ -143,7 +143,8 @@ public class MessageBodyBuilder {
         return this.templateEngine.transform(logTemplate, model);
     }
 
-    public String buildMessageBodyForMessage(String logTemplate, EventNotificationContext context, MessageSummary message,  LoggingAlertFields loggingAlertFields) {
+    public String buildMessageBodyForMessage(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary message) {
+        LoggingAlertFields loggingAlertFields = this.buildLoggingAlertFields(context, config, generalConfig, date, message);
         ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
         return this.buildMessageBodyForBacklog(logTemplate, context, backlogWithMessage, loggingAlertFields);
