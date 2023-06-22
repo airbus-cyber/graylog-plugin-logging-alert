@@ -355,6 +355,9 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <!-- check newest version here: https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
                 <version>3.5.0</version>
+                <configuration>
+                    <doclint>-missing</doclint>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
