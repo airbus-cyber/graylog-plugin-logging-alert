@@ -224,7 +224,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <!-- check newest version here: https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-enforcer-plugin -->
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -267,6 +268,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>rpm-maven-plugin</artifactId>
+                <!-- check newest version here: https://central.sonatype.com/artifact/org.codehaus.mojo/rpm-maven-plugin -->
 		        <version>2.2.0</version>
                 <configuration>
                     <group>Application/Internet</group>
@@ -299,7 +301,8 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <!-- check newest version here: https://central.sonatype.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -311,7 +314,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.0.1</version>
+                <!-- check newest version here: https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-gpg-plugin -->
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -325,7 +329,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
+                <!-- check newest version here: https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-source-plugin -->
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -338,7 +343,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
+                <!-- check newest version here: https://central.sonatype.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -351,6 +357,7 @@
         </plugins>
     </build>
 
+    <!-- Note: this is necessary to run js tests -->
     <profiles>
         <profile>
             <id>web-interface-build</id>
