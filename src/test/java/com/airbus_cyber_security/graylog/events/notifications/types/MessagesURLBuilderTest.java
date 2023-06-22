@@ -49,16 +49,16 @@ public class MessagesURLBuilderTest {
 
     private MessagesURLBuilder subject;
 
+    private DateTime dummyTime;
+
+    private EventNotificationContext dummyContext;
+
     private static final String TEST_NOTIFICATION_ID = "NotificationTestId";
 
     @Before
     public void setup() {
         this.subject = new MessagesURLBuilder();
-    }
-
-    @Test
-    public void buildMessagesUrlShouldEscapeBackslash() {
-        DateTime dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
+        this.dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
         EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
         EventDto event = EventDto.builder()
                 .alert(true)
@@ -106,55 +106,59 @@ public class MessagesURLBuilderTest {
                 .jobDefinitionId("jobDefinitionId")
                 .jobDefinitionType("jobDefinitionType")
                 .schedule(new JobSchedule.FallbackSchedule())
-                .triggeredAt(dummyTime)
+                .triggeredAt(this.dummyTime)
                 .build();
-        EventNotificationContext context = EventNotificationContext.builder()
+        this.dummyContext = EventNotificationContext.builder()
                 .notificationId(TEST_NOTIFICATION_ID)
                 .notificationConfig(notificationConfig)
                 .event(event)
                 .eventDefinition(eventDefinitionDto)
                 .jobTrigger(jobTrigger)
                 .build();
+    }
+
+    @Test
+    public void buildMessagesUrlShouldEscapeBackslash() {
         List<String> splitFields = Collections.singletonList("filename");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("filename", "C:\\File.exe");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, dummyTime);
+        String query = this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
         Assert.assertEquals("/search?rangetype=absolute&from=2023-06-21T14%3A43%3A25.000Z&to=2023-06-21T14%3A44%3A25.000Z&q=filename%3A\"C:\\\\File.exe\"", query);
     }
 
     @Test
-    public void buildSplitFieldsSearchQueryShouldEscapeDoubleQuotes() {
+    public void buildMessagesUrlShouldEscapeDoubleQuotes() {
         List<String> splitFields = Collections.singletonList("key");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("key", "\"");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
-        Assert.assertEquals("&q=key%3A\"\\\"\"", query);
+        String query = this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
+        Assert.assertEquals("/search?rangetype=absolute&from=2023-06-21T14%3A43%3A25.000Z&to=2023-06-21T14%3A44%3A25.000Z&q=key%3A\"\\\"\"", query);
     }
 
     @Test
-    public void buildSplitFieldsSearchQueryShouldNotFailWhenSplitFieldIsInteger() {
+    public void buildMessagesUrlShouldNotFailWhenSplitFieldIsInteger() {
         List<String> splitFields = Collections.singletonList("key");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("key", 48);
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
     }
 
     @Test
-    public void buildSplitFieldsSearchQueryShouldNotFailWhenSplitFieldIsNotPresent() {
+    public void buildMessagesUrlShouldNotFailWhenSplitFieldIsNotPresent() {
         List<String> splitFields = Collections.singletonList("key");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        this.subject.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+        this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
     }
 }
