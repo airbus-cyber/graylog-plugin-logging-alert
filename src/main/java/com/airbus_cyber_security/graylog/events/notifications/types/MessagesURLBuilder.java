@@ -50,16 +50,6 @@ public class MessagesURLBuilder {
         return result.toString();
     }
 
-    public String getStreamSearchUrl(EventDto event, DateTime timeBeginSearch) {
-        String message_url = MSGS_URL_BEGIN
-                + timeBeginSearch.toString(TIME_FORMATTER) + MSGS_URL_TO
-                + event.eventTimestamp().plusMinutes(1).toString(TIME_FORMATTER);
-        if (event.sourceStreams().isEmpty()) {
-            return message_url;
-        }
-        return message_url + MSGS_URL_STREAM + this.concatenateSourceStreams(event);
-    }
-
     private String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
         StringBuilder searchFields = new StringBuilder();
         int i = 0;
@@ -85,6 +75,16 @@ public class MessagesURLBuilder {
         }
 
         return searchFields.toString();
+    }
+
+    public String getStreamSearchUrl(EventDto event, DateTime beginTime) {
+        String message_url = MSGS_URL_BEGIN
+                + beginTime.toString(TIME_FORMATTER) + MSGS_URL_TO
+                + event.eventTimestamp().plusMinutes(1).toString(TIME_FORMATTER);
+        if (event.sourceStreams().isEmpty()) {
+            return message_url;
+        }
+        return message_url + MSGS_URL_STREAM + this.concatenateSourceStreams(event);
     }
 
     public String buildMessagesUrl(EventNotificationContext context, Iterable<String> splitFields, MessageSummary messageSummary,
