@@ -16,7 +16,7 @@ jobs:
       - name: Setup Java JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version:  ${{ env.JAVA_VERSION }}
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: temurin
           cache: maven
       - name: Retrieve variables from pom
