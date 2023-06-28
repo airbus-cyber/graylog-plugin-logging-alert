@@ -73,8 +73,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <graylog.version>${project.parent.version}</graylog.version>
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
     </properties>
