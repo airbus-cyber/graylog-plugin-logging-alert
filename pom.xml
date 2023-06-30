@@ -109,6 +109,14 @@
             </resource>
         </resources>
         <plugins>
+            <!--
+            Note: most plugins versions are not explicited, because they are defined in the parent graylog pom
+            So they are updated, when the graylog version is updated
+
+            A command to find the available goals provided by a plugin:
+            mvn help:describe -Dplugin=org.apache.maven.plugins:maven-jar-plugin
+            mvn org.apache.maven.plugins:maven-jar-plugin:help
+            -->
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
