@@ -153,6 +153,7 @@ class Test(TestCase):
             time.sleep(_PERIOD)
 
             gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
+            # Seems like this test sometimes fails here, should we wait a little bit longer? Or is this truly a bug, a misisng notification?
             notification_identifier2 = self._parse_notification_identifier(self._wait_until_notification())
 
             self.assertNotEqual(notification_identifier2, notification_identifier1)
