@@ -16,12 +16,13 @@
  */
 
 // sources of inspiration for this code:
+// * components/common/URLWhiteListFormModal.tsx
 // * components/maps/configurations/GeoIpResolverConfig.tsx
 // * views/components/messagelist/MessageTableEntry.tsx
 // * pages/ShowMessagePage.tsx
 // * components/pipelines/ProcessingTimelineComponent.tsx (with useEffect for StreamsStore
-// * https://github.com/Graylog2/graylog-plugin-threatintel, components/ThreatIntelPluginConfig.jsx
-import React, { useState, useRef } from 'react';
+// * threatintel/components/ThreatIntelPluginConfig.jsx
+import React, { useState } from 'react';
 import { useStore } from 'stores/connect';
 import { StreamsStore } from 'views/stores/StreamsStore';
 import { defaultCompare } from 'logic/DefaultCompare'
@@ -76,17 +77,15 @@ const _displayOptionalConfigurationValue = (value) => {
 
 const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
     const [nextConfiguration, setNextConfiguration] = useState(config);
+    const [showModal, setShowModal] = useState(false);
     const { streams: streamList = [] } = useStore(StreamsStore);
 
-    // TODO try to avoid useRef (use Modal instead of BootsrapModalForm?)
-    const configurationModal = useRef();
-
     const _openModal = () => {
-        configurationModal.current.open();
+        setShowModal(true);
     };
 
     const _closeModal = () => {
-        configurationModal.current.close();
+        setShowModal(false);
     };
 
 /* TODO is this necessary?
@@ -205,10 +204,10 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
             </IfPermitted>
 
             <BootstrapModalForm
-                ref={configurationModal}
+                show={showModal}
                 title="Update Logging Alert Notification Configuration"
                 onSubmitForm={_saveConfiguration}
-                onModalClose={_resetConfiguration}
+                onCancel={_resetConfiguration}
                 submitButtonText="Save">
                 <fieldset>
                     <Input

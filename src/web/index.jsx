@@ -17,7 +17,7 @@
 // sources of inspiration for this code:
 // * components/maps/configurations/index.ts
 // * graylog-plugin-integrations, src/web/index.jsx (see https://github.com/Graylog2/graylog-plugin-integrations/pull/964)
-// * https://github.com/Graylog2/graylog-plugin-threatintel, index.jsx
+// * https://github.com/Graylog2/graylog-plugin-threatintel, index.jsx, now threatintel/bindings.jsx
 // * https://github.com/Graylog2/graylog-plugin-aws, index.jsx
 // * https://github.com/Graylog2/graylog-plugin-collector, index.jsx
 import './webpack-entry';
