@@ -30,7 +30,6 @@
     <artifactId>graylog-plugin-logging-alert</artifactId>
     <version>5.1.0</version>
     <packaging>jar</packaging>
-
     <name>${project.artifactId}</name>
     <description>Graylog ${project.artifactId} plugin.</description>
     <url>https://github.com/airbus-cyber/graylog-plugin-logging-alert</url>
