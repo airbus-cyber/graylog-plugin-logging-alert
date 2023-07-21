@@ -49,6 +49,6 @@ describe('<LoggingAlertConfig>', () => {
     // so there must be a reason for waitFor to be necessary
     // maybe because of the wrap with CurrentUserContext.Provider
     const elem = await findByText('Edit configuration');
-    expect(elem).toHaveStyle('background-color: rgb(87, 141, 204)')
+    expect(elem).toHaveStyle('background-color: rgb(84, 133, 190)')
   });
 });
