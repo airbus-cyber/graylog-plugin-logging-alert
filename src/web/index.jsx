@@ -27,7 +27,7 @@ import LoggingAlertConfig from 'components/LoggingAlertConfig';
 import LoggingAlertFormContainer from 'components/event-notifications/LoggingAlertFormContainer';
 import LoggingAlertSummary from 'components/event-notifications/LoggingAlertSummary';
 import LoggingAlertNotificationDetails from 'components/event-notifications/LoggingAlertNotificationDetails';
-export {DEFAULT_BODY_TEMPLATE} from 'components/LoggingAlertConfig';
+export { DEFAULT_BODY_TEMPLATE } from 'components/LoggingAlertConfig';
 
 const metadata = {
   name: packageJson.name
