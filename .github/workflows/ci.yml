@@ -70,6 +70,11 @@ jobs:
           pip install -r requirements.txt
           docker-compose --project-directory ../runtime pull
           PYTHONUNBUFFERED=true python -m unittest --verbose
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: end_to_end/package-lock.json
       - name: Package signed .rpm
         working-directory: plugin
         env:
