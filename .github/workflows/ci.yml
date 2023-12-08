@@ -82,7 +82,16 @@ jobs:
           npx playwright install chromium
       - name: Run Playwright tests
         working-directory: plugin/end_to_end
-        run: npx playwright test
+        run: |
+          ../validation/graylog_control start
+          npx playwright test; result=$?
+          ../validation/graylog_control stop
+          (exit $result)
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: plugin/end_to_end/playwright-report/
       - name: Package signed .rpm
         working-directory: plugin
         env:
