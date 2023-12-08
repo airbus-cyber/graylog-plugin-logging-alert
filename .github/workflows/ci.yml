@@ -75,6 +75,14 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: plugin/end_to_end/package-lock.json
+      - name: Install dependencies
+        working-directory: plugin/end_to_end
+        run: |
+          npm ci
+          npx playwright install bromium
+      - name: Run Playwright tests
+        working-directory: plugin/end_to_end
+        run: npx playwright test
       - name: Package signed .rpm
         working-directory: plugin
         env:
