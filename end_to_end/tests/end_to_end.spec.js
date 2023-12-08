@@ -1,5 +1,16 @@
 // @ts-check
+const { execSync } = require('child_process');
 const { test, expect } = require('@playwright/test');
+
+test.beforeAll(async () => {
+    test.setTimeout(5*60*1000);
+    execSync('../validation/graylog_control start');
+});
+
+
+test.afterAll(async () => {
+    execSync('../validation/graylog_control stop');
+});
 
 test.beforeEach(async ({ page }) => {
   await page.goto('http://127.0.0.1:9000/');
