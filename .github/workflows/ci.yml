@@ -79,7 +79,7 @@ jobs:
         working-directory: plugin/end_to_end
         run: |
           npm ci
-          npx playwright install bromium
+          npx playwright install chromium
       - name: Run Playwright tests
         working-directory: plugin/end_to_end
         run: npx playwright test
