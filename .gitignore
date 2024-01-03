@@ -6,8 +6,8 @@
 /runtime/graylog/plugin/
 
 # For backend tests in python
-/validation/venv/
 /validation/graylog/__pycache__/
+/validation/server/venv/
 /validation/end_to_end/__pycache__/
 /validation/end_to_end/venv/
 

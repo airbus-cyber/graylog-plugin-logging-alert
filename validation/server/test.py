@@ -8,7 +8,7 @@
 # * execute tests
 #   python -m unittest --verbose
 # * execute only one test
-#   PYTHONPATH=graylog python -m unittest test.Test.test_notification_identifier_should_not_be_from_the_message_in_the_backlog_issue22
+#   PYTHONPATH=../graylog python -m unittest test.Test.test_notification_identifier_should_not_be_from_the_message_in_the_backlog_issue22
 
 from unittest import TestCase, skip
 import time
@@ -20,7 +20,7 @@ _PERIOD = 5
 class Test(TestCase):
 
     def setUp(self) -> None:
-        self._graylog = Graylog('../runtime')
+        self._graylog = Graylog('../../runtime')
         self._graylog.start()
 
     def tearDown(self) -> None:

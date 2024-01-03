@@ -63,13 +63,13 @@ jobs:
           mkdir runtime/graylog/plugin
           cp ${{ steps.requestPom.outputs.JAR_PATH }} runtime/graylog/plugin
       - name: Execute backend tests
-        working-directory: plugin/validation
+        working-directory: plugin/validation/server
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          docker-compose --project-directory ../runtime pull
-          PYTHONUNBUFFERED=true PYTHONPATH=graylog python -m unittest --verbose
+          docker-compose --project-directory ../../runtime pull
+          PYTHONUNBUFFERED=true PYTHONPATH=../graylog python -m unittest --verbose
       - uses: actions/setup-node@v4
         with:
           node-version: 18
