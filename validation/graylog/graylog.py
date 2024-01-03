@@ -1,8 +1,8 @@
 import time
-from graylog_server import GraylogServer
-from graylog_rest_api import GraylogRestApi
-from graylog_inputs import GraylogInputs
-from server_timeout_error import ServerTimeoutError
+from graylog.graylog_server import GraylogServer
+from graylog.graylog_rest_api import GraylogRestApi
+from graylog.graylog_inputs import GraylogInputs
+from graylog.server_timeout_error import ServerTimeoutError
 
 
 class Graylog:

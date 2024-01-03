@@ -1,7 +1,7 @@
 from urllib import parse
 import requests
 from requests.exceptions import ConnectionError
-from gelf_input import GelfInput
+from graylog.gelf_input import GelfInput
 
 STREAM_ALL_MESSAGES = "000000000000000000000001"
 _AUTH = ('admin', 'admin')

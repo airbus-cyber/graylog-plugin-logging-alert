@@ -8,11 +8,11 @@
 # * execute tests
 #   python -m unittest --verbose
 # * execute only one test
-#   PYTHONPATH=../graylog python -m unittest test.Test.test_notification_identifier_should_not_be_from_the_message_in_the_backlog_issue22
+#   PYTHONPATH=.. python -m unittest test.Test.test_notification_identifier_should_not_be_from_the_message_in_the_backlog_issue22
 
 from unittest import TestCase, skip
 import time
-from graylog import Graylog
+from graylog.graylog import Graylog
 
 _PERIOD = 5
 

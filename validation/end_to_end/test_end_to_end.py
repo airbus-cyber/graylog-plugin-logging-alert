@@ -1,5 +1,5 @@
 from pytest import fixture
-from graylog import Graylog
+from graylog.graylog import Graylog
 
 from playwright.sync_api import Page, expect
 
