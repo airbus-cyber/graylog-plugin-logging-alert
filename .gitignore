@@ -8,6 +8,8 @@
 # For backend tests in python
 /validation/__pycache__/
 /validation/venv/
+/validation/end_to_end/__pycache__/
+/validation/end_to_end/venv/
 
 # IDE
 .idea
