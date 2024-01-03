@@ -7,8 +7,8 @@ from server_timeout_error import ServerTimeoutError
 
 class Graylog:
 
-    def __init__(self):
-        self._server = GraylogServer('../runtime')
+    def __init__(self, docker_compose_path):
+        self._server = GraylogServer(docker_compose_path)
         self._api = GraylogRestApi()
 
     def _wait(self, condition, attempts, sleep_duration=1):

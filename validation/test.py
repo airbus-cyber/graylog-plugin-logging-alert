@@ -20,7 +20,7 @@ _PERIOD = 5
 class Test(TestCase):
 
     def setUp(self) -> None:
-        self._graylog = Graylog()
+        self._graylog = Graylog('../runtime')
         self._graylog.start()
 
     def tearDown(self) -> None:

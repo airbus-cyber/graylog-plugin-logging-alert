@@ -75,14 +75,14 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: plugin/end_to_end/package-lock.json
-      - name: Install dependencies
-        working-directory: plugin/end_to_end
-        run: |
-          npm ci
-          npx playwright install chromium
       - name: Run Playwright tests
-        working-directory: plugin/end_to_end
-        run: npx playwright test
+        working-directory: plugin/validation/end_to_end
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          docker-compose --project-directory ../../runtime pull
+          PYTHONPATH=.. pytest
       - uses: actions/upload-artifact@v3
         if: always()
         with:
