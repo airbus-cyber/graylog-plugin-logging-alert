@@ -167,3 +167,11 @@ class GraylogRestApi:
             'overflow_tag': 'LoggingOverflow'
         }
         self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+
+    def configure_telemetry(self):
+        configuration = {
+            'telemetry_enabled': False,
+            'telemetry_permission_asked': True
+        }
+        self._put('telemetry/user/settings', configuration)
+

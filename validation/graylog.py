@@ -8,7 +8,7 @@ from server_timeout_error import ServerTimeoutError
 class Graylog:
 
     def __init__(self):
-        self._server = GraylogServer('../runtime')
+        self._server = GraylogServer('../../runtime')
         self._api = GraylogRestApi()
 
     def _wait(self, condition, attempts, sleep_duration=1):
@@ -59,3 +59,6 @@ class Graylog:
 
     def update_plugin_configuration(self, aggregation_stream):
         self._api.update_plugin_configuration(aggregation_stream)
+
+    def configure_telemetry(self):
+        self._api.configure_telemetry()
