@@ -8,7 +8,7 @@ from server_timeout_error import ServerTimeoutError
 class Graylog:
 
     def __init__(self):
-        self._server = GraylogServer('../../runtime')
+        self._server = GraylogServer('../runtime')
         self._api = GraylogRestApi()
 
     def _wait(self, condition, attempts, sleep_duration=1):
