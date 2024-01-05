@@ -17,8 +17,6 @@
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.graylog.events.notifications.*;
 import org.graylog.events.event.EventDto;
