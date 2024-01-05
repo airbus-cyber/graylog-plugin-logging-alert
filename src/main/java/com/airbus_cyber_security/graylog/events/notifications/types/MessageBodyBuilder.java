@@ -99,15 +99,15 @@ public class MessageBodyBuilder {
         return valuesAggregationField.toString();
     }
 
-    private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext ctx, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary) {
+    private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary) {
         String key = getValuesAggregationField(messageSummary, config);
         LoggingAlertFields fields = this.loggingAlertFieldsCache.get(key);
         if (fields != null) {
             return fields;
         }
 
-        String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(ctx, config.splitFields(), messageSummary, date);
-        String loggingAlertID = getAlertIDWithSuffix(config.aggregationTime(), generalConfig, ctx, key);
+        String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(context, config.splitFields(), messageSummary, date);
+        String loggingAlertID = getAlertIDWithSuffix(config.aggregationTime(), generalConfig, context, key);
 
         fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
         this.loggingAlertFieldsCache.put(key, fields);
