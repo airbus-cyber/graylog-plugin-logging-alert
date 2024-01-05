@@ -1,14 +1,14 @@
 from pytest import fixture
-from graylog.graylog import Graylog
+from graylog.driver import Driver
 
 from playwright.sync_api import Page, expect
 
 
 @fixture(scope="function", autouse=True)
 def before_each_after_each(page: Page):
-    graylog = Graylog('../../runtime')
-    graylog.start()
-    graylog.configure_telemetry()
+    subject = Driver('../../runtime')
+    subject.start()
+    subject.configure_telemetry()
 
     page.goto('http://127.0.0.1:9000/')
     # note: could also be: getByRole('textbox', { name: 'Username' })
@@ -17,7 +17,7 @@ def before_each_after_each(page: Page):
     page.get_by_role('button', name='Sign in').click()
 
     yield
-    graylog.stop()
+    subject.stop()
 
 def test_plugin_logging_alert_should_be_registered_issue_50(page: Page):
     page.get_by_role('button', name='System').click()

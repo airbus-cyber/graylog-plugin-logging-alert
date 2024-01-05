@@ -5,7 +5,7 @@ from graylog.graylog_inputs import GraylogInputs
 from graylog.server_timeout_error import ServerTimeoutError
 
 
-class Graylog:
+class Driver:
 
     def __init__(self, docker_compose_path):
         self._server = GraylogServer(docker_compose_path)
