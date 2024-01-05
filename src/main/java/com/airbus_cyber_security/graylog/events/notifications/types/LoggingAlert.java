@@ -74,8 +74,9 @@ public class LoggingAlert implements EventNotification {
         DateTime date = event.eventTimestamp();
 
         for (MessageSummary messageSummary: backlog) {
-            if (messageSummary.getTimestamp().isBefore(date))
+            if (messageSummary.getTimestamp().isBefore(date)) {
                 date = messageSummary.getTimestamp();
+            }
         }
 
         Collection<String> listMessagesToLog = new ArrayList<>();
