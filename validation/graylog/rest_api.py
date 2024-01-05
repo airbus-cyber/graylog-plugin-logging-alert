@@ -10,7 +10,7 @@ _HEADERS = {'X-Requested-By': 'test-program'}
 _DEFAULT_LOG_BODY = 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}'
 
 
-class GraylogRestApi:
+class RestApi:
 
     def _build_url(self, path):
         return parse.urljoin('http://127.0.0.1:9000/api/', path)

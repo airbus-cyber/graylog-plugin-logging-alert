@@ -1,14 +1,14 @@
 import time
-from graylog.graylog_server import GraylogServer
-from graylog.graylog_rest_api import GraylogRestApi
+from graylog.server import Server
+from graylog.rest_api import RestApi
 from graylog.server_timeout_error import ServerTimeoutError
 
 
 class Driver:
 
     def __init__(self, docker_compose_path):
-        self._server = GraylogServer(docker_compose_path)
-        self._api = GraylogRestApi()
+        self._server = Server(docker_compose_path)
+        self._api = RestApi()
 
     def _wait(self, condition, attempts, sleep_duration=1):
         count = 0

@@ -1,7 +1,7 @@
 import subprocess
 
 
-class GraylogServer:
+class Server:
 
     def __init__(self, docker_compose_path):
         self._docker_compose_path = docker_compose_path
