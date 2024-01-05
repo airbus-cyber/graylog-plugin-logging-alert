@@ -62,7 +62,11 @@ jobs:
         run: |
           mkdir runtime/graylog/plugin
           cp ${{ steps.requestPom.outputs.JAR_PATH }} runtime/graylog/plugin
-      # TODO should try to cache dependencies installed with pip?
+      - name: Cache backend tests python dependences
+        uses: actions/cache@v3
+        with:
+          path: plugin/validation/server/venv
+          key: ${{ hashFiles('plugin/validation/server/requirements.txt') }}
       - name: Execute backend tests
         working-directory: plugin/validation/server
         run: |
@@ -71,6 +75,11 @@ jobs:
           pip install -r requirements.txt
           docker-compose --project-directory ../../runtime pull
           PYTHONUNBUFFERED=true PYTHONPATH=.. python -m unittest --verbose
+      - name: Cache Playwright tests python dependences
+        uses: actions/cache@v3
+        with:
+          path: plugin/validation/server/venv
+          key: ${{ hashFiles('plugin/validation/end_to_end/requirements.txt') }}
       - name: Run Playwright tests
         working-directory: plugin/validation/end_to_end
         run: |
