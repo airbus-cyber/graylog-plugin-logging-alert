@@ -1,9 +1,14 @@
+import json
+
 
 class GelfInput:
 
-    def __init__(self, api, identifier):
-        self._api = api
-        self._identifier = identifier
+    def __init__(self, input_socket):
+        self._socket = input_socket
 
-    def is_running(self):
-        return self._api.gelf_input_is_running(self._identifier)
+    def send(self, args):
+        data = dict({'version': '1.1', 'host': 'host', 'short_message': 'short_message'}, **args)
+        print('Sending {}'.format(data))
+        message = '{}\0'.format(json.dumps(data))
+        self._socket.send(message.encode())
+

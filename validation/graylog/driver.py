@@ -1,7 +1,6 @@
 import time
 from graylog.graylog_server import GraylogServer
 from graylog.graylog_rest_api import GraylogRestApi
-from graylog.graylog_inputs import GraylogInputs
 from graylog.server_timeout_error import ServerTimeoutError
 
 
@@ -52,7 +51,7 @@ class Driver:
     def create_gelf_input(self):
         gelf_input = self._api.create_gelf_input()
         self._wait(gelf_input.is_running, 10, sleep_duration=.1)
-        return GraylogInputs()
+        return gelf_input
 
     def create_stream_with_rule(self, title, field, value):
         return self._api.create_stream_with_rule(title, field, value)
