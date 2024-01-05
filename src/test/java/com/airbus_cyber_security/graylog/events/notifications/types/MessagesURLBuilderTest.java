@@ -51,20 +51,21 @@ public class MessagesURLBuilderTest {
 
     private DateTime dummyTime;
 
-    private EventNotificationContext dummyContext;
-
     private static final String TEST_NOTIFICATION_ID = "NotificationTestId";
 
     @Before
     public void setup() {
         this.subject = new MessagesURLBuilder();
         this.dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
+    }
+
+    private EventNotificationContext buildContext(DateTime jobTriggerTime) {
         EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
         EventDto event = EventDto.builder()
                 .alert(true)
                 .eventDefinitionId("EventDefinitionTestId")
                 .eventDefinitionType("notification-test-v1")
-                .eventTimestamp(Tools.nowUTC())
+                .eventTimestamp(this.dummyTime)
                 .processingTimestamp(Tools.nowUTC())
                 .id("TEST_NOTIFICATION_ID")
                 .streams(ImmutableSet.of(Stream.DEFAULT_EVENTS_STREAM_ID))
@@ -106,9 +107,9 @@ public class MessagesURLBuilderTest {
                 .jobDefinitionId("jobDefinitionId")
                 .jobDefinitionType("jobDefinitionType")
                 .schedule(new JobSchedule.FallbackSchedule())
-                .triggeredAt(this.dummyTime)
+                .triggeredAt(jobTriggerTime)
                 .build();
-        this.dummyContext = EventNotificationContext.builder()
+        return EventNotificationContext.builder()
                 .notificationId(TEST_NOTIFICATION_ID)
                 .notificationConfig(notificationConfig)
                 .event(event)
@@ -125,7 +126,8 @@ public class MessagesURLBuilderTest {
         fields.put("filename", "C:\\File.exe");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
+        EventNotificationContext context = this.buildContext(this.dummyTime);
+        String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
         Assert.assertEquals("/search?rangetype=absolute&from=2023-06-21T14%3A43%3A25.000Z&to=2023-06-21T14%3A44%3A25.000Z&q=filename%3A\"C:\\\\File.exe\"", query);
     }
 
@@ -137,7 +139,8 @@ public class MessagesURLBuilderTest {
         fields.put("key", "\"");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        String query = this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
+        EventNotificationContext context = this.buildContext(this.dummyTime);
+        String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
         Assert.assertEquals("/search?rangetype=absolute&from=2023-06-21T14%3A43%3A25.000Z&to=2023-06-21T14%3A44%3A25.000Z&q=key%3A\"\\\"\"", query);
     }
 
@@ -149,7 +152,8 @@ public class MessagesURLBuilderTest {
         fields.put("key", 48);
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
+        EventNotificationContext context = this.buildContext(this.dummyTime);
+        this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
     }
 
     @Test
@@ -159,6 +163,21 @@ public class MessagesURLBuilderTest {
         fields.put("_id", "identifier");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        this.subject.buildMessagesUrl(this.dummyContext, splitFields, messageSummary, this.dummyTime);
+        EventNotificationContext context = this.buildContext(this.dummyTime);
+        this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
+    }
+
+    @Test
+    public void getStreamSearchUrlShouldComputeTheSameTimeRangeAsbuildMessagesUrlIssue47() {
+        List<String> splitFields = Collections.emptyList();
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("_id", "identifier");
+        Message message = new Message(fields);
+        MessageSummary messageSummary = new MessageSummary("index", message);
+        DateTime jobTrigger = this.dummyTime.plusMinutes(5);
+        EventNotificationContext context = this.buildContext(jobTrigger);
+        String query = this.subject.getStreamSearchUrl(context, this.dummyTime);
+        String expectedQuery = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
+        Assert.assertEquals(expectedQuery, query);
     }
 }

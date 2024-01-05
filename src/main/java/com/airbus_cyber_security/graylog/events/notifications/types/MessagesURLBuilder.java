@@ -35,19 +35,19 @@ public class MessagesURLBuilder {
     private static final String COMMA_SEPARATOR = "%2C";
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
 
-    private String concatenateSourceStreams(EventDto event) {
-        Set<String> setStreams = event.sourceStreams();
-        if (setStreams.isEmpty()) {
+    private String buildSourceStreams(EventDto event) {
+        Set<String> sourceStreams = event.sourceStreams();
+        if (sourceStreams.isEmpty()) {
             return "";
         }
         StringBuilder result = new StringBuilder();
-        for (String stream: setStreams) {
+        for (String stream: sourceStreams) {
             if (result.length() != 0) {
                 result.append(COMMA_SEPARATOR);
             }
             result.append(stream);
         }
-        return result.toString();
+        return MSGS_URL_STREAM + result.toString();
     }
 
     private String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
@@ -77,24 +77,11 @@ public class MessagesURLBuilder {
         return searchFields.toString();
     }
 
-    public String getStreamSearchUrl(EventDto event, DateTime beginTime) {
-        String message_url = MSGS_URL_BEGIN
-                + beginTime.toString(TIME_FORMATTER) + MSGS_URL_TO
-                + event.eventTimestamp().plusMinutes(1).toString(TIME_FORMATTER);
-        if (event.sourceStreams().isEmpty()) {
-            return message_url;
-        }
-        return message_url + MSGS_URL_STREAM + this.concatenateSourceStreams(event);
-    }
-
-    public String buildMessagesUrl(EventNotificationContext context, Iterable<String> splitFields, MessageSummary messageSummary,
-                                    DateTime beginTime) {
-        EventDto event = context.event();
-        if (!context.eventDefinition().isPresent()) {
-            return getStreamSearchUrl(event, beginTime);
-        }
-
+    private DateTime evaluateEndTime(EventNotificationContext context, DateTime beginTime) {
         DateTime endTime;
+        // TODO should handle the case where the jobTrigger is not present
+        //      this can happen in the notification edition page when testing the notification
+        //      in this case, maybe use event.eventTimestamp().plusMinutes(1) as endTime (as was done before)
         JobTriggerDto jobTrigger = context.jobTrigger().get();
         if (jobTrigger.endTime().isPresent()) {
             endTime = jobTrigger.endTime().get().plusMinutes(1);
@@ -108,19 +95,21 @@ public class MessagesURLBuilder {
             endTime = beginTime.plusMinutes(timeRange);
         }
 
-        String search = "";
-        String concatStream = this.concatenateSourceStreams(event);
-        if (!concatStream.isEmpty()) {
-            search = MSGS_URL_STREAM + concatStream;
-        }
+        return endTime;
+    }
 
-        String searchQuery = this.buildSplitFieldsSearchQuery(splitFields, messageSummary);
+    public String getStreamSearchUrl(EventNotificationContext context, DateTime beginTime) {
+        DateTime endTime = this.evaluateEndTime(context, beginTime);
+        // TODO review how beginTime/endTime are computed: they do not seem to correspond to the aggregation time range shown when viewing the alert!!
+        return MSGS_URL_BEGIN + beginTime.toString(TIME_FORMATTER)
+                + MSGS_URL_TO + endTime.toString(TIME_FORMATTER)
+                + this.buildSourceStreams(context.event());
+    }
 
-        // TODO it should probably be possible to factor this more with code in getStreamSearchUrl
-        return MSGS_URL_BEGIN
-                + beginTime.toString(TIME_FORMATTER) + MSGS_URL_TO
-                + endTime.toString(TIME_FORMATTER)
-                + search
-                + searchQuery;
+    public String buildMessagesUrl(EventNotificationContext context, Iterable<String> splitFields, MessageSummary messageSummary,
+                                    DateTime beginTime) {
+        String result = this.getStreamSearchUrl(context, beginTime);
+
+        return result + this.buildSplitFieldsSearchQuery(splitFields, messageSummary);
     }
 }

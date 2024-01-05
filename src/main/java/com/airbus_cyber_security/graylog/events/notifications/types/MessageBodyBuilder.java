@@ -140,7 +140,7 @@ public class MessageBodyBuilder {
     public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, ImmutableList<MessageSummary> backlog) {
         String identifier = this.getAlertID(config.aggregationTime(), generalConfig, context);
         String severity = config.severity().getType();
-        String messagesURL = this.messagesURLBuilder.getStreamSearchUrl(context.event(), date);
+        String messagesURL = this.messagesURLBuilder.getStreamSearchUrl(context, date);
         LoggingAlertFields loggingAlertFields = new LoggingAlertFields(identifier, severity, date, messagesURL);
         return this.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);
     }
