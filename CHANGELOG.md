@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
 ### Bug Fixes
 * Plugin configuration name is shortened so that it is nicely displayed ([issue #50](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/50))
+* The `message_url` is correctly computed when there is no backlog (such as aggregation event definitions of the form `count() < 1`) ([issue #47](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/47))
 
 ## [5.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.0.0...5.1.0)
 ### Features
