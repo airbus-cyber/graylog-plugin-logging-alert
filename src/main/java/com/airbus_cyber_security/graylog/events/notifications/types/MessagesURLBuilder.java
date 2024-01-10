@@ -20,7 +20,6 @@ import org.graylog.events.event.EventDto;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.plugin.MessageSummary;
-import org.graylog2.plugin.Tools;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
