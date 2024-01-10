@@ -93,9 +93,8 @@ public class MessagesURLBuilder {
         }
 
         /* when the alert is unresolved and the repeat notification is active */
-        int timeRange = Tools.getNumber(jobTrigger.createdAt(), 1).intValue();
-        if (endTime.isBefore(beginTime.plusMinutes(timeRange))) {
-            endTime = beginTime.plusMinutes(timeRange);
+        if (endTime.isBefore(beginTime.plusMinutes(1))) {
+            endTime = beginTime.plusMinutes(1);
         }
 
         return endTime;
