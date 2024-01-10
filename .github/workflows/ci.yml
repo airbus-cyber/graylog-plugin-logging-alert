@@ -75,6 +75,7 @@ jobs:
           pip install -r requirements.txt
           docker-compose --project-directory ../../runtime pull
           PYTHONUNBUFFERED=true PYTHONPATH=.. python -m unittest --verbose
+      # TODO improve this, see https://playwright.dev/python/docs/ci-intro (in particular, use setup-pyhton?)
       - name: Cache Playwright tests python dependences
         uses: actions/cache@v3
         with:
@@ -88,12 +89,12 @@ jobs:
           pip install -r requirements.txt
           playwright install chromium
           docker-compose --project-directory ../../runtime pull
-          PYTHONPATH=.. pytest
+          PYTHONPATH=.. pytest --tracing=retain-on-failure
       - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
-          path: plugin/end_to_end/playwright-report/
+          path: plugin/validation/end_to_end/test-results/
       - name: Package signed .rpm
         working-directory: plugin
         env:
