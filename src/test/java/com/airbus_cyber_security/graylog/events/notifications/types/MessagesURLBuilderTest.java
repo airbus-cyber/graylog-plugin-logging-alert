@@ -21,7 +21,6 @@ package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import java.util.*;
 
-import org.graylog.events.contentpack.entities.EventProcessorConfigEntity;
 import org.graylog.events.event.EventDto;
 import org.graylog.events.notifications.EventNotificationConfig;
 import org.graylog.events.notifications.EventNotificationContext;
@@ -33,10 +32,8 @@ import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.scheduler.JobSchedule;
 import org.graylog.scheduler.JobTriggerDto;
-import org.graylog2.contentpacks.EntityDescriptorIds;
 import org.graylog2.plugin.Message;
 import org.graylog2.plugin.MessageSummary;
-import org.graylog2.plugin.rest.ValidationResult;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,9 +56,8 @@ public class MessagesURLBuilderTest {
         this.dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
     }
 
-    private EventNotificationContext buildContext(DateTime jobTriggerTime) {
-        EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
-        EventDto event = EventDto.builder()
+    private EventDto buildDummyEvent() {
+        return EventDto.builder()
                 .alert(true)
                 .eventDefinitionId("EventDefinitionTestId")
                 .eventDefinitionType("notification-test-v1")
@@ -77,7 +73,10 @@ public class MessagesURLBuilderTest {
                 .priority(2)
                 .fields(ImmutableMap.of("field1", "value1", "field2", "value2"))
                 .build();
-        EventDefinitionDto eventDefinitionDto = EventDefinitionDto.builder()
+    }
+
+    EventDefinitionDto buildDummyEventDefinition() {
+        return EventDefinitionDto.builder()
                 .alert(true)
                 .id(TEST_NOTIFICATION_ID)
                 .title("Event Definition Test Title")
@@ -103,6 +102,24 @@ public class MessagesURLBuilderTest {
                                       }
 
                 ).build();
+    }
+
+    private EventNotificationContext buildDummyContext() {
+        EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
+        EventDto event = buildDummyEvent();
+        EventDefinitionDto eventDefinitionDto = buildDummyEventDefinition();
+        return EventNotificationContext.builder()
+                .notificationId(TEST_NOTIFICATION_ID)
+                .notificationConfig(notificationConfig)
+                .event(event)
+                .eventDefinition(eventDefinitionDto)
+                .build();
+    }
+
+    private EventNotificationContext buildDummyContext(DateTime jobTriggerTime) {
+        EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
+        EventDto event = buildDummyEvent();
+        EventDefinitionDto eventDefinitionDto = buildDummyEventDefinition();
         JobTriggerDto jobTrigger = JobTriggerDto.builder()
                 .jobDefinitionId("jobDefinitionId")
                 .jobDefinitionType("jobDefinitionType")
@@ -126,7 +143,7 @@ public class MessagesURLBuilderTest {
         fields.put("filename", "C:\\File.exe");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        EventNotificationContext context = this.buildContext(this.dummyTime);
+        EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
         Assert.assertEquals("/search?rangetype=absolute&from=2023-06-21T14%3A43%3A25.000Z&to=2023-06-21T14%3A44%3A25.000Z&q=filename%3A\"C:\\\\File.exe\"", query);
     }
@@ -139,7 +156,7 @@ public class MessagesURLBuilderTest {
         fields.put("key", "\"");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        EventNotificationContext context = this.buildContext(this.dummyTime);
+        EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
         Assert.assertEquals("/search?rangetype=absolute&from=2023-06-21T14%3A43%3A25.000Z&to=2023-06-21T14%3A44%3A25.000Z&q=key%3A\"\\\"\"", query);
     }
@@ -152,7 +169,7 @@ public class MessagesURLBuilderTest {
         fields.put("key", 48);
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        EventNotificationContext context = this.buildContext(this.dummyTime);
+        EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
     }
 
@@ -163,7 +180,7 @@ public class MessagesURLBuilderTest {
         fields.put("_id", "identifier");
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
-        EventNotificationContext context = this.buildContext(this.dummyTime);
+        EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
     }
 
@@ -175,9 +192,17 @@ public class MessagesURLBuilderTest {
         Message message = new Message(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         DateTime jobTrigger = this.dummyTime.plusMinutes(5);
-        EventNotificationContext context = this.buildContext(jobTrigger);
+        EventNotificationContext context = this.buildDummyContext(jobTrigger);
         String query = this.subject.getStreamSearchUrl(context, this.dummyTime);
         String expectedQuery = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
         Assert.assertEquals(expectedQuery, query);
+    }
+
+    @Test
+    public void getStreamSearchUrlShouldNotFailWhenThereIsNoJobTrigger() {
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("_id", "identifier");
+        EventNotificationContext context = this.buildDummyContext();
+        this.subject.getStreamSearchUrl(context, this.dummyTime);
     }
 }

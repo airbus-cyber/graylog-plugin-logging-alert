@@ -78,10 +78,13 @@ public class MessagesURLBuilder {
     }
 
     private DateTime evaluateEndTime(EventNotificationContext context, DateTime beginTime) {
+        // TODO currently we use event.eventTimestamp() for beginTime and this complex code for endTime
+        //      why don't we just simply use event.timerangeStart() and event.timerangeEnd() ?
+        if (context.jobTrigger().isEmpty()) {
+            EventDto event = context.event();
+            return event.eventTimestamp().plusMinutes(1);
+        }
         DateTime endTime;
-        // TODO should handle the case where the jobTrigger is not present
-        //      this can happen in the notification edition page when testing the notification
-        //      in this case, maybe use event.eventTimestamp().plusMinutes(1) as endTime (as was done before)
         JobTriggerDto jobTrigger = context.jobTrigger().get();
         if (jobTrigger.endTime().isPresent()) {
             endTime = jobTrigger.endTime().get().plusMinutes(1);
