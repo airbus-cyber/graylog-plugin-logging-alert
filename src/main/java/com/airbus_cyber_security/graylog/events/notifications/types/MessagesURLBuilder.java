@@ -42,7 +42,7 @@ public class MessagesURLBuilder {
         }
         StringBuilder result = new StringBuilder();
         for (String stream: sourceStreams) {
-            if (result.length() != 0) {
+            if (!result.isEmpty()) {
                 result.append(COMMA_SEPARATOR);
             }
             result.append(stream);
