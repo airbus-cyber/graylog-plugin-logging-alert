@@ -51,6 +51,7 @@ class Driver:
     def create_gelf_input(self):
         gelf_input = self._api.create_gelf_input()
         self._wait(gelf_input.is_running, 10, sleep_duration=.1)
+        gelf_input.connect()
         return gelf_input
 
     def create_stream_with_rule(self, title, field, value):

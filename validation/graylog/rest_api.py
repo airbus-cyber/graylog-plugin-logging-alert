@@ -1,7 +1,7 @@
 from urllib import parse
 import requests
 from requests.exceptions import ConnectionError
-from graylog.gelf_input_context_manager import GelfInputContextManager
+from graylog.gelf_input import GelfInput
 
 STREAM_ALL_MESSAGES = "000000000000000000000001"
 _AUTH = ('admin', 'admin')
@@ -131,7 +131,7 @@ class RestApi:
         }
         response = self._post('system/inputs', payload)
         identifier = response.json()['id']
-        return GelfInputContextManager(self, identifier)
+        return GelfInput(self, identifier)
 
     def create_stream_with_rule(self, title, field, value):
         response = self._get('system/indices/index_sets')

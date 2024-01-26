@@ -56,7 +56,7 @@ public class MessagesURLBuilderTest {
         this.dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
     }
 
-    private EventDto buildDummyEvent() {
+    private EventDto.Builder dummyEventBuilder() {
         return EventDto.builder()
                 .alert(true)
                 .eventDefinitionId("EventDefinitionTestId")
@@ -71,8 +71,7 @@ public class MessagesURLBuilderTest {
                 .key("testkey")
                 .originContext(EventOriginContext.elasticsearchMessage("testIndex_42", "b5e53442-12bb-4374-90ed-0deadbeefbaz"))
                 .priority(2)
-                .fields(ImmutableMap.of("field1", "value1", "field2", "value2"))
-                .build();
+                .fields(ImmutableMap.of("field1", "value1", "field2", "value2"));
     }
 
     EventDefinitionDto buildDummyEventDefinition() {
@@ -104,33 +103,32 @@ public class MessagesURLBuilderTest {
                 ).build();
     }
 
-    private EventNotificationContext buildDummyContext() {
+    private EventNotificationContext.Builder dummyContextBuilder() {
         EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
-        EventDto event = buildDummyEvent();
         EventDefinitionDto eventDefinitionDto = buildDummyEventDefinition();
+        EventDto event = dummyEventBuilder()
+                .timerangeStart(this.dummyTime)
+                .timerangeEnd(this.dummyTime.plusMinutes(1))
+                .build();
         return EventNotificationContext.builder()
                 .notificationId(TEST_NOTIFICATION_ID)
                 .notificationConfig(notificationConfig)
-                .event(event)
                 .eventDefinition(eventDefinitionDto)
-                .build();
+                .event(event);
     }
 
-    private EventNotificationContext buildDummyContext(DateTime jobTriggerTime) {
-        EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
-        EventDto event = buildDummyEvent();
-        EventDefinitionDto eventDefinitionDto = buildDummyEventDefinition();
-        JobTriggerDto jobTrigger = JobTriggerDto.builder()
+    private JobTriggerDto buildJobTrigger(DateTime jobTriggerTime) {
+        return JobTriggerDto.builder()
                 .jobDefinitionId("jobDefinitionId")
                 .jobDefinitionType("jobDefinitionType")
                 .schedule(new JobSchedule.FallbackSchedule())
                 .triggeredAt(jobTriggerTime)
                 .build();
-        return EventNotificationContext.builder()
-                .notificationId(TEST_NOTIFICATION_ID)
-                .notificationConfig(notificationConfig)
-                .event(event)
-                .eventDefinition(eventDefinitionDto)
+    }
+
+    private EventNotificationContext buildDummyContext(DateTime jobTriggerTime) {
+        JobTriggerDto jobTrigger = buildJobTrigger(jobTriggerTime);
+        return dummyContextBuilder()
                 .jobTrigger(jobTrigger)
                 .build();
     }
@@ -202,7 +200,25 @@ public class MessagesURLBuilderTest {
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoJobTrigger() {
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
-        EventNotificationContext context = this.buildDummyContext();
+        EventNotificationContext context = dummyContextBuilder().build();
+        this.subject.getStreamSearchUrl(context, this.dummyTime);
+    }
+
+    @Test
+    public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeStart() {
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("_id", "identifier");
+        EventDto event = dummyEventBuilder().timerangeEnd(this.dummyTime.plusMinutes(1)).build();
+        EventNotificationContext context = dummyContextBuilder().event(event).build();
+        this.subject.getStreamSearchUrl(context, this.dummyTime);
+    }
+
+    @Test
+    public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeEnd() {
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("_id", "identifier");
+        EventDto event = dummyEventBuilder().timerangeStart(this.dummyTime).build();
+        EventNotificationContext context = dummyContextBuilder().event(event).build();
         this.subject.getStreamSearchUrl(context, this.dummyTime);
     }
 }

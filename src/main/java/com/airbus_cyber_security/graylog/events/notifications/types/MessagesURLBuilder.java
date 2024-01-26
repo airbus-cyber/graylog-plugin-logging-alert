@@ -76,41 +76,29 @@ public class MessagesURLBuilder {
         return searchFields.toString();
     }
 
-    private DateTime evaluateEndTime(EventNotificationContext context, DateTime beginTime) {
-        // TODO currently we use event.eventTimestamp() for beginTime and this complex code for endTime
-        //      why don't we just simply use event.timerangeStart() and event.timerangeEnd() ?
-        if (context.jobTrigger().isEmpty()) {
-            EventDto event = context.event();
-            return event.eventTimestamp().plusMinutes(1);
+    private DateTime evaluateEndTime(EventDto event, DateTime beginTime) {
+        if (event.timerangeEnd().isEmpty()) {
+            return beginTime.plusMinutes(1);
         }
-        DateTime endTime;
-        JobTriggerDto jobTrigger = context.jobTrigger().get();
-        if (jobTrigger.endTime().isPresent()) {
-            endTime = jobTrigger.endTime().get().plusMinutes(1);
-        } else {
-            endTime = jobTrigger.triggeredAt().get().plusMinutes(1);
-        }
-
-        /* when the alert is unresolved and the repeat notification is active */
-        if (endTime.isBefore(beginTime.plusMinutes(1))) {
-            endTime = beginTime.plusMinutes(1);
-        }
-
-        return endTime;
+        return event.timerangeEnd().get();
     }
 
+    // TODO simplify code: remove beginTime, replace the full context by event
     public String getStreamSearchUrl(EventNotificationContext context, DateTime beginTime) {
-        DateTime endTime = this.evaluateEndTime(context, beginTime);
+        EventDto event = context.event();
+        if (event.timerangeStart().isPresent()) {
+            beginTime = event.timerangeStart().get();
+        }
+        DateTime endTime = evaluateEndTime(event, beginTime);
         // TODO review how beginTime/endTime are computed: they do not seem to correspond to the aggregation time range shown when viewing the alert!!
         return MSGS_URL_BEGIN + beginTime.toString(TIME_FORMATTER)
                 + MSGS_URL_TO + endTime.toString(TIME_FORMATTER)
-                + this.buildSourceStreams(context.event());
+                + this.buildSourceStreams(event);
     }
 
     public String buildMessagesUrl(EventNotificationContext context, Iterable<String> splitFields, MessageSummary messageSummary,
                                     DateTime beginTime) {
         String result = this.getStreamSearchUrl(context, beginTime);
-
         return result + this.buildSplitFieldsSearchQuery(splitFields, messageSummary);
     }
 }
