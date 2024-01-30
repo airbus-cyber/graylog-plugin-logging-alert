@@ -26,7 +26,7 @@ import React, { useState } from 'react';
 import { useStore } from 'stores/connect';
 import { StreamsStore } from 'views/stores/StreamsStore';
 import { defaultCompare } from 'logic/DefaultCompare'
-// TODO remove the ref and use property show when migrating to graylog >= 5.1
+
 import { BootstrapModalForm, Button, Input } from 'components/bootstrap';
 import IfPermitted from 'components/common/IfPermitted';
 import Select from 'components/common/Select';
