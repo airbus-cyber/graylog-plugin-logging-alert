@@ -35,10 +35,4 @@ def test_plugin_logging_alert_configuration_save_button_should_close_popup_50(pa
     page.get_by_role('button', name='Logging').click()
     page.get_by_role("button", name="Edit configuration").click()
     page.get_by_text('Save').click()
-    print('A')
-    expect(page.get_by_text('Update Logging Alert Notification Configuration')).to_have_count(0)
-    print('B')
-    # TODO...
-#    expect(page.get_by_text('Update Logging Alert Notification Configuration').count()).to_equal(0)
-#    print('C')
-#    expect(page.get_by_text('Update Logging Alert Notification Configuration')).not_to_be_attached()
+    expect(page.get_by_text('Update Logging Alert Notification Configuration')).not_to_be_attached()

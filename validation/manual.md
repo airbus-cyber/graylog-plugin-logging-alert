@@ -11,13 +11,6 @@
 * click button Save
 * it should not generate an error on request to update the configuration
 
-### Save button should close popup
-* select Plugins section
-* select Logging Alert configuration
-* click button edit configuration
-* click button Save
-* it should close the popup
-
 ### Cancel button should close popup
 * select Plugins section
 * select Logging Alert configuration
