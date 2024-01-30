@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.1...5.1.2)
+### Bug Fixes
+* Cancel button of configuration was not working
+* Revert the display name of the plugin, as requests do not work anymore see ([issue #50](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/50)) and Graylog issue Graylog2/graylog2-server#15939
+
 ## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
 ### Bug Fixes
 * Plugin configuration name is shortened so that it is nicely displayed ([issue #50](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/50))
