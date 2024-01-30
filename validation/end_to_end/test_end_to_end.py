@@ -25,5 +25,6 @@ def test_plugin_logging_alert_should_be_registered_issue_50(page: Page):
     page.get_by_role('button', name='Plugins').click()
   
     # note: could also be: await expect(page.getByText('Logging Alert')).toBeVisible();
-    expect(page.get_by_role('button', name='Logging')).to_have_text('Logging Alert')
+    # TODO should really by Logging Alert, but this will only be possible once this fix https://github.com/Graylog2/graylog2-server/issues/15939 is released
+    expect(page.get_by_role('button', name='Logging')).to_have_text('com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig')
 
