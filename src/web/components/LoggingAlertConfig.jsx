@@ -101,7 +101,11 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
     };
 
     const _resetConfiguration = () => {
+        // note: this is necessary to cancel current configuration changes
+        //       scenario: open the configuration popup, change a field value, cancel, reopen the configuration popup
+        //                 the field value should be back to what it was before its change
         setNextConfiguration(config);
+        _closeModal();
     };
 
     const _updateConfigurationField = (field, value) => {

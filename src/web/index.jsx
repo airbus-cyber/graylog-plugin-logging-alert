@@ -37,7 +37,7 @@ PluginStore.register(new PluginManifest(metadata, {
   systemConfigurations: [
     {
       component: LoggingAlertConfig,
-      configType: 'Logging Alert'
+      configType: 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig'
     },
   ],
   eventNotificationTypes: [
