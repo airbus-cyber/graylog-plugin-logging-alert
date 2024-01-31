@@ -17,12 +17,3 @@
 * click button edit configuration
 * click button exit cross
 * it should close the popup
-
-### Cancel button should revert changes
-* select Plugins section
-* select Logging Alert configuration
-* click button edit configuration
-* change Line Break Substitution to +
-* click button Cancel
-* click button edit configuration
-* Line Break Substitution should contain |
