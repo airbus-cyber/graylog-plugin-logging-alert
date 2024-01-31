@@ -17,7 +17,7 @@ def before_each_after_each(page: Page):
     page.get_by_role('button', name='Sign in').click()
 
     yield
-    subject.stop()
+    #subject.stop()
 
 def test_plugin_logging_alert_should_be_registered_issue_50(page: Page):
     page.get_by_role('button', name='System').click()
@@ -33,6 +33,17 @@ def test_plugin_logging_alert_configuration_save_button_should_close_popup_50(pa
     page.get_by_role('menuitem', name='Configurations').click()
     page.get_by_role('button', name='Plugins').click()
     page.get_by_role('button', name='Logging').click()
-    page.get_by_role("button", name="Edit configuration").click()
+    page.get_by_role('button', name='Edit configuration').click()
     page.get_by_text('Save').click()
     expect(page.get_by_text('Update Logging Alert Notification Configuration')).not_to_be_attached()
+
+def test_plugin_logging_alert_configuration_save_button_update_should_not_fail_50(page: Page):
+    page.get_by_role('button', name='System').click()
+    page.get_by_role('menuitem', name='Configurations').click()
+    page.get_by_role('button', name='Plugins').click()
+    page.get_by_role('button', name='Logging').click()
+    page.get_by_role('button', name='Edit configuration').click()
+    # note: we could also have done something with page.on('response', lambda response: print('<<', response.status, response.url, response.request.method, response.ok))
+    with page.expect_response(lambda response: response.request.method == 'PUT' and '/api/system/cluster_config/' in response.url) as event:
+        page.get_by_text('Save').click()
+        assert event.value.ok

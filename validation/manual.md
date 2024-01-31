@@ -4,13 +4,6 @@
 
 * start from http://127.0.0.1:9000/system/configurations
 
-### Save button should not fail
-* select Plugins section
-* select Logging Alert configuration
-* click button edit configuration
-* click button Save
-* it should not generate an error on request to update the configuration
-
 ### Cancel button should close popup
 * select Plugins section
 * select Logging Alert configuration
