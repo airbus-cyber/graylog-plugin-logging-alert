@@ -168,7 +168,7 @@ class RestApi:
         if aggregation_stream:
             plugin_configuration['aggregation_stream'] = aggregation_stream
         response = self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
-        print(response.json())
+        return response.status_code
 
     def configure_telemetry(self):
         configuration = {

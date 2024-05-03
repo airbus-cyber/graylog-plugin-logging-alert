@@ -58,7 +58,7 @@ class Driver:
         return self._api.create_stream_with_rule(title, field, value)
 
     def update_plugin_configuration(self, aggregation_stream=None):
-        self._api.update_plugin_configuration(aggregation_stream)
+        return self._api.update_plugin_configuration(aggregation_stream)
 
     def configure_telemetry(self):
         self._api.configure_telemetry()
