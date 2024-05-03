@@ -155,9 +155,8 @@ class RestApi:
         self._post('streams/{}/resume'.format(stream_identifier))
         return stream_identifier
 
-    def update_plugin_configuration(self, aggregation_stream):
+    def update_plugin_configuration(self, aggregation_stream=None):
         plugin_configuration = {
-            'aggregation_stream': aggregation_stream,
             'aggregation_time': '10',
             'alert_tag': 'LoggingAlert',
             'field_alert_id': 'id',
@@ -166,7 +165,10 @@ class RestApi:
             'severity': 'LOW',
             'overflow_tag': 'LoggingOverflow'
         }
-        self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        if aggregation_stream:
+            plugin_configuration['aggregation_stream'] = aggregation_stream
+        response = self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', plugin_configuration)
+        print(response.json())
 
     def configure_telemetry(self):
         configuration = {

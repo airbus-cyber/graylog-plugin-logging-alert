@@ -98,6 +98,11 @@ class Test(TestCase):
             
             self.assertNotEqual(notification_identifier, 'message_identifier')
 
+    def test_set_logging_alert_configuration_should_not_fail(self):
+        status_code = self._subject.update_plugin_configuration()
+        # TODO should be 200 instead of 202!!
+        self.assertEqual(202, status_code)
+
     # Seems like this test may sometimes block?
     def test_aggregation_should_reuse_the_notification_identifier(self):
         stream_input_identifier = self._subject.create_stream_with_rule('input', 'stream', 'input')
