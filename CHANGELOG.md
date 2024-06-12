@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [5.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.2...5.1.3)
 ### Bug Fixes
-* Inserted commas between split fields when they are displayed in the notification summary ([issue #51](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/51))
+* Inserted commas between split fields when they are displayed in the notification details ([issue #51](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/51))
 
 ## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.1...5.1.2)
 ### Bug Fixes
