@@ -2,8 +2,9 @@
 /node/
 /node_modules/
 
-# Location for built plugin
+# For the runtime dockre-compose
 /runtime/graylog/plugin/
+/runtime/.env
 
 # For backend tests in python
 /validation/graylog/__pycache__/

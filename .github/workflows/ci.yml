@@ -57,11 +57,12 @@ jobs:
         working-directory: plugin
         run: |
           mvn package --batch-mode
-      - name: Copy jar to backend tests runtime
+      - name: Prepare backend tests runtime
         working-directory: plugin
         run: |
           mkdir runtime/graylog/plugin
           cp ${{ steps.requestPom.outputs.JAR_PATH }} runtime/graylog/plugin
+          echo GRAYLOG_VERSION=${{ steps.requestPom.outputs.GRAYLOG_VERSION }} > .env
       - name: Cache backend tests python dependences
         uses: actions/cache@v3
         with:
