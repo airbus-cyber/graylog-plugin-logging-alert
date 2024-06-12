@@ -14,6 +14,11 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+
+// sources of inspiration for this code
+// * components/event-definitions/event-definition-form/EventDefinitionSummary.tsx
+// * components/event-definitions/event-definition-types/FilterAggregationSummary.jsx
+
 import * as React from 'react';
 import PropTypes from 'prop-types';
 
@@ -34,7 +39,7 @@ const LoggingAlertNotificationDetails = ({ notification }) => {
                                    </Well>
                                )}
             />
-            <ReadOnlyFormGroup label="Split Fields" value={notification.config.split_fields} />
+            <ReadOnlyFormGroup label="Split Fields" value={notification.config.split_fields.join(', ')} />
             <ReadOnlyFormGroup label="Aggregation Time Range" value={notification.config.aggregation_time} />
             <ReadOnlyFormGroup label="Alert Tag" value={notification.config.alert_tag} />
             <ReadOnlyFormGroup label="Single Notification" value={notification.config.single_notification} />
