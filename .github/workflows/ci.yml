@@ -62,7 +62,7 @@ jobs:
         run: |
           mkdir runtime/graylog/plugin
           cp ${{ steps.requestPom.outputs.JAR_PATH }} runtime/graylog/plugin
-          echo GRAYLOG_VERSION=${{ steps.requestPom.outputs.GRAYLOG_VERSION }} > .env
+          echo GRAYLOG_VERSION=${{ steps.requestPom.outputs.GRAYLOG_VERSION }} > runtime/.env
       - name: Cache backend tests python dependences
         uses: actions/cache@v3
         with:
