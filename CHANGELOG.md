@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.4](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.3...5.1.4)
+### Bug Fixes
+* FIX Plugin compatibility with Graylog 5.1.9 
+
 ## [5.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.2...5.1.3)
 ### Bug Fixes
 * Inserted commas between split fields when they are displayed in the notification details ([issue #51](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/51))
