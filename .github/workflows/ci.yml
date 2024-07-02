@@ -27,6 +27,7 @@ jobs:
 
           NAME=$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
           echo "JAR_PATH=target/$NAME-$VERSION.jar" >> $GITHUB_OUTPUT
           echo "RPM_PATH=target/rpm/$NAME/RPMS/noarch/$NAME-$VERSION-1.noarch.rpm" >> $GITHUB_OUTPUT
           echo "DEB_PATH=target/$NAME-$VERSION.deb" >> $GITHUB_OUTPUT
@@ -97,6 +98,7 @@ jobs:
           name: playwright-report
           path: plugin/validation/end_to_end/test-results/
       - name: Package signed .rpm
+        if: endsWith(steps.requestPom.outputs.VERSION,'SNAPSHOT') == false
         working-directory: plugin
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -106,6 +108,7 @@ jobs:
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
           rpm --define "_gpg_name Airbus CyberSecurity" --define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase $PASSPHRASE" --addsign "${{ steps.requestPom.outputs.RPM_PATH }}"
       - name: Package signed .deb
+        if: endsWith(steps.requestPom.outputs.VERSION,'SNAPSHOT') == false
         working-directory: plugin
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -125,12 +128,14 @@ jobs:
           path: plugin/${{ steps.requestPom.outputs.JAR_PATH }}
           if-no-files-found: error
       - name: Archive .rpm
+        if: endsWith(steps.requestPom.outputs.VERSION,'SNAPSHOT') == false
         uses: actions/upload-artifact@v3
         with:
           name: rpm
           path: plugin/${{ steps.requestPom.outputs.RPM_PATH }}
           if-no-files-found: error
       - name: Archive .deb
+        if: endsWith(steps.requestPom.outputs.VERSION,'SNAPSHOT') == false
         uses: actions/upload-artifact@v3
         with:
           name: deb
@@ -146,7 +151,7 @@ jobs:
             plugin/${{ steps.requestPom.outputs.DEB_PATH }}
           fail_on_unmatched_files: true
       - name: Deploy to Maven Central
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/') || endsWith(steps.requestPom.outputs.VERSION,'SNAPSHOT')
         working-directory: plugin
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
