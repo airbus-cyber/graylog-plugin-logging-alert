@@ -82,10 +82,6 @@ class LoggingAlertForm extends React.Component {
 	    this.propagateChange(name, FormsUtils.getValueFromInput(event.target));
     };
 
-    handleSeverityChange = (nextValue) => {
-  	    this.propagateChange('severity', nextValue);
-    };
-
     handleBodyTemplateChange = (nextValue) => {
 	    this.propagateChange('log_body', nextValue);
     };
@@ -96,15 +92,6 @@ class LoggingAlertForm extends React.Component {
 	    }
     };
 
-    availableSeverityTypes = () => {
-        return [
-            {value: 'HIGH', label: 'High'},
-            {value: 'MEDIUM', label: 'Medium'},
-            {value: 'LOW', label: 'Low'},
-            {value: 'INFO', label: 'Info'},
-        ];
-    };
-  
     handleSplitFieldsChange = (selected) => {
         const nextValue = selected === '' ? [] : selected.split(',');
         this.propagateChange('split_fields', nextValue)
@@ -112,9 +99,6 @@ class LoggingAlertForm extends React.Component {
 
     getAlertConfig = (configuration) => {
   	    if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
-  		    if (this.props.config.severity === undefined){
-			    this.handleSeverityChange(configuration[LOGGING_ALERT_CONFIG].severity);
-		    }
 		    if (this.props.config.log_body === undefined){
 			    this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
 		    }
@@ -127,7 +111,6 @@ class LoggingAlertForm extends React.Component {
   		    return configuration[LOGGING_ALERT_CONFIG];
 	    } else {
   		    return {
-			    severity: 'LOW',
 			    log_body: DEFAULT_BODY_TEMPLATE,
 			    alert_tag: 'LoggingAlert',
 			    aggregation_time: 0,
@@ -145,22 +128,6 @@ class LoggingAlertForm extends React.Component {
 
         return (
             <React.Fragment>
-                <FormGroup controlId="severity"
-	                validationState={validation.errors.severity ? 'error' : null}>
-                    <ControlLabel>Alert Severity</ControlLabel>
-                    <Select id="severity"
-                        placeholder="Select Severity"
-                        required
-                        options={this.availableSeverityTypes()}
-                        matchProp="value"
-                        value={config.severity? config.severity : alertConfig.severity}
-                        onChange={this.handleSeverityChange}
-                    />
-                    <HelpBlock>
-                        {lodash.get(validation, 'errors.severity[0]', 'The severity of logged alerts')}
-                    </HelpBlock>
-	            </FormGroup>
-
                 <FormGroup controlId="log_body" validationState={validation.errors.log_body ? 'error' : null}>
                     <ControlLabel>Body Template</ControlLabel>
                     <SourceCodeEditor id="log_body"

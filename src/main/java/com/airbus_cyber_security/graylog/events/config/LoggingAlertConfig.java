@@ -38,7 +38,6 @@ public abstract class LoggingAlertConfig {
     public static final String BODY_TEMPLATE =
                     "type: alert" + SEPARATOR_TEMPLATE +
                     FIELD_ALERT_ID + ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
-                    "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
                     "app: graylog" + SEPARATOR_TEMPLATE +
                     "subject: ${event_definition_title}" + SEPARATOR_TEMPLATE +
                     "body: ${event_definition_description}" + SEPARATOR_TEMPLATE +
@@ -47,10 +46,6 @@ public abstract class LoggingAlertConfig {
                     "dest: ${backlog[0].fields.dest_ip}" + SEPARATOR_TEMPLATE +
                     "dest_category: ${backlog[0].fields.dest_category}" + SEPARATOR_TEMPLATE +
                     "${end}";
-
-
-    @JsonProperty("severity")
-    public abstract SeverityType accessSeverity();
 
     @JsonProperty("separator")
     public abstract String accessSeparator();
@@ -79,7 +74,6 @@ public abstract class LoggingAlertConfig {
 
     @JsonCreator
     public static LoggingAlertConfig create(
-            @JsonProperty("severity") SeverityType severity,
             @JsonProperty("separator") String separator,
             @JsonProperty("log_body") String logBody,
             @JsonProperty("aggregation_stream") String aggregationStream,
@@ -89,7 +83,6 @@ public abstract class LoggingAlertConfig {
             @JsonProperty("alert_tag") String alertTag,
             @JsonProperty("overflow_tag") String overflowTag){
         return builder()
-                .accessSeverity(severity)
                 .accessSeparator(separator)
                 .accessLogBody(logBody)
                 .accessAggregationStream(aggregationStream)
@@ -103,7 +96,6 @@ public abstract class LoggingAlertConfig {
 
     public static LoggingAlertConfig createDefault() {
         return builder()
-                .accessSeverity(SeverityType.LOW)
                 .accessSeparator(" | ")
                 .accessLogBody(BODY_TEMPLATE)
                 .accessAggregationStream(DEFAULT_STREAM_ID)
@@ -126,7 +118,6 @@ public abstract class LoggingAlertConfig {
     @AutoValue.Builder
     public abstract static class Builder {
 
-        public abstract Builder accessSeverity(SeverityType accessSeverity);
         public abstract Builder accessSeparator(String accessSeparator);
         public abstract Builder accessLogBody(String accessLogBody);
         public abstract Builder accessAggregationStream(String accessAggregationStream);

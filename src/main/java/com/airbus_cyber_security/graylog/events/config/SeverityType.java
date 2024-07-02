@@ -31,4 +31,19 @@ public enum SeverityType {
 	public String getType(){
 		return type;
 	}
+
+	/**
+	 * Priority :<br>
+	 *  - 1 : Low<br>
+	 *  - 2 : Normal<br>
+	 *  - 3 : High
+	 * @param priority priority value of event definition
+	 */
+	public static SeverityType getSeverityTypeFromPriority(int priority){
+        return switch (priority) {
+            case 2 -> MEDIUM;
+            case 3 -> HIGH;
+            default -> LOW;
+        };
+	}
 }

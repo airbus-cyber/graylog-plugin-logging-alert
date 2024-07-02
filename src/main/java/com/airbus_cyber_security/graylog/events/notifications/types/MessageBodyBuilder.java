@@ -17,6 +17,7 @@
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floreysoft.jmte.Engine;
@@ -25,7 +26,6 @@ import com.google.common.collect.Maps;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
 import org.graylog.events.processor.EventDefinitionDto;
-import org.graylog.events.event.EventDto;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.jackson.TypeReferences;
 import org.graylog2.plugin.MessageSummary;
@@ -109,7 +109,12 @@ public class MessageBodyBuilder {
         String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(context, config.splitFields(), messageSummary, date);
         String loggingAlertID = getAlertIDWithSuffix(config.aggregationTime(), generalConfig, context, key);
 
-        fields = new LoggingAlertFields(loggingAlertID, config.severity().getType(), date, messagesUrl);
+        String severity = SeverityType.LOW.getType();
+        if(context.eventDefinition().isPresent()) {
+            severity = SeverityType.getSeverityTypeFromPriority(context.eventDefinition().get().priority()).getType();
+        }
+
+        fields = new LoggingAlertFields(loggingAlertID, severity, date, messagesUrl);
         this.loggingAlertFieldsCache.put(key, fields);
         return fields;
     }
@@ -139,7 +144,10 @@ public class MessageBodyBuilder {
 
     public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, ImmutableList<MessageSummary> backlog) {
         String identifier = this.getAlertID(config.aggregationTime(), generalConfig, context);
-        String severity = config.severity().getType();
+        String severity = SeverityType.LOW.getType();
+        if(context.eventDefinition().isPresent()) {
+            severity = SeverityType.getSeverityTypeFromPriority(context.eventDefinition().get().priority()).getType();
+        }
         String messagesURL = this.messagesURLBuilder.getStreamSearchUrl(context, date);
         LoggingAlertFields loggingAlertFields = new LoggingAlertFields(identifier, severity, date, messagesURL);
         return this.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);

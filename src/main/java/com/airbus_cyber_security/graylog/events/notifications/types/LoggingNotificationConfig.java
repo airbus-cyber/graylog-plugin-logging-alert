@@ -50,15 +50,11 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
 
     public static final String TYPE_NAME = "logging-alert-notification";
 
-    private static final String FIELD_SEVERITY = "severity";
     private static final String FIELD_SPLIT_FIELDS = "split_fields";
     private static final String FIELD_LOG_BODY = "log_body";
     private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-
-    @JsonProperty(FIELD_SEVERITY)
-    public abstract SeverityType severity();
 
     @JsonProperty(FIELD_SPLIT_FIELDS)
     public abstract Set<String> splitFields();
@@ -86,11 +82,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     public ValidationResult validate() {
         final ValidationResult validation = new ValidationResult();
         String errorMessage;
-        if (!isValidSeverity(severity())) {
-            errorMessage = "Severity is invalid format";
-            LOGGER.error(errorMessage);
-            validation.addError(FIELD_SEVERITY, errorMessage);
-        }
         if(logBody() == null || logBody().isEmpty()) {
             errorMessage = "Log Body cannot be empty";
             LOGGER.error(errorMessage);
@@ -110,7 +101,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
         public static Builder create() {
             return new AutoValue_LoggingNotificationConfig.Builder()
                     .type(TYPE_NAME)
-                    .severity(SeverityType.LOW)
                     .logBody(LoggingAlertConfig.BODY_TEMPLATE)
                     .splitFields(new HashSet<>())
                     .aggregationTime(0)
@@ -118,8 +108,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
                     .singleMessage(false);
         }
 
-        @JsonProperty(FIELD_SEVERITY)
-        public abstract Builder severity(SeverityType severity);
         @JsonProperty(FIELD_SPLIT_FIELDS)
         public abstract Builder splitFields(Set<String> splitFields);
         @JsonProperty(FIELD_LOG_BODY)
@@ -137,16 +125,11 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     @Override
     public EventNotificationConfigEntity toContentPackEntity(EntityDescriptorIds entityDescriptorIds) {
         return LoggingNotificationConfigEntity.builder()
-                .severity(severity())
                 .splitFields(splitFields())
                 .logBody(ValueReference.of(logBody()))
                 .aggregationTime(aggregationTime())
                 .alertTag(ValueReference.of(alertTag()))
                 .singleMessage(singleMessage())
                 .build();
-    }
-
-    private boolean isValidSeverity(SeverityType severityType) {
-        return severityType != null;
     }
 }

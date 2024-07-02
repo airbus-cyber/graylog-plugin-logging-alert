@@ -31,7 +31,6 @@ import styles from './LoggingAlertSummary.css';
 const LoggingAlertNotificationDetails = ({ notification }) => {
     return (
         <>
-            <ReadOnlyFormGroup label="Alert Severity" value={notification.config.severity} />
             <ReadOnlyFormGroup label="Log Content"
                                value={(
                                    <Well bsSize="small" className={styles.bodyPreview}>

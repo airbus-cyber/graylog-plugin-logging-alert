@@ -38,10 +38,6 @@ class LoggingAlertSummary extends React.Component {
         <CommonNotificationSummary {...this.props}>
             <React.Fragment>
               <tr>
-                <td>Alert Severity:</td>
-                <td>{notification.config.severity || 'No severity for this notification.'}</td>
-              </tr>
-              <tr>
                 <td>Log Content:</td>
                   <Well bsSize="small" className={styles.bodyPreview}>
                     {notification.config.log_body || <em>Empty body</em>}

@@ -34,7 +34,6 @@ import Spinner from 'components/common/Spinner';
 
 export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "id: ${logging_alert.id}"  + "\n" +
-    "severity: ${logging_alert.severity}" + "\n" +
     "app: graylog"  + "\n" +
     "subject: ${event_definition_title}" + "\n" +
     "body: ${event_definition_description}" + "\n" +
@@ -46,22 +45,10 @@ export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
 
 const DEFAULT_CONFIG = {
     field_alert_id: 'id',
-    severity: 'LOW',
     separator: ' | ',
     log_body: DEFAULT_BODY_TEMPLATE,
     alert_tag: 'LoggingAlert',
     overflow_tag: 'LoggingOverflow',
-};
-
-const AVAILABLE_SEVERITY_TYPES = [
-    {value: 'HIGH', label: 'High'},
-    {value: 'MEDIUM', label: 'Medium'},
-    {value: 'LOW', label: 'Low'},
-    {value: 'INFO', label: 'Info'},
-];
-
-const _displayActiveSeverityType = (type) => {
-    return AVAILABLE_SEVERITY_TYPES.filter((t) => t.value === type)[0].label;
 };
 
 const _formatOption = (key, value) => {
@@ -120,10 +107,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
         };
     };
 
-    const _onSeverityTypeSelect = (value) => {
-        _updateConfigurationField('severity', value);
-    };
-
     const _onAggregationStreamSelect = (value) => {
         _updateConfigurationField('aggregation_stream', value);
     };
@@ -146,12 +129,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                 Graylog users with required permissions will be able to read them in
                 the configuration dialog on this page.
             </p>
-            <dl className="deflist">
-                <dt>Alert Severity: </dt>
-                <dd>
-                    {_displayActiveSeverityType(config.severity)}
-                </dd>
-            </dl>
             <dl className="deflist">
                 <dt>Log Content: </dt>
                 <dd>
@@ -214,19 +191,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                 onCancel={_resetConfiguration}
                 submitButtonText="Save">
                 <fieldset>
-                    <Input
-                        id="severity"
-                        label="Default Alert Severity"
-                        help="The default severity of logged alerts when adding a new notification"
-                        name="severity">
-                        <Select placeholder="Select the severity"
-                                required
-                                options={AVAILABLE_SEVERITY_TYPES}
-                                matchProp="value"
-                                value={nextConfiguration.severity}
-                                onChange={_onSeverityTypeSelect}
-                        />
-                    </Input>
                     <Input
                         id="log-body"
                         type="textarea"

@@ -44,7 +44,6 @@ public class LoggingAlert implements EventNotification {
 
     private final ClusterConfigService clusterConfigService;
 
-
     private final MessageBodyBuilder messageBodyBuilder;
 
     public interface Factory extends EventNotification.Factory {

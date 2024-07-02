@@ -16,7 +16,6 @@
  */
 package com.airbus_cyber_security.graylog.events.contentpack.entities;
 
-import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -38,15 +37,11 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 
     public static final String TYPE_NAME = "logging-alert-notification";
 
-    private static final String FIELD_SEVERITY = "severity";
     private static final String FIELD_SPLIT_FIELDS = "split_fields";
     private static final String FIELD_LOG_BODY = "log_body";
     private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-
-	@JsonProperty(FIELD_SEVERITY)
-    public abstract SeverityType severity();
     
     @JsonProperty(FIELD_SPLIT_FIELDS)
     public abstract Set<String> splitFields();
@@ -76,9 +71,7 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
             return new AutoValue_LoggingNotificationConfigEntity.Builder()
                     .type(TYPE_NAME);
         }
-    	
-    	@JsonProperty(FIELD_SEVERITY)
-        public abstract Builder severity(SeverityType severity);
+
         @JsonProperty(FIELD_SPLIT_FIELDS)
         public abstract Builder splitFields(Set<String> splitFields);
         @JsonProperty(FIELD_LOG_BODY)
@@ -97,7 +90,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 	public EventNotificationConfig toNativeEntity(Map<String, ValueReference> parameters,
 			Map<EntityDescriptor, Object> nativeEntities) {
 		return LoggingNotificationConfig.builder()
-				.severity(severity())
 				.splitFields(splitFields())
 				.logBody(logBody().asString(parameters))
 				.aggregationTime(aggregationTime())
