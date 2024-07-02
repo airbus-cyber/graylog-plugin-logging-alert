@@ -34,6 +34,7 @@ import Spinner from 'components/common/Spinner';
 
 export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "id: ${logging_alert.id}"  + "\n" +
+    "severity: ${event_definition_priority}" + "\n" +
     "app: graylog"  + "\n" +
     "subject: ${event_definition_title}" + "\n" +
     "body: ${event_definition_description}" + "\n" +
