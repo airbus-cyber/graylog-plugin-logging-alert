@@ -2,7 +2,7 @@
 
 [![Continuous Integration](https://github.com/airbus-cyber/graylog-plugin-logging-alert/actions/workflows/ci.yml/badge.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-SSPL-green)](https://www.mongodb.com/licensing/server-side-public-license)
-[![GitHub Release](https://img.shields.io/badge/release-v2.2.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/airbus-cyber/graylog-plugin-logging-alert)](https://github.com/airbus-cyber/graylog-plugin-logging-alert/releases)
 
 #### Alert notification plugin for Graylog to generate log messages from alerts
 
@@ -22,7 +22,7 @@ Alert example recorded as an internal log message:
 
 | Plugin Version | Graylog Version |
 |----------------|-----------------|
-| 5.1.x          | 5.1.9+          |
+| 5.1.x          | \>=5.1.9        |
 | 5.0.x          | 5.0.x           |
 | 4.3.x          | 4.3.x           |
 | 4.2.x          | 4.3.x           |

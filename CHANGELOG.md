@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.2.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.4...5.2.0)
+### Bug Fixes
+* Remove severity and use event definition priority ([issue #100](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/100))
+
 ## [5.1.4](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.3...5.1.4)
 ### Bug Fixes
 * FIX Plugin compatibility with Graylog 5.1.9 
