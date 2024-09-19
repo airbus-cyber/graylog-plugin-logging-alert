@@ -64,7 +64,7 @@ jobs:
           mkdir runtime/graylog/plugin
           cp ${{ steps.requestPom.outputs.JAR_PATH }} runtime/graylog/plugin
           echo GRAYLOG_VERSION=${{ steps.requestPom.outputs.GRAYLOG_VERSION }} > runtime/.env
-      - name: Cache backend tests python dependences
+      - name: Cache backend tests python dependencies
         uses: actions/cache@v3
         with:
           path: plugin/validation/server/venv
@@ -75,10 +75,10 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          docker-compose --project-directory ../../runtime pull
+          docker compose --project-directory ../../runtime pull
           PYTHONUNBUFFERED=true PYTHONPATH=.. python -m unittest --verbose
-      # TODO improve this, see https://playwright.dev/python/docs/ci-intro (in particular, use setup-pyhton?)
-      - name: Cache Playwright tests python dependences
+      # TODO improve this, see https://playwright.dev/python/docs/ci-intro (in particular, use setup-python?)
+      - name: Cache Playwright tests python dependencies
         uses: actions/cache@v3
         with:
           path: plugin/validation/server/venv
@@ -90,7 +90,7 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           playwright install chromium
-          docker-compose --project-directory ../../runtime pull
+          docker compose --project-directory ../../runtime pull
           PYTHONPATH=.. pytest --tracing=retain-on-failure
       - uses: actions/upload-artifact@v3
         if: always()
