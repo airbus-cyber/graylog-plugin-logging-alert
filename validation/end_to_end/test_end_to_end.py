@@ -22,15 +22,12 @@ def before_each_after_each(page: Page):
 def _go_to_plugin_configuration(page: Page):
     page.get_by_role('button', name='System').click()
     page.get_by_role('menuitem', name='Configurations').click()
-    page.get_by_role('button', name='Plugins').click()
-    page.get_by_role('button', name='Logging').click()
+    page.get_by_title('Plugins').click()
+    page.get_by_title('Logging Alert').click()
 
 def test_plugin_logging_alert_should_be_registered_issue_50(page: Page):
     _go_to_plugin_configuration(page)
-
-    # note: could also be: await expect(page.getByText('Logging Alert')).toBeVisible();
-    # TODO should really by Logging Alert, but this will only be possible once this fix https://github.com/Graylog2/graylog2-server/issues/15939 is released
-    expect(page.get_by_role('button', name='Logging')).to_have_text('com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig')
+    expect(page.get_by_title('Logging Alert')).to_be_visible()
 
 def test_plugin_logging_alert_configuration_save_button_should_close_popup_issue_50(page: Page):
     _go_to_plugin_configuration(page)
