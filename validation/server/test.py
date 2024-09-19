@@ -61,7 +61,7 @@ class Test(TestCase):
             if notification_identifier is not None:
                 return notification_identifier
         print('All logs')
-        print(self._subject._server._extract_all_logs())
+        print(self._subject._server.extract_all_logs())
         print('Latest logs')
         print(logs)
         self.fail(f'Notification not logged within {duration} seconds')
@@ -266,7 +266,7 @@ class Test(TestCase):
             }
         }
         serie = {
-            'function': 'count',
+            'type': 'count',
             'id': 'count-'
         }
         self._subject.create_event_definition(notification_definition_identifier,
@@ -307,7 +307,7 @@ class Test(TestCase):
             }
         }
         serie = {
-            'function': 'count',
+            'type': 'count',
             'id': 'count-'
         }
         self._subject.create_event_definition(notification_definition_identifier,
