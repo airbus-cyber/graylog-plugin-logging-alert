@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,6 +54,6 @@ public class MoreSearchTest {
         Set<Parameter> parameters = new HashSet<>();
         TimeRange timeRange = RelativeRange.create(10);
         MoreSearch.ScrollCallback callback = (messages, continueScrolling) -> {};
-        this.subject.scrollQuery(query, streams, parameters, timeRange, 1, callback);
+        this.subject.scrollQuery(query, streams, new ArrayList<>(), parameters, timeRange, 1, callback);
     }
 }

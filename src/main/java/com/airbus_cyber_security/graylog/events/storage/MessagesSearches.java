@@ -26,8 +26,9 @@ import org.graylog2.plugin.indexer.searches.timeranges.RelativeRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.text.MessageFormat;
+import java.util.Locale;
 
 
 public class MessagesSearches {
@@ -47,7 +48,8 @@ public class MessagesSearches {
             RelativeRange relativeRange = RelativeRange.create(aggregationTime * 60);
             AbsoluteRange range = AbsoluteRange.create(relativeRange.getFrom(), relativeRange.getTo());
 
-            String query = MessageFormat.format("{0}: /.*{1}/", alertIdentifierFieldName, suffixID);
+            MessageFormat messageFormat = new MessageFormat("{0}: /.*{1}/", Locale.getDefault());
+            String query = messageFormat.format(new Object[]{alertIdentifierFieldName, suffixID});
             LOGGER.debug("Alert Query: {}", query);
 
             // Add stream filter

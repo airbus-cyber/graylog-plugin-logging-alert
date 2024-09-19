@@ -32,13 +32,11 @@ import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.scheduler.JobSchedule;
 import org.graylog.scheduler.JobTriggerDto;
-import org.graylog2.plugin.Message;
-import org.graylog2.plugin.MessageSummary;
+import org.graylog2.plugin.*;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.graylog2.plugin.Tools;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog.events.event.EventOriginContext;
 
@@ -139,7 +137,7 @@ public class MessagesURLBuilderTest {
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("filename", "C:\\File.exe");
-        Message message = new Message(fields);
+        Message message = TestMessageFactory.createMessage(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
@@ -152,7 +150,7 @@ public class MessagesURLBuilderTest {
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("key", "\"");
-        Message message = new Message(fields);
+        Message message = TestMessageFactory.createMessage(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         String query = this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
@@ -165,7 +163,7 @@ public class MessagesURLBuilderTest {
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
         fields.put("key", 48);
-        Message message = new Message(fields);
+        Message message = TestMessageFactory.createMessage(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
@@ -176,7 +174,7 @@ public class MessagesURLBuilderTest {
         List<String> splitFields = Collections.singletonList("key");
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
-        Message message = new Message(fields);
+        Message message = TestMessageFactory.createMessage(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         this.subject.buildMessagesUrl(context, splitFields, messageSummary, this.dummyTime);
@@ -187,7 +185,7 @@ public class MessagesURLBuilderTest {
         List<String> splitFields = Collections.emptyList();
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("_id", "identifier");
-        Message message = new Message(fields);
+        Message message = TestMessageFactory.createMessage(fields);
         MessageSummary messageSummary = new MessageSummary("index", message);
         DateTime jobTrigger = this.dummyTime.plusMinutes(5);
         EventNotificationContext context = this.buildDummyContext(jobTrigger);
@@ -198,16 +196,12 @@ public class MessagesURLBuilderTest {
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoJobTrigger() {
-        Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("_id", "identifier");
         EventNotificationContext context = dummyContextBuilder().build();
         this.subject.getStreamSearchUrl(context, this.dummyTime);
     }
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeStart() {
-        Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("_id", "identifier");
         EventDto event = dummyEventBuilder().timerangeEnd(this.dummyTime.plusMinutes(1)).build();
         EventNotificationContext context = dummyContextBuilder().event(event).build();
         this.subject.getStreamSearchUrl(context, this.dummyTime);
@@ -215,8 +209,6 @@ public class MessagesURLBuilderTest {
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeEnd() {
-        Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("_id", "identifier");
         EventDto event = dummyEventBuilder().timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder().event(event).build();
         this.subject.getStreamSearchUrl(context, this.dummyTime);

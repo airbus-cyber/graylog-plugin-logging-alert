@@ -31,7 +31,7 @@ import org.graylog2.jackson.TypeReferences;
 import org.graylog2.plugin.MessageSummary;
 import org.joda.time.DateTime;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
 
@@ -81,7 +81,8 @@ public class MessageBodyBuilder {
     private String getHashFromString(String value) {
         int hash = value.hashCode();
         if (hash < 0) {
-            return "a" + Math.abs(hash);
+            hash = -hash;
+            return "a" + hash;
         }
         return String.valueOf(hash);
     }

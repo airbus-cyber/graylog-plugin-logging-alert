@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import static org.graylog2.plugin.streams.Stream.DEFAULT_STREAM_ID;
 
@@ -101,7 +101,6 @@ public abstract class LoggingAlertConfig {
                 .accessLogBody(BODY_TEMPLATE)
                 .accessAggregationStream(DEFAULT_STREAM_ID)
                 .accessAggregationTime(0)
-                .accessLimitOverflow(0)
                 .accessLimitOverflow(0)
                 .accessFieldAlertId(FIELD_ALERT_ID)
                 .accessAlertTag("LoggingAlert")
