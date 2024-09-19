@@ -211,7 +211,7 @@
                         <licenseSet>
                             <header>com/mycila/maven/plugin/license/templates/SSPL-1.txt</header>
                             <properties>
-                                <project.inceptionYear>2018</project.inceptionYear>
+                                <year>2018</year>
                                 <owner>Airbus CyberSecurity (SAS)</owner>
                             </properties>
                             <includes>
