@@ -57,7 +57,7 @@ jobs:
       - name: Build plugin
         working-directory: plugin
         run: |
-          mvn package --batch-mode
+          ./mvnw package --batch-mode
       - name: Prepare backend tests runtime
         working-directory: plugin
         run: |
@@ -104,7 +104,7 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          mvn rpm:rpm
+          ./mvnw rpm:rpm
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
           rpm --define "_gpg_name Airbus CyberSecurity" --define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase $PASSPHRASE" --addsign "${{ steps.requestPom.outputs.RPM_PATH }}"
       - name: Package signed .deb
@@ -116,11 +116,11 @@ jobs:
         run: |
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
           gpg2 --export-secret-keys --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" > $HOME/.gnupg/secring.gpg
-          mvn jdeb:jdeb --settings deployment/settings.xml
+          ./mvnw jdeb:jdeb --settings deployment/settings.xml
       - name: Check license headers
         working-directory: plugin
         run: |
-          mvn license:check
+          ./mvnw license:check
       - name: Archive .jar
         uses: actions/upload-artifact@v3
         with:
@@ -160,4 +160,4 @@ jobs:
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
-          mvn clean deploy -DskipTests=true --settings deployment/settings.xml
+          ./mvnw clean deploy -DskipTests=true --settings deployment/settings.xml
