@@ -24,7 +24,7 @@ pip install -r requirements.txt
 ## Execution
 To run:
 ```
-PYTHONPATH=.. pyhon -m unittest --verbose
+PYTHONPATH=.. python -m unittest --verbose
 ```
 Running only one test:
 ```

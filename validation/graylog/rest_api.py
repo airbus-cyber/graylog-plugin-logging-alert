@@ -73,7 +73,9 @@ class RestApi:
             'alert': True,
             'config': {
                 'conditions': conditions,
+                'event_limit': 100,
                 'execute_every_ms': period*1000,
+                'filters': [],
                 'group_by': [],
                 'query': '',
                 'query_parameters': [],
