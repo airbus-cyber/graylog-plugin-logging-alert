@@ -4,7 +4,6 @@ on: push
 
 env:
   JAVA_VERSION: 17
-  MAVEN_VERSION: 3.9.6
 
 jobs:
   build:
@@ -14,12 +13,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: plugin
-      - name: Setup Maven Action
-        uses: s4u/setup-maven-action@v1.14.0
+      - name: Setup Java JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
         with:
           java-version: ${{ env.JAVA_VERSION }}
-          java-distribution: temurin
-          maven-version: ${{ env.MAVEN_VERSION }}
+          distribution: temurin
+          cache: maven
       - name: Retrieve variables from pom
         id: requestPom
         working-directory: plugin
@@ -49,7 +48,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         working-directory: graylog2-server
         run: |
-          mvn compile -DskipTests=true --batch-mode
+          ./mvnw compile -DskipTests=true --batch-mode
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
