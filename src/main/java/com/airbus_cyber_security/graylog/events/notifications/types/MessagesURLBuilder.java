@@ -18,7 +18,6 @@ package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import org.graylog.events.event.EventDto;
 import org.graylog.events.notifications.EventNotificationContext;
-import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.plugin.MessageSummary;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;

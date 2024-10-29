@@ -17,7 +17,6 @@
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.contentpack.entities.LoggingNotificationConfigEntity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;

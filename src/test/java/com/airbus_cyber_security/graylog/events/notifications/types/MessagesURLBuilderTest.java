@@ -19,8 +19,6 @@
 // * org.graylog.events.notifications.NotificationTestData.NotificationTestData
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
-import java.util.*;
-
 import org.graylog.events.event.EventDto;
 import org.graylog.events.notifications.EventNotificationConfig;
 import org.graylog.events.notifications.EventNotificationContext;
@@ -32,13 +30,21 @@ import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.scheduler.JobSchedule;
 import org.graylog.scheduler.JobTriggerDto;
-import org.graylog2.plugin.*;
+import org.graylog2.plugin.Message;
+import org.graylog2.plugin.MessageSummary;
+import org.graylog2.plugin.TestMessageFactory;
+import org.graylog2.plugin.Tools;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog.events.event.EventOriginContext;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MessagesURLBuilderTest {
 
@@ -147,7 +153,7 @@ public class MessagesURLBuilderTest {
     @Test
     public void buildMessagesUrlShouldEscapeDoubleQuotes() {
         List<String> splitFields = Collections.singletonList("key");
-        Map<String, Object> fields = new HashMap<String, Object>();
+        Map<String, Object> fields = new HashMap<>();
         fields.put("_id", "identifier");
         fields.put("key", "\"");
         Message message = TestMessageFactory.createMessage(fields);

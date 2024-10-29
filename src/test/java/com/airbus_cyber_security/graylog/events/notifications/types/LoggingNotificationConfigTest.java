@@ -14,17 +14,17 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.airbus_cyber_security.graylog;
+package com.airbus_cyber_security.graylog.events.notifications.types;
 
-import com.airbus_cyber_security.graylog.events.config.SeverityType;
-import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
-import org.graylog.events.notifications.*;
+import org.graylog.events.notifications.NotificationDto;
 import org.graylog2.plugin.rest.ValidationResult;
-import org.junit.*;
+import org.junit.Test;
+import org.junit.Rule;
+import org.junit.Assert;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import java.util.*;
+import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

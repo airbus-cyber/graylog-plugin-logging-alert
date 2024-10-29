@@ -18,8 +18,10 @@ package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.google.common.collect.ImmutableList;
-import org.graylog.events.notifications.*;
 import org.graylog.events.event.EventDto;
+import org.graylog.events.notifications.EventNotification;
+import org.graylog.events.notifications.EventNotificationContext;
+import org.graylog.events.notifications.EventNotificationService;
 import org.graylog2.plugin.MessageSummary;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.joda.time.DateTime;
@@ -27,7 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.inject.Inject;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * This is the plugin. Your class should implement one of the existing plugin
