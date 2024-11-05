@@ -104,11 +104,11 @@ You can optionally define an **Overflow Limit**. From this given number of log m
 
 ## Build
 
-This project is using Maven 3 and requires Java 8 or higher.
+This project requires Java 17 JDK.
 
 * Clone this repository.
-* Run `mvn package` to build a JAR file.
-* Optional: Run `mvn jdeb:jdeb` and `mvn rpm:rpm` to create a DEB and RPM package respectively.
+* Run `./mvnw package` to build a JAR file.
+* Optional: Run `./mvnw org.vafer:jdeb:jdeb` and `./mvnw rpm:rpm` to create a DEB and RPM package respectively.
 * Copy generated JAR file in target directory to your Graylog plugin directory.
 * Restart the Graylog.
 
