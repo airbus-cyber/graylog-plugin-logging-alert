@@ -92,11 +92,6 @@ class LoggingAlertForm extends React.Component {
 	    }
     };
 
-    handleSplitFieldsChange = (selected) => {
-        const nextValue = selected === '' ? [] : selected.split(',');
-        this.propagateChange('split_fields', nextValue)
-    };
-
     getAlertConfig = (configuration) => {
   	    if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
 		    if (this.props.config.log_body === undefined){
@@ -114,7 +109,6 @@ class LoggingAlertForm extends React.Component {
 			    log_body: DEFAULT_BODY_TEMPLATE,
 			    alert_tag: 'LoggingAlert',
 			    aggregation_time: 0,
-			    split_fields: [],
 			    single_notification: false,
 		    }
 	    }
@@ -137,20 +131,6 @@ class LoggingAlertForm extends React.Component {
                         onChange={this.handleBodyTemplateChange} />
                     <HelpBlock>
                         {lodash.get(validation, 'errors.log_body[0]', 'The template to generate the log content form')}
-                    </HelpBlock>
-                </FormGroup>
-
-                <FormGroup controlId="split_fields">
-                    <ControlLabel>Split Fields  <small className="text-muted">(Optional)</small></ControlLabel>
-                    <MultiSelect id="split_fields"
-                        matchProp="label"
-                        onChange={this.handleSplitFieldsChange}
-                        options={formattedFields}
-                        ignoreAccents={false}
-                        value={lodash.defaultTo(config.split_fields, []).join(',')}
-                        allowCreate />
-                    <HelpBlock>
-                        Fields that should be checked to split the alert according to each value by generating a different alert is for each value
                     </HelpBlock>
                 </FormGroup>
 

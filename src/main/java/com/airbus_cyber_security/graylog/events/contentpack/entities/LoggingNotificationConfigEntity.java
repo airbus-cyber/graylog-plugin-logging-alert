@@ -28,7 +28,6 @@ import org.graylog2.contentpacks.model.entities.EntityDescriptor;
 import org.graylog2.contentpacks.model.entities.references.ValueReference;
 
 import java.util.Map;
-import java.util.Set;
 
 @AutoValue
 @JsonTypeName(LoggingNotificationConfigEntity.TYPE_NAME)
@@ -37,14 +36,10 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 
     public static final String TYPE_NAME = "logging-alert-notification";
 
-    private static final String FIELD_SPLIT_FIELDS = "split_fields";
     private static final String FIELD_LOG_BODY = "log_body";
     private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-    
-    @JsonProperty(FIELD_SPLIT_FIELDS)
-    public abstract Set<String> splitFields();
     
     @JsonProperty(FIELD_LOG_BODY)
     public abstract ValueReference logBody();
@@ -72,8 +67,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
                     .type(TYPE_NAME);
         }
 
-        @JsonProperty(FIELD_SPLIT_FIELDS)
-        public abstract Builder splitFields(Set<String> splitFields);
         @JsonProperty(FIELD_LOG_BODY)
         public abstract Builder logBody(ValueReference logBody);
         @JsonProperty(FIELD_AGGREGATION_TIME)
@@ -90,7 +83,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 	public EventNotificationConfig toNativeEntity(Map<String, ValueReference> parameters,
 			Map<EntityDescriptor, Object> nativeEntities) {
 		return LoggingNotificationConfig.builder()
-				.splitFields(splitFields())
 				.logBody(logBody().asString(parameters))
 				.aggregationTime(aggregationTime())
 				.alertTag(alertTag().asString(parameters))

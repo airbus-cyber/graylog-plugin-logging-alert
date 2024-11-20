@@ -44,10 +44,6 @@ class LoggingAlertSummary extends React.Component {
                   </Well>
               </tr>
               <tr>
-                <td>Split Fields:</td>
-                <td>{notification.config.split_fields.join(', ') || 'No split fields for this notification.'}</td>
-              </tr>
-              <tr>
                 <td>Aggregation Time Range:</td>
                 <td>{notification.config.aggregation_time}</td>
               </tr>

@@ -35,8 +35,6 @@ import org.graylog2.plugin.rest.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This is the configuration of a notification
@@ -49,14 +47,10 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
 
     public static final String TYPE_NAME = "logging-alert-notification";
 
-    private static final String FIELD_SPLIT_FIELDS = "split_fields";
     private static final String FIELD_LOG_BODY = "log_body";
     private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
-
-    @JsonProperty(FIELD_SPLIT_FIELDS)
-    public abstract Set<String> splitFields();
 
     @JsonProperty(FIELD_LOG_BODY)
     public abstract String logBody();
@@ -101,14 +95,11 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
             return new AutoValue_LoggingNotificationConfig.Builder()
                     .type(TYPE_NAME)
                     .logBody(LoggingAlertConfig.BODY_TEMPLATE)
-                    .splitFields(new HashSet<>())
                     .aggregationTime(0)
                     .alertTag("LoggingAlert")
                     .singleMessage(false);
         }
 
-        @JsonProperty(FIELD_SPLIT_FIELDS)
-        public abstract Builder splitFields(Set<String> splitFields);
         @JsonProperty(FIELD_LOG_BODY)
         public abstract Builder logBody(String logBody);
         @JsonProperty(FIELD_AGGREGATION_TIME)
@@ -124,7 +115,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     @Override
     public EventNotificationConfigEntity toContentPackEntity(EntityDescriptorIds entityDescriptorIds) {
         return LoggingNotificationConfigEntity.builder()
-                .splitFields(splitFields())
                 .logBody(ValueReference.of(logBody()))
                 .aggregationTime(aggregationTime())
                 .alertTag(ValueReference.of(alertTag()))

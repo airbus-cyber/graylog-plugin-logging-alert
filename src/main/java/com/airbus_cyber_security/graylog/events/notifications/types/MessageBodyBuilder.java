@@ -22,7 +22,6 @@ import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floreysoft.jmte.Engine;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
 import org.graylog.events.processor.EventDefinitionDto;
@@ -46,8 +45,6 @@ public class MessageBodyBuilder {
 
     private final ObjectMapper objectMapper;
 
-    private final Map<String, LoggingAlertFields> loggingAlertFieldsCache;
-
     private final MessagesURLBuilder messagesURLBuilder;
 
     @Inject
@@ -55,14 +52,13 @@ public class MessageBodyBuilder {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
         this.searches = searches;
-        this.loggingAlertFieldsCache = Maps.newHashMap();
         this.messagesURLBuilder = new MessagesURLBuilder();
     }
 
-    private String getAlertIDWithSuffix(int aggregationTime, LoggingAlertConfig generalConfig,
-                                       EventNotificationContext context, String key) {
+    private String getAlertIdentifier(int aggregationTime, LoggingAlertConfig generalConfig,
+                                      EventNotificationContext context) {
         String events_definition_id = context.eventDefinition().get().id();
-        String suffix = "-" + getHashFromString(events_definition_id + "-" + key);
+        String suffix = "-" + getHashFromString(events_definition_id);
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
@@ -87,37 +83,16 @@ public class MessageBodyBuilder {
         return String.valueOf(hash);
     }
 
-    private String getAlertID(int aggregationTime, LoggingAlertConfig generalConfig, EventNotificationContext context) {
-        return this.getAlertIDWithSuffix(aggregationTime, generalConfig, context, "");
-    }
-
-    private String getValuesAggregationField(MessageSummary messageSummary, LoggingNotificationConfig config) {
-        StringBuilder valuesAggregationField = new StringBuilder();
-        for (String field: config.splitFields()) {
-            // TODO should probably add a separator: field1=a, field2=ab <=> field1=aa, field2=b!!!
-            valuesAggregationField.append(messageSummary.getField(field));
-        }
-        return valuesAggregationField.toString();
-    }
-
     private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary) {
-        String key = getValuesAggregationField(messageSummary, config);
-        LoggingAlertFields fields = this.loggingAlertFieldsCache.get(key);
-        if (fields != null) {
-            return fields;
-        }
-
-        String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(context, config.splitFields(), messageSummary, date);
-        String loggingAlertID = getAlertIDWithSuffix(config.aggregationTime(), generalConfig, context, key);
+        String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(context, date);
+        String loggingAlertID = getAlertIdentifier(config.aggregationTime(), generalConfig, context);
 
         String severity = SeverityType.LOW.getType();
         if(context.eventDefinition().isPresent()) {
             severity = SeverityType.getSeverityTypeFromPriority(context.eventDefinition().get().priority()).getType();
         }
 
-        fields = new LoggingAlertFields(loggingAlertID, severity, date, messagesUrl);
-        this.loggingAlertFieldsCache.put(key, fields);
-        return fields;
+        return new LoggingAlertFields(loggingAlertID, severity, date, messagesUrl);
     }
 
     private Map<String, Object> getModel(EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
@@ -144,12 +119,12 @@ public class MessageBodyBuilder {
     }
 
     public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, ImmutableList<MessageSummary> backlog) {
-        String identifier = this.getAlertID(config.aggregationTime(), generalConfig, context);
+        String identifier = this.getAlertIdentifier(config.aggregationTime(), generalConfig, context);
         String severity = SeverityType.LOW.getType();
         if(context.eventDefinition().isPresent()) {
             severity = SeverityType.getSeverityTypeFromPriority(context.eventDefinition().get().priority()).getType();
         }
-        String messagesURL = this.messagesURLBuilder.getStreamSearchUrl(context, date);
+        String messagesURL = this.messagesURLBuilder.buildMessagesUrl(context, date);
         LoggingAlertFields loggingAlertFields = new LoggingAlertFields(identifier, severity, date, messagesURL);
         return this.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);
     }

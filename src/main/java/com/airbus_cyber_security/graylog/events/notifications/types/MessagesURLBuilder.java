@@ -18,7 +18,6 @@ package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import org.graylog.events.event.EventDto;
 import org.graylog.events.notifications.EventNotificationContext;
-import org.graylog2.plugin.MessageSummary;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -48,33 +47,6 @@ public class MessagesURLBuilder {
         return MSGS_URL_STREAM + result.toString();
     }
 
-    private String buildSplitFieldsSearchQuery(Iterable<String> splitFields, MessageSummary messageSummary) {
-        StringBuilder searchFields = new StringBuilder();
-        int i = 0;
-        for (String field: splitFields) {
-            Object value = messageSummary.getField(field);
-            if (value == null) {
-                continue;
-            }
-            String valueAsString = value.toString();
-            if (valueAsString.isEmpty()) {
-                continue;
-            }
-            String prefix;
-            if (i == 0) {
-                prefix = "&q=";
-            } else {
-                prefix = "+AND+";
-            }
-            String escapedValue = valueAsString.replace("\\", "\\\\");
-            escapedValue = escapedValue.replace("\"", "\\\"");
-            searchFields.append(prefix + field + "%3A\"" + escapedValue + "\"");
-            i++;
-        }
-
-        return searchFields.toString();
-    }
-
     private DateTime evaluateEndTime(EventDto event, DateTime beginTime) {
         if (event.timerangeEnd().isEmpty()) {
             return beginTime.plusMinutes(1);
@@ -83,7 +55,7 @@ public class MessagesURLBuilder {
     }
 
     // TODO simplify code: remove beginTime, replace the full context by event
-    public String getStreamSearchUrl(EventNotificationContext context, DateTime beginTime) {
+    public String buildMessagesUrl(EventNotificationContext context, DateTime beginTime) {
         EventDto event = context.event();
         if (event.timerangeStart().isPresent()) {
             beginTime = event.timerangeStart().get();
@@ -93,11 +65,5 @@ public class MessagesURLBuilder {
         return MSGS_URL_BEGIN + beginTime.toString(TIME_FORMATTER)
                 + MSGS_URL_TO + endTime.toString(TIME_FORMATTER)
                 + this.buildSourceStreams(event);
-    }
-
-    public String buildMessagesUrl(EventNotificationContext context, Iterable<String> splitFields, MessageSummary messageSummary,
-                                    DateTime beginTime) {
-        String result = this.getStreamSearchUrl(context, beginTime);
-        return result + this.buildSplitFieldsSearchQuery(splitFields, messageSummary);
     }
 }
