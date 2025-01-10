@@ -1,0 +1,151 @@
+package com.airbus_cyber_security.graylog.events.notifications.types;
+
+import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import org.graylog.events.event.EventDto;
+import org.graylog.events.notifications.EventNotificationConfig;
+import org.graylog.events.notifications.EventNotificationContext;
+import org.graylog.events.notifications.EventNotificationSettings;
+import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
+import org.joda.time.DateTime;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+
+@RunWith(MockitoJUnitRunner.class)
+public class MessageBodyBuilderTest {
+
+    private static final String AGGREGATION_STREAM = "aggregationStream-0";
+    private static final String ALERT_ID_FIELD = "alert_id";
+    private static final String EVENT_DEFINITION_ID = "eventDefinitionId-0";
+    private static final String EVENT_ID = "eventId-0";
+    private static final String EVENT_ID_1 = "eventId-1";
+    private static final String NOTIFICATION_ID = "notificationId-0";
+
+    @Mock
+    private MessagesSearches messagesSearches;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Test
+    public void testGetAlertIdentifierWithoutAlert() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(null);
+        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches);
+
+        LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
+        EventNotificationContext context = buildEventNotificationContext();
+
+        Method getAlertIdentifierMethod = getAlertIdentifierMethod();
+        String result = (String) getAlertIdentifierMethod.invoke(messageBodyBuilder, 1, generalConfig, context);
+
+        Assert.assertTrue(result.startsWith(EVENT_ID));
+    }
+
+    @Test
+    public void testGetAlertIdentifierWithExistingAlert() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(EVENT_ID_1);
+        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches);
+
+        LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
+        EventNotificationContext context = buildEventNotificationContext();
+
+        Method getAlertIdentifierMethod = getAlertIdentifierMethod();
+        String result = (String) getAlertIdentifierMethod.invoke(messageBodyBuilder, 1, generalConfig, context);
+
+        Assert.assertTrue(result.startsWith(EVENT_ID_1));
+    }
+
+    private Method getAlertIdentifierMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method getAlertIdentifierMethod = MessageBodyBuilder.class.getDeclaredMethod("getAlertIdentifier", int.class, LoggingAlertConfig.class, EventNotificationContext.class);
+        getAlertIdentifierMethod.setAccessible(true);
+        return getAlertIdentifierMethod;
+    }
+
+    private static LoggingAlertConfig buildLoggingAlertConfig() {
+        return LoggingAlertConfig.builder()
+                .accessAggregationStream(AGGREGATION_STREAM)
+                .accessFieldAlertId(ALERT_ID_FIELD)
+                .accessSeparator("|")
+                .accessLogBody("")
+                .accessAggregationTime(60)
+                .accessLimitOverflow(500)
+                .accessAlertTag("AlertLogging")
+                .accessOverflowTag("OverflowAlertTag")
+                .build();
+    }
+
+    private static EventNotificationContext buildEventNotificationContext() {
+        EventProcessorConfig eventProcessorConfig = buildEventProcessorConfig();
+        EventNotificationSettings eventNotificationSettings = buildEventNotificationSettings();
+
+        EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
+                .id(EVENT_DEFINITION_ID)
+                .title(EVENT_DEFINITION_ID)
+                .description("")
+                .priority(1)
+                .alert(true)
+                .config(eventProcessorConfig)
+                .keySpec(ImmutableList.of())
+                .notificationSettings(eventNotificationSettings)
+                .build();
+        EventDto event = EventDto.builder()
+                .id(EVENT_ID)
+                .groupByFields(Collections.emptyMap())
+                .eventDefinitionId(EVENT_DEFINITION_ID)
+                .eventDefinitionType("")
+                .eventTimestamp(DateTime.now())
+                .processingTimestamp(DateTime.now())
+                .streams(new HashSet<>())
+                .message("")
+                .source("")
+                .keyTuple(new ArrayList<>())
+                .priority(1)
+                .alert(true)
+                .fields(Collections.emptyMap())
+                .build();
+
+        return EventNotificationContext.builder()
+                .eventDefinition(eventDefinition)
+                .event(event)
+                .notificationId(NOTIFICATION_ID)
+                .notificationConfig(buildEventNotificationConfig())
+                .build();
+    }
+
+    private static EventProcessorConfig buildEventProcessorConfig() {
+        return AggregationEventProcessorConfig.builder()
+                .query("")
+                .streams(new HashSet<>())
+                .groupBy(new ArrayList<>())
+                .series(new ArrayList<>())
+                .conditions(null)
+                .executeEveryMs(5000)
+                .searchWithinMs(5000)
+                .build();
+    }
+
+    private static EventNotificationConfig buildEventNotificationConfig() {
+        return new EventNotificationConfig.FallbackNotificationConfig();
+    }
+
+    private static EventNotificationSettings buildEventNotificationSettings() {
+        return EventNotificationSettings.withGracePeriod(5000);
+    }
+}
