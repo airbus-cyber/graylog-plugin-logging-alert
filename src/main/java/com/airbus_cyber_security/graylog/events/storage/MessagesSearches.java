@@ -59,10 +59,12 @@ public class MessagesSearches {
             // Execute query
             SearchResult result = this.searches.search(query, filter, range, 1, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
 
-            if (result != null && !result.getResults().isEmpty()) {
-                LOGGER.debug(result.getResults().size() + " Alert found");
-                // return the first matching alert
-                return result.getResults().get(0).getMessage().getField(alertIdentifierFieldName).toString();
+            if (result != null) {
+                LOGGER.debug("{} alert found", result.getResults().size());
+                if(!result.getResults().isEmpty()) {
+                    // return the first matching alert
+                    return result.getResults().get(0).getMessage().getField(alertIdentifierFieldName).toString();
+                }
             }
         } catch (InvalidRangeParametersException e) {
             LOGGER.error("[getAggregationAlertID] - ERROR!", e);

@@ -57,8 +57,13 @@ public class MessageBodyBuilder {
 
     private String getAlertIdentifier(int aggregationTime, LoggingAlertConfig generalConfig,
                                       EventNotificationContext context) {
-        String events_definition_id = context.eventDefinition().get().id();
-        String suffix = "-" + getHashFromString(events_definition_id);
+        String key = generateKeyFromGroupBy(context.event().groupByFields());
+
+        String events_definition_id = "";
+        if(context.eventDefinition().isPresent()) {
+            events_definition_id = context.eventDefinition().get().id();
+        }
+        String suffix = "-" + getHashFromString(events_definition_id + "-" + key);
 
         String loggingAlertID = null;
         String aggregationStream = generalConfig.accessAggregationStream();
@@ -93,6 +98,20 @@ public class MessageBodyBuilder {
         }
 
         return new LoggingAlertFields(loggingAlertID, severity, date, messagesUrl);
+    }
+
+    private String generateKeyFromGroupBy(Map<String, String> groupByFields) {
+        StringBuilder keyBuilder = new StringBuilder();
+
+        if (groupByFields != null) {
+           for (String keyGroup : groupByFields.keySet()) {
+               keyBuilder.append(keyGroup);
+               keyBuilder.append("=");
+               keyBuilder.append(groupByFields.get(keyGroup));
+           }
+        }
+
+        return keyBuilder.toString();
     }
 
     private Map<String, Object> getModel(EventNotificationContext context, ImmutableList<MessageSummary> backlog,  LoggingAlertFields loggingAlertFields) {
