@@ -22,7 +22,7 @@ Alert example recorded as an internal log message:
 
 | Plugin Version | Graylog Version |
 |----------------|-----------------|
-| 6.1.0          | 6.1.x           |
+| 6.1.x          | 6.1.0           |
 | 6.0.0          | 6.0.x           |
 | 5.1.x          | \>=5.1.9        |
 | 5.0.x          | 5.0.x           |

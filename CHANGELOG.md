@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.0.0...6.1.0)
+### Bug Fixes
+* Fix alert aggregation ([issue #101](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/101))
+
+
 ## [6.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.0.0...6.1.0)
 ### Features
 * Add compatibility with [Graylog 6.1.0](https://graylog.org/post/announcing-graylog-v6-1/)
