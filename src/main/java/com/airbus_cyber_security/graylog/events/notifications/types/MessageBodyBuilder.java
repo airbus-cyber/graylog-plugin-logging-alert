@@ -55,7 +55,8 @@ public class MessageBodyBuilder {
         this.messagesURLBuilder = new MessagesURLBuilder();
     }
 
-    private String getAlertIdentifier(int aggregationTime, LoggingAlertConfig generalConfig,
+    // package-protected
+    String getAlertIdentifier(int aggregationTime, LoggingAlertConfig generalConfig,
                                       EventNotificationContext context) {
         String key = generateKeyFromGroupBy(context.event().groupByFields());
 
@@ -88,7 +89,7 @@ public class MessageBodyBuilder {
         return String.valueOf(hash);
     }
 
-    private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary messageSummary) {
+    private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date) {
         String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(context, date);
         String loggingAlertID = getAlertIdentifier(config.aggregationTime(), generalConfig, context);
 
@@ -149,7 +150,7 @@ public class MessageBodyBuilder {
     }
 
     public String buildMessageBodyForMessage(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, MessageSummary message) {
-        LoggingAlertFields loggingAlertFields = this.buildLoggingAlertFields(context, config, generalConfig, date, message);
+        LoggingAlertFields loggingAlertFields = this.buildLoggingAlertFields(context, config, generalConfig, date);
         ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
         return this.buildMessageBody(logTemplate, context, backlogWithMessage, loggingAlertFields);

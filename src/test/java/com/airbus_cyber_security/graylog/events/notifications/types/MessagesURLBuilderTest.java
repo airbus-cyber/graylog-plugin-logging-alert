@@ -37,9 +37,6 @@ import org.junit.Test;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog.events.event.EventOriginContext;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class MessagesURLBuilderTest {
 
     private MessagesURLBuilder subject;
@@ -133,8 +130,6 @@ public class MessagesURLBuilderTest {
 
     @Test
     public void buildMessagesUrlShouldNotFailWhenSplitFieldIsNotPresent() {
-        Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("_id", "identifier");
         EventNotificationContext context = this.buildDummyContext(this.dummyTime);
         this.subject.buildMessagesUrl(context, this.dummyTime);
     }

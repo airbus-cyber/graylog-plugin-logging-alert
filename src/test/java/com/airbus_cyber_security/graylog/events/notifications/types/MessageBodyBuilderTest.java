@@ -12,14 +12,13 @@ import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,37 +44,29 @@ public class MessageBodyBuilderTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void testGetAlertIdentifierWithoutAlert() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testGetAlertIdentifierWithoutAlert() {
         when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(null);
         MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches);
 
         LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
         EventNotificationContext context = buildEventNotificationContext();
 
-        Method getAlertIdentifierMethod = getAlertIdentifierMethod();
-        String result = (String) getAlertIdentifierMethod.invoke(messageBodyBuilder, 1, generalConfig, context);
+        String result = messageBodyBuilder.getAlertIdentifier(1, generalConfig, context);
 
         Assert.assertTrue(result.startsWith(EVENT_ID));
     }
 
     @Test
-    public void testGetAlertIdentifierWithExistingAlert() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testGetAlertIdentifierWithExistingAlert() {
         when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(EVENT_ID_1);
         MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches);
 
         LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
         EventNotificationContext context = buildEventNotificationContext();
 
-        Method getAlertIdentifierMethod = getAlertIdentifierMethod();
-        String result = (String) getAlertIdentifierMethod.invoke(messageBodyBuilder, 1, generalConfig, context);
+        String result = messageBodyBuilder.getAlertIdentifier(1, generalConfig, context);
 
         Assert.assertTrue(result.startsWith(EVENT_ID_1));
-    }
-
-    private Method getAlertIdentifierMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method getAlertIdentifierMethod = MessageBodyBuilder.class.getDeclaredMethod("getAlertIdentifier", int.class, LoggingAlertConfig.class, EventNotificationContext.class);
-        getAlertIdentifierMethod.setAccessible(true);
-        return getAlertIdentifierMethod;
     }
 
     private static LoggingAlertConfig buildLoggingAlertConfig() {
@@ -110,8 +101,8 @@ public class MessageBodyBuilderTest {
                 .groupByFields(Collections.emptyMap())
                 .eventDefinitionId(EVENT_DEFINITION_ID)
                 .eventDefinitionType("")
-                .eventTimestamp(DateTime.now())
-                .processingTimestamp(DateTime.now())
+                .eventTimestamp(DateTime.now(DateTimeZone.UTC))
+                .processingTimestamp(DateTime.now(DateTimeZone.UTC))
                 .streams(new HashSet<>())
                 .message("")
                 .source("")
