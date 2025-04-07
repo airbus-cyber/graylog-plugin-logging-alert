@@ -139,7 +139,7 @@ class LoggingAlertForm extends React.Component {
                     id="aggregation_time"
                     type="number"
                     name="aggregation_time"
-                    help="Aggregate alerts received in the given number of minutes by logging alerts with the same alert id"
+                    help="Aggregate alerts received in the given number of minutes. If some Group by Fields have been configured in the Event Definition they will also be used to aggregate alerts"
                     value={config.aggregation_time === undefined? alertConfig.aggregation_time : config.aggregation_time}
                     onChange={this.handleChange}
                 />
@@ -148,7 +148,7 @@ class LoggingAlertForm extends React.Component {
                     id="alert_tag"
                     type="text"
                     name="alert_tag"
-                    help="The tag of the generated logs"
+                    help="This tag is added at the begining of the generated logs"
                     value={config.alert_tag? config.alert_tag : alertConfig.alert_tag}
                     onChange={this.handleChange}
                 />
