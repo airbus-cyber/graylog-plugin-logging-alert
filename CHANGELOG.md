@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.1...6.1.2)
+### Features
+* Add logging_alert.title ([issue #54](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/54))
+
+
 ## [6.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.0...6.1.1)
 ### Bug Fixes
 * Fix alert aggregation ([issue #101](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/101))
