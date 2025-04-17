@@ -22,8 +22,11 @@ import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floreysoft.jmte.Engine;
 import com.google.common.collect.ImmutableList;
+import org.graylog.events.notifications.DBNotificationService;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationModelData;
+import org.graylog.events.notifications.NotificationDto;
+import org.graylog.events.notifications.NotificationTestData;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.jackson.TypeReferences;
@@ -47,11 +50,14 @@ public class MessageBodyBuilder {
 
     private final MessagesURLBuilder messagesURLBuilder;
 
+    private final DBNotificationService notificationService;
+
     @Inject
-    public MessageBodyBuilder(ObjectMapper objectMapper, MessagesSearches searches) {
+    public MessageBodyBuilder(ObjectMapper objectMapper, MessagesSearches searches, DBNotificationService notificationService) {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
         this.searches = searches;
+        this.notificationService = notificationService;
         this.messagesURLBuilder = new MessagesURLBuilder();
     }
 
@@ -92,13 +98,10 @@ public class MessageBodyBuilder {
     private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date) {
         String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(context, date);
         String loggingAlertID = getAlertIdentifier(config.aggregationTime(), generalConfig, context);
+        String severity = getSeverityFromContext(context);
+        String notifTitle = getNotificationTitleFromContext(context);
 
-        String severity = SeverityType.LOW.getType();
-        if(context.eventDefinition().isPresent()) {
-            severity = SeverityType.getSeverityTypeFromPriority(context.eventDefinition().get().priority()).getType();
-        }
-
-        return new LoggingAlertFields(loggingAlertID, severity, date, messagesUrl);
+        return new LoggingAlertFields(loggingAlertID, notifTitle, severity, date, messagesUrl);
     }
 
     private String generateKeyFromGroupBy(Map<String, String> groupByFields) {
@@ -140,12 +143,11 @@ public class MessageBodyBuilder {
 
     public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, LoggingAlertConfig generalConfig, DateTime date, ImmutableList<MessageSummary> backlog) {
         String identifier = this.getAlertIdentifier(config.aggregationTime(), generalConfig, context);
-        String severity = SeverityType.LOW.getType();
-        if(context.eventDefinition().isPresent()) {
-            severity = SeverityType.getSeverityTypeFromPriority(context.eventDefinition().get().priority()).getType();
-        }
+        String severity = getSeverityFromContext(context);
+        String notifTitle = getNotificationTitleFromContext(context);
+
         String messagesURL = this.messagesURLBuilder.buildMessagesUrl(context, date);
-        LoggingAlertFields loggingAlertFields = new LoggingAlertFields(identifier, severity, date, messagesURL);
+        LoggingAlertFields loggingAlertFields = new LoggingAlertFields(identifier, notifTitle, severity, date, messagesURL);
         return this.buildMessageBody(logTemplate, context, backlog, loggingAlertFields);
     }
 
@@ -154,5 +156,22 @@ public class MessageBodyBuilder {
         ImmutableList<MessageSummary> backlogWithMessage = new ImmutableList.Builder<MessageSummary>().add(message).build();
 
         return this.buildMessageBody(logTemplate, context, backlogWithMessage, loggingAlertFields);
+    }
+
+    private String getSeverityFromContext(EventNotificationContext context) {
+        String severity = SeverityType.LOW.getType();
+        if(context.eventDefinition().isPresent()) {
+            severity = SeverityType.getSeverityTypeFromPriority(context.eventDefinition().get().priority()).getType();
+        }
+
+        return severity;
+    }
+
+    private String getNotificationTitleFromContext(EventNotificationContext context) {
+        if (NotificationTestData.TEST_NOTIFICATION_ID.equals(context.notificationId())) {
+           return "Notification Test Title";
+        }
+        Optional<NotificationDto> notif = notificationService.get(context.notificationId());
+        return notif.map(NotificationDto::title).orElse("No Title Notification");
     }
 }

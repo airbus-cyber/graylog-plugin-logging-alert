@@ -244,3 +244,23 @@ class Test(TestCase):
 
             logs = self._subject.extract_logs()
             self.assertEqual(self._count_notification_log(logs), 1)
+
+    def test_notification_logging_alert_title_issue54(self):
+        notif_title = 'Notification Title Test'
+        notif_log_body = 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${logging_alert.title}'
+        notification_definition_identifier = self._subject.create_notification(title=notif_title, log_body=notif_log_body)
+        self._subject.create_event_definition(notification_definition_identifier, period=_PERIOD)
+
+        with self._subject.create_gelf_input() as gelf_inputs:
+            self._subject.start_logs_capture()
+            gelf_inputs.send({})
+            time.sleep(2*_PERIOD)
+
+            gelf_inputs.send({})
+            time.sleep(_PERIOD)
+
+            gelf_inputs.send({'short_message': 'pop'})
+            # wait long enough for potential exception to occur (even on slow machines)
+            time.sleep(2*_PERIOD)
+            logs = self._subject.extract_logs()
+            self.assertIn(notif_title, logs)

@@ -43,7 +43,7 @@ class RestApi:
         except ConnectionError:
             return False
 
-    def create_notification(self, single_message=False, log_body=_DEFAULT_LOG_BODY, description=''):
+    def create_notification(self, single_message=False, log_body=_DEFAULT_LOG_BODY, description='', title='N'):
         notification_configuration = {
         'config': {
                 'log_body': log_body,
@@ -52,7 +52,7 @@ class RestApi:
                 'type': 'logging-alert-notification'
             },
             'description': description,
-            'title': 'N'
+            'title': title
         }
         response = self._post('events/notifications', notification_configuration)
         notification = response.json()

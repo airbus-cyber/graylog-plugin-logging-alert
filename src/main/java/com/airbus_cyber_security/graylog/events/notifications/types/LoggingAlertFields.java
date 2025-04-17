@@ -21,12 +21,14 @@ import org.joda.time.DateTime;
 public class LoggingAlertFields {
 	
 	private final String id;
+	private final String title;
 	private final String severity;
 	private final DateTime detectTime;
 	private final String messagesURL;
 
-	public LoggingAlertFields(String id, String severity, DateTime detectTime, String messagesURL)	{
+	public LoggingAlertFields(String id, String title, String severity, DateTime detectTime, String messagesURL)	{
 		this.id = id;
+		this.title = title;
 		this.severity = severity;
 		this.detectTime = detectTime;
 		this.messagesURL = messagesURL;
@@ -34,6 +36,10 @@ public class LoggingAlertFields {
 
 	public String getId() {
 		return id;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 	public String getSeverity() {

@@ -22,6 +22,7 @@ import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.graylog.events.event.EventDto;
+import org.graylog.events.notifications.DBNotificationService;
 import org.graylog.events.notifications.EventNotificationConfig;
 import org.graylog.events.notifications.EventNotificationContext;
 import org.graylog.events.notifications.EventNotificationSettings;
@@ -60,10 +61,13 @@ public class MessageBodyBuilderTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private DBNotificationService notificationService;
+
     @Test
     public void testGetAlertIdentifierWithoutAlert() {
         when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(null);
-        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches);
+        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
 
         LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
         EventNotificationContext context = buildEventNotificationContext();
@@ -76,7 +80,7 @@ public class MessageBodyBuilderTest {
     @Test
     public void testGetAlertIdentifierWithExistingAlert() {
         when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(EVENT_ID_1);
-        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches);
+        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
 
         LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
         EventNotificationContext context = buildEventNotificationContext();
