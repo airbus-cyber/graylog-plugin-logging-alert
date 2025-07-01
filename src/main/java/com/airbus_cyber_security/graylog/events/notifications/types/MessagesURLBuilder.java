@@ -25,6 +25,9 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -52,18 +55,28 @@ public class MessagesURLBuilder {
         return MSGS_URL_STREAM + result.toString();
     }
 
-    private String buildSearchQuery(Optional<EventDefinitionDto> eventDefinitionOpt) {
+    private String buildSearchQuery(Optional<EventDefinitionDto> eventDefinitionOpt, Map<String, String> groupByFields) {
         if (eventDefinitionOpt.isPresent()) {
             EventDefinitionDto eventDefinition = eventDefinitionOpt.get();
             EventProcessorConfig config = eventDefinition.config();
 
             if (config instanceof AggregationEventProcessorConfig) {
                 AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) config;
-                if (aggregationConfig.query() == null || aggregationConfig.query().isEmpty() || aggregationConfig.query().equals("*")) {
-                    return "";
+                List<String> filters = new ArrayList<>();
+
+                String searchQuery = aggregationConfig.query();
+                if (searchQuery != null && !searchQuery.isEmpty() && !searchQuery.equals("*")) {
+                    filters.add(searchQuery);
                 }
 
-                return MSGS_URL_QUERY + aggregationConfig.query();
+                // Add groupByFields in filters
+                groupByFields.entrySet().stream().map( entry -> entry.getKey() + ": " + entry.getValue()).forEach(filters::add);
+
+                Optional<String> filterResult = filters.stream().reduce((x, y) -> "(" + x + ") AND (" + y + ")");
+
+                if (filterResult.isPresent()) {
+                    return MSGS_URL_QUERY + filterResult.get();
+                }
             }
         }
 
@@ -87,7 +100,7 @@ public class MessagesURLBuilder {
         // TODO review how beginTime/endTime are computed: they do not seem to correspond to the aggregation time range shown when viewing the alert!!
         return MSGS_URL_BEGIN + beginTime.toString(TIME_FORMATTER)
                 + MSGS_URL_TO + endTime.toString(TIME_FORMATTER)
-                + this.buildSearchQuery(context.eventDefinition())
+                + this.buildSearchQuery(context.eventDefinition(), event.groupByFields())
                 + this.buildSourceStreams(event);
     }
 }

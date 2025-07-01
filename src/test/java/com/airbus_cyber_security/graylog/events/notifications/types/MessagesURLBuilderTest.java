@@ -56,8 +56,8 @@ public class MessagesURLBuilderTest {
         this.dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
     }
 
-    private EventDto.Builder dummyEventBuilder() {
-        return EventDto.builder()
+    private EventDto.Builder dummyEventBuilder(boolean withGroupByField) {
+        EventDto.Builder builder = EventDto.builder()
                 .alert(true)
                 .eventDefinitionId("EventDefinitionTestId")
                 .eventDefinitionType("notification-test-v1")
@@ -72,6 +72,12 @@ public class MessagesURLBuilderTest {
                 .originContext(EventOriginContext.elasticsearchMessage("testIndex_42", "b5e53442-12bb-4374-90ed-0deadbeefbaz"))
                 .priority(2)
                 .fields(ImmutableMap.of("field1", "value1", "field2", "value2"));
+
+        if (withGroupByField) {
+           builder.groupByFields(ImmutableMap.of("user", "x"));
+        }
+
+        return builder;
     }
 
     EventDefinitionDto buildDummyEventDefinition(boolean isFallback) {
@@ -106,7 +112,7 @@ public class MessagesURLBuilderTest {
     private EventNotificationContext.Builder dummyContextBuilder(boolean isFallback) {
         EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
         EventDefinitionDto eventDefinitionDto = buildDummyEventDefinition(isFallback);
-        EventDto event = dummyEventBuilder()
+        EventDto event = dummyEventBuilder(false)
                 .timerangeStart(this.dummyTime)
                 .timerangeEnd(this.dummyTime.plusMinutes(1))
                 .build();
@@ -164,23 +170,42 @@ public class MessagesURLBuilderTest {
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeStart() {
-        EventDto event = dummyEventBuilder().timerangeEnd(this.dummyTime.plusMinutes(1)).build();
+        EventDto event = dummyEventBuilder(false).timerangeEnd(this.dummyTime.plusMinutes(1)).build();
         EventNotificationContext context = dummyContextBuilder(true).event(event).build();
         this.subject.buildMessagesUrl(context, this.dummyTime);
     }
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeEnd() {
-        EventDto event = dummyEventBuilder().timerangeStart(this.dummyTime).build();
+        EventDto event = dummyEventBuilder(false).timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder(true).event(event).build();
         this.subject.buildMessagesUrl(context, this.dummyTime);
     }
 
     @Test
+    public void getStreamSearchUrlShouldNotContainsSearchQuery() {
+        EventDto event = dummyEventBuilder(false).timerangeStart(this.dummyTime).build();
+        EventNotificationContext context = dummyContextBuilder(true).event(event).build();
+        String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
+
+        Assert.assertFalse(messageUrl.contains("&q="));
+    }
+
+    @Test
     public void getStreamSearchUrlShouldContainsSearchQuery() {
-        EventDto event = dummyEventBuilder().timerangeStart(this.dummyTime).build();
+        EventDto event = dummyEventBuilder(false).timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder(false).event(event).build();
         String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
         Assert.assertTrue(messageUrl.contains(TEST_SEARCH_QUERY));
+    }
+
+    @Test
+    public void getStreamSearchUrlShouldContainsSearchQueryAndGroupByFields() {
+        String expectedValue = "(" + TEST_SEARCH_QUERY + ") AND (user: x)";
+
+        EventDto event = dummyEventBuilder(true).timerangeStart(this.dummyTime).build();
+        EventNotificationContext context = dummyContextBuilder(false).event(event).build();
+        String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
+        Assert.assertTrue(messageUrl.contains(expectedValue));
     }
 }
