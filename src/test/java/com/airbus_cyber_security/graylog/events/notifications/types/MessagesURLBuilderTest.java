@@ -28,14 +28,18 @@ import com.google.common.collect.ImmutableMap;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.scheduler.JobSchedule;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.plugin.Tools;
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog.events.event.EventOriginContext;
+
+import java.util.Collections;
 
 public class MessagesURLBuilderTest {
 
@@ -44,6 +48,7 @@ public class MessagesURLBuilderTest {
     private DateTime dummyTime;
 
     private static final String TEST_NOTIFICATION_ID = "NotificationTestId";
+    private static final String TEST_SEARCH_QUERY = "src: x";
 
     @Before
     public void setup() {
@@ -69,13 +74,13 @@ public class MessagesURLBuilderTest {
                 .fields(ImmutableMap.of("field1", "value1", "field2", "value2"));
     }
 
-    EventDefinitionDto buildDummyEventDefinition() {
+    EventDefinitionDto buildDummyEventDefinition(boolean isFallback) {
         return EventDefinitionDto.builder()
                 .alert(true)
                 .id(TEST_NOTIFICATION_ID)
                 .title("Event Definition Test Title")
                 .description("Event Definition Test Description")
-                .config(new EventProcessorConfig.FallbackConfig())
+                .config(dummyEventProcessorConfig(isFallback))
                 .fieldSpec(ImmutableMap.of())
                 .priority(2)
                 .keySpec(ImmutableList.of())
@@ -98,9 +103,9 @@ public class MessagesURLBuilderTest {
                 ).build();
     }
 
-    private EventNotificationContext.Builder dummyContextBuilder() {
+    private EventNotificationContext.Builder dummyContextBuilder(boolean isFallback) {
         EventNotificationConfig notificationConfig = new EventNotificationConfig.FallbackNotificationConfig();
-        EventDefinitionDto eventDefinitionDto = buildDummyEventDefinition();
+        EventDefinitionDto eventDefinitionDto = buildDummyEventDefinition(isFallback);
         EventDto event = dummyEventBuilder()
                 .timerangeStart(this.dummyTime)
                 .timerangeEnd(this.dummyTime.plusMinutes(1))
@@ -110,6 +115,23 @@ public class MessagesURLBuilderTest {
                 .notificationConfig(notificationConfig)
                 .eventDefinition(eventDefinitionDto)
                 .event(event);
+    }
+
+    private EventProcessorConfig dummyEventProcessorConfig(boolean isFallback) {
+        if  (isFallback) {
+            return new EventProcessorConfig.FallbackConfig();
+        } else {
+            EventProcessorConfig eventProcessorConfig = AggregationEventProcessorConfig.builder()
+                    .query(TEST_SEARCH_QUERY)
+                    .streams(Collections.emptySet())
+                    .groupBy(Collections.emptyList())
+                    .series(Collections.emptyList())
+                    .searchWithinMs(60000)
+                    .executeEveryMs(60000)
+                    .build();
+
+            return eventProcessorConfig;
+        }
     }
 
     private JobTriggerDto buildJobTrigger(DateTime jobTriggerTime) {
@@ -123,7 +145,7 @@ public class MessagesURLBuilderTest {
 
     private EventNotificationContext buildDummyContext(DateTime jobTriggerTime) {
         JobTriggerDto jobTrigger = buildJobTrigger(jobTriggerTime);
-        return dummyContextBuilder()
+        return dummyContextBuilder(true)
                 .jobTrigger(jobTrigger)
                 .build();
     }
@@ -136,21 +158,29 @@ public class MessagesURLBuilderTest {
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoJobTrigger() {
-        EventNotificationContext context = dummyContextBuilder().build();
+        EventNotificationContext context = dummyContextBuilder(true).build();
         this.subject.buildMessagesUrl(context, this.dummyTime);
     }
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeStart() {
         EventDto event = dummyEventBuilder().timerangeEnd(this.dummyTime.plusMinutes(1)).build();
-        EventNotificationContext context = dummyContextBuilder().event(event).build();
+        EventNotificationContext context = dummyContextBuilder(true).event(event).build();
         this.subject.buildMessagesUrl(context, this.dummyTime);
     }
 
     @Test
     public void getStreamSearchUrlShouldNotFailWhenThereIsNoTimerangeEnd() {
         EventDto event = dummyEventBuilder().timerangeStart(this.dummyTime).build();
-        EventNotificationContext context = dummyContextBuilder().event(event).build();
+        EventNotificationContext context = dummyContextBuilder(true).event(event).build();
         this.subject.buildMessagesUrl(context, this.dummyTime);
+    }
+
+    @Test
+    public void getStreamSearchUrlShouldContainsSearchQuery() {
+        EventDto event = dummyEventBuilder().timerangeStart(this.dummyTime).build();
+        EventNotificationContext context = dummyContextBuilder(false).event(event).build();
+        String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
+        Assert.assertTrue(messageUrl.contains(TEST_SEARCH_QUERY));
     }
 }

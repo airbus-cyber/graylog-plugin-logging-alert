@@ -18,16 +18,21 @@ package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import org.graylog.events.event.EventDto;
 import org.graylog.events.notifications.EventNotificationContext;
+import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class MessagesURLBuilder {
 
     private static final String MSGS_URL_BEGIN = "/search?rangetype=absolute&from=";
     private static final String MSGS_URL_TO = "&to=";
+    private static final String MSGS_URL_QUERY = "&q=";
     private static final String MSGS_URL_STREAM = "&streams=";
     private static final String COMMA_SEPARATOR = "%2C";
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
@@ -47,6 +52,24 @@ public class MessagesURLBuilder {
         return MSGS_URL_STREAM + result.toString();
     }
 
+    private String buildSearchQuery(Optional<EventDefinitionDto> eventDefinitionOpt) {
+        if (eventDefinitionOpt.isPresent()) {
+            EventDefinitionDto eventDefinition = eventDefinitionOpt.get();
+            EventProcessorConfig config = eventDefinition.config();
+
+            if (config instanceof AggregationEventProcessorConfig) {
+                AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) config;
+                if (aggregationConfig.query() == null || aggregationConfig.query().isEmpty() || aggregationConfig.query().equals("*")) {
+                    return "";
+                }
+
+                return MSGS_URL_QUERY + aggregationConfig.query();
+            }
+        }
+
+        return "";
+    }
+
     private DateTime evaluateEndTime(EventDto event, DateTime beginTime) {
         if (event.timerangeEnd().isEmpty()) {
             return beginTime.plusMinutes(1);
@@ -64,6 +87,7 @@ public class MessagesURLBuilder {
         // TODO review how beginTime/endTime are computed: they do not seem to correspond to the aggregation time range shown when viewing the alert!!
         return MSGS_URL_BEGIN + beginTime.toString(TIME_FORMATTER)
                 + MSGS_URL_TO + endTime.toString(TIME_FORMATTER)
+                + this.buildSearchQuery(context.eventDefinition())
                 + this.buildSourceStreams(event);
     }
 }
