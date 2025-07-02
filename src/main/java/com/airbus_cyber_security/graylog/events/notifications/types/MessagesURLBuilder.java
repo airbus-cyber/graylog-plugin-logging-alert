@@ -38,6 +38,7 @@ public class MessagesURLBuilder {
     private static final String MSGS_URL_QUERY = "&q=";
     private static final String MSGS_URL_STREAM = "&streams=";
     private static final String COMMA_SEPARATOR = "%2C";
+    private static final String EMPTY_VALUE = "(Empty Value)";
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("yyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS'Z'");
 
     private String buildSourceStreams(EventDto event) {
@@ -69,8 +70,11 @@ public class MessagesURLBuilder {
                     filters.add(searchQuery);
                 }
 
-                // Add groupByFields in filters
-                groupByFields.entrySet().stream().map( entry -> entry.getKey() + ": " + entry.getValue()).forEach(filters::add);
+                // Add groupByFields in filters (separate empty value)
+                groupByFields.entrySet().stream().filter(MessagesURLBuilder::emptyValue)
+                        .map(entry -> "NOT _exists_: " + entry.getKey()).forEach(filters::add);
+                groupByFields.entrySet().stream().filter(MessagesURLBuilder::notEmptyValue)
+                        .map( entry -> entry.getKey() + ": " + entry.getValue()).forEach(filters::add);
 
                 Optional<String> filterResult = filters.stream().reduce((x, y) -> "(" + x + ") AND (" + y + ")");
 
@@ -81,6 +85,14 @@ public class MessagesURLBuilder {
         }
 
         return "";
+    }
+
+    private static boolean emptyValue(Map.Entry<String, String> entry) {
+        return EMPTY_VALUE.equals(entry.getValue());
+    }
+
+    private static boolean notEmptyValue(Map.Entry<String, String> entry) {
+        return !EMPTY_VALUE.equals(entry.getValue());
     }
 
     private DateTime evaluateEndTime(EventDto event, DateTime beginTime) {
