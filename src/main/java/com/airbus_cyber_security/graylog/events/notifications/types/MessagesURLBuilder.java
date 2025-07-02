@@ -25,6 +25,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,31 +61,83 @@ public class MessagesURLBuilder {
         if (eventDefinitionOpt.isPresent()) {
             EventDefinitionDto eventDefinition = eventDefinitionOpt.get();
             EventProcessorConfig config = eventDefinition.config();
+            String configType = getEventProcessorConfigType(config);
 
-            if (config instanceof AggregationEventProcessorConfig) {
-                AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) config;
-                List<String> filters = new ArrayList<>();
+            List<String> filters = new ArrayList<>();
 
-                String searchQuery = aggregationConfig.query();
-                if (searchQuery != null && !searchQuery.isEmpty() && !searchQuery.equals("*")) {
-                    filters.add(searchQuery);
-                }
+            if (configType.equals(AggregationEventProcessorConfig.TYPE_NAME)) {
+                filters.addAll(getFiltersFromAggregation((AggregationEventProcessorConfig) config));
+            } else if (configType.equals("correlation-count")) {
+                filters.addAll(getFiltersFromCorrelationCount(config));
+            }
 
-                // Add groupByFields in filters (separate empty value)
-                groupByFields.entrySet().stream().filter(MessagesURLBuilder::emptyValue)
-                        .map(entry -> "NOT _exists_: " + entry.getKey()).forEach(filters::add);
-                groupByFields.entrySet().stream().filter(MessagesURLBuilder::notEmptyValue)
-                        .map( entry -> entry.getKey() + ": " + entry.getValue()).forEach(filters::add);
+            // Add groupByFields in filters (separate empty value)
+            groupByFields.entrySet().stream().filter(MessagesURLBuilder::emptyValue)
+                    .map(entry -> "NOT _exists_: " + entry.getKey()).forEach(filters::add);
+            groupByFields.entrySet().stream().filter(MessagesURLBuilder::notEmptyValue)
+                    .map( entry -> entry.getKey() + ": " + entry.getValue()).forEach(filters::add);
 
-                Optional<String> filterResult = filters.stream().reduce((x, y) -> "(" + x + ") AND (" + y + ")");
+            // Build query
+            Optional<String> filterResult = filters.stream().reduce((x, y) -> "(" + x + ") AND (" + y + ")");
 
-                if (filterResult.isPresent()) {
-                    return MSGS_URL_QUERY + filterResult.get();
-                }
+            if (filterResult.isPresent()) {
+                return MSGS_URL_QUERY + filterResult.get();
             }
         }
 
         return "";
+    }
+
+    /**
+     * Get type and avoid Exception for FallbackConfig
+     */
+    private String getEventProcessorConfigType(EventProcessorConfig config) {
+        try {
+            return config.type();
+        } catch (UnsupportedOperationException e) {
+            return "";
+        }
+    }
+
+    private List<String> getFiltersFromAggregation(AggregationEventProcessorConfig aggregationConfig) {
+        List<String> filters = new ArrayList<>();
+
+        String searchQuery = aggregationConfig.query();
+        if (isValidSearchQuery(searchQuery)) {
+            filters.add(searchQuery);
+        }
+
+        return filters;
+    }
+
+    /**
+     * Use Reflexion for CorrelationCountProcessorConfig to avoid dependency with graylog-plugin-correlation-count
+     */
+    private List<String> getFiltersFromCorrelationCount(EventProcessorConfig config) {
+        try {
+            List<String> filters = new ArrayList<>();
+            Class<?> correlationCountClass = config.getClass().getSuperclass();
+            Method methodSearchQuery = correlationCountClass.getMethod("searchQuery");
+            String searchQuery = (String) methodSearchQuery.invoke(config);
+            if (isValidSearchQuery(searchQuery)) {
+                filters.add(searchQuery);
+            }
+
+            Method additionalSearchQueryMethod = correlationCountClass.getMethod("additionalSearchQuery");
+            String additionalSearchQuery = (String) additionalSearchQueryMethod.invoke(config);
+            if (isValidSearchQuery(additionalSearchQuery)) {
+                filters.add(additionalSearchQuery);
+            }
+
+            return filters;
+        } catch (Exception e) {
+            // Keep Exception to be noticed if class signature changed
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isValidSearchQuery(String searchQuery) {
+        return searchQuery != null && !searchQuery.isEmpty() && !searchQuery.equals("*");
     }
 
     private static boolean emptyValue(Map.Entry<String, String> entry) {
