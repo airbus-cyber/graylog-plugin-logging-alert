@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+
+## [6.1.4](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.3...6.1.4)
+### Bug Fixes
+* Improve Fix logging_alert.messages_url ([issue #56](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/56))
+
+
 ## [6.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.2...6.1.3)
 ### Changes
 * Change Graylog minimum version to 6.1.4

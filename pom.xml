@@ -28,7 +28,7 @@
 
     <groupId>com.airbus-cyber-security.graylog</groupId>
     <artifactId>graylog-plugin-logging-alert</artifactId>
-    <version>6.1.3</version>
+    <version>6.1.4</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>Graylog ${project.artifactId} plugin.</description>
@@ -412,6 +412,8 @@
                     <publishingServerId>central</publishingServerId>
                     <autoPublish>true</autoPublish>
                     <waitUntil>published</waitUntil>
+                    <waitPollingInterval>10</waitPollingInterval>
+                    <waitMaxTime>3600</waitMaxTime>
                 </configuration>
             </plugin>
         </plugins>
