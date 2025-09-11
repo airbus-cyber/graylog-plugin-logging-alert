@@ -1,6 +1,6 @@
 {
   "name": "LoggingAlert",
-  "version": "6.1.4",
+  "version": "6.1.5",
   "description": "Graylog plugin LoggingAlert Web Interface",
   "repository": {
     "type": "git",
