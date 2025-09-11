@@ -195,7 +195,7 @@ public class MessagesURLBuilderTest {
 
     @Test
     public void getStreamSearchUrlShouldContainsSearchQueryAndGroupByFields() {
-        String expectedValue = "(" + TEST_SEARCH_QUERY + ") AND (user: x)";
+        String expectedValue = "(" + TEST_SEARCH_QUERY + ") AND (user:x)";
 
         EventDto event = dummyEventBuilder().groupByFields(ImmutableMap.of("user", "x")).timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder(false).event(event).build();
@@ -205,7 +205,7 @@ public class MessagesURLBuilderTest {
 
     @Test
     public void getStreamSearchUrlShouldContainsSearchQueryAndEmptyGroupByFields() {
-        String expectedValue = "(" + TEST_SEARCH_QUERY + ") AND (NOT _exists_: user)";
+        String expectedValue = "(" + TEST_SEARCH_QUERY + ") AND (NOT _exists_:user)";
 
         EventDto event = dummyEventBuilder().groupByFields(ImmutableMap.of("user", "(Empty Value)")).timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder(false).event(event).build();

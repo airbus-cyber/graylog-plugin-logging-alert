@@ -73,9 +73,9 @@ public class MessagesURLBuilder {
 
             // Add groupByFields in filters (separate empty value)
             groupByFields.entrySet().stream().filter(MessagesURLBuilder::emptyValue)
-                    .map(entry -> "NOT _exists_: " + entry.getKey()).forEach(filters::add);
+                    .map(entry -> "NOT _exists_:" + entry.getKey()).forEach(filters::add);
             groupByFields.entrySet().stream().filter(MessagesURLBuilder::notEmptyValue)
-                    .map( entry -> entry.getKey() + ": " + entry.getValue()).forEach(filters::add);
+                    .map( entry -> entry.getKey() + ":" + entry.getValue()).forEach(filters::add);
 
             // Build query
             Optional<String> filterResult = filters.stream().reduce((x, y) -> "(" + x + ") AND (" + y + ")");
