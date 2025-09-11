@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [6.1.5](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.4...6.1.5)
 ### Bug Fixes
-* Fix logging_alert.messages_url, remove spaces ([issue #56](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/57))
+* Fix logging_alert.messages_url, remove spaces ([issue #57](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/57))
 
 
 ## [6.1.4](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.3...6.1.4)
