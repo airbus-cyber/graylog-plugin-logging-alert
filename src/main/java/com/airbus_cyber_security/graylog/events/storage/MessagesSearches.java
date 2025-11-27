@@ -42,7 +42,7 @@ public class MessagesSearches {
         this.searches = searches;
     }
 
-    public String getAggregationAlertIdentifier(int aggregationTime, String alertIdentifierFieldName, String aggregationStream, String suffixID) {
+    public String getAggregationAlertIdentifier(int aggregationTime, String alertIdentifierFieldName, String suffixID) {
         LOGGER.debug("Start of getAggregationAlertID...");
         try {
             RelativeRange relativeRange = RelativeRange.create(aggregationTime * 60);
@@ -52,12 +52,8 @@ public class MessagesSearches {
             String query = messageFormat.format(new Object[]{alertIdentifierFieldName, suffixID});
             LOGGER.debug("Alert Query: {}", query);
 
-            // Add stream filter
-            String filter = "streams:" + aggregationStream;
-            LOGGER.debug("Alert filter: {}", filter);
-
             // Execute query
-            SearchResult result = this.searches.search(query, filter, range, 1, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
+            SearchResult result = this.searches.search(query, range, 1, 0, new Sorting(Message.FIELD_TIMESTAMP, Sorting.Direction.DESC));
 
             if (result != null) {
                 LOGGER.debug("{} alert found", result.getResults().size());

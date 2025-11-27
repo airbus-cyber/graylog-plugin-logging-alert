@@ -73,11 +73,10 @@ public class MessageBodyBuilder {
         String suffix = "-" + getHashFromString(events_definition_id + "-" + key);
 
         String loggingAlertID = null;
-        String aggregationStream = generalConfig.accessAggregationStream();
 
-        if (aggregationTime > 0 && aggregationStream != null && !aggregationStream.isEmpty()) {
+        if (aggregationTime > 0) {
             String alertIdentifierFieldName = generalConfig.accessFieldAlertId();
-            loggingAlertID = this.searches.getAggregationAlertIdentifier(aggregationTime, alertIdentifierFieldName, aggregationStream, suffix);
+            loggingAlertID = this.searches.getAggregationAlertIdentifier(aggregationTime, alertIdentifierFieldName, suffix);
         }
 
         if (loggingAlertID == null || loggingAlertID.isEmpty()) {

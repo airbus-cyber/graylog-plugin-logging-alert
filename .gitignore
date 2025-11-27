@@ -2,7 +2,7 @@
 /node/
 /node_modules/
 
-# For the runtime dockre-compose
+# For the runtime docker-compose
 /runtime/graylog/plugin/
 /runtime/.env
 

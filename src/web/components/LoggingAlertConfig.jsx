@@ -23,14 +23,8 @@
 // * components/pipelines/ProcessingTimelineComponent.tsx (with useEffect for StreamsStore
 // * threatintel/components/ThreatIntelPluginConfig.jsx
 import React, { useState } from 'react';
-import { useStore } from 'stores/connect';
-import { StreamsStore } from 'views/stores/StreamsStore';
-import { defaultCompare } from 'logic/DefaultCompare'
-
 import { BootstrapModalForm, Button, Input } from 'components/bootstrap';
 import IfPermitted from 'components/common/IfPermitted';
-import Select from 'components/common/Select';
-import Spinner from 'components/common/Spinner';
 
 export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "id: ${logging_alert.id}"  + "\n" +
@@ -52,10 +46,6 @@ const DEFAULT_CONFIG = {
     overflow_tag: 'LoggingOverflow',
 };
 
-const _formatOption = (key, value) => {
-    return { value: value, label: key };
-};
-
 const _displayOptionalConfigurationValue = (value) => {
     if (!value) {
         return '[not set]';
@@ -66,7 +56,6 @@ const _displayOptionalConfigurationValue = (value) => {
 const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
     const [nextConfiguration, setNextConfiguration] = useState(config);
     const [showModal, setShowModal] = useState(false);
-    const { streams: streamList = [] } = useStore(StreamsStore);
 
     const _openModal = () => {
         setShowModal(true);
@@ -76,16 +65,10 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
         setShowModal(false);
     };
 
-/* TODO is this necessary?
-    useEffect(() => {
-        setNextConfiguration({ ...config });
-    }, [config]);
-*/
-
     const _saveConfiguration = () => {
         updateConfig(nextConfiguration).then(() => {
             _closeModal();
-        })
+        });
     };
 
     const _resetConfiguration = () => {
@@ -107,18 +90,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
             _updateConfigurationField(field, e.target.value);
         };
     };
-
-    const _onAggregationStreamSelect = (value) => {
-        _updateConfigurationField('aggregation_stream', value);
-    };
-
-    if (!streamList) {
-        return <Spinner />;
-    }
-
-    const formattedStreams = streamList
-        .map(stream => _formatOption(stream.title, stream.id))
-        .sort((s1, s2) => defaultCompare(s1.label.toLowerCase(), s2.label.toLowerCase()));
 
     return (
         <div>
@@ -146,12 +117,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                 <dt>Aggregation Time Range: </dt>
                 <dd>
                     {_displayOptionalConfigurationValue(config.aggregation_time)}
-                </dd>
-            </dl>
-            <dl className="deflist">
-                <dt>Alerts Stream: </dt>
-                <dd>
-                    {_displayOptionalConfigurationValue(config.aggregation_stream)}
                 </dd>
             </dl>
             <dl className="deflist">
@@ -220,16 +185,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                         value={nextConfiguration.aggregation_time}
                         onChange={_onUpdate('aggregation_time')}
                     />
-                    <Input  id="aggregation-stream"
-                            label="Alerts Stream"
-                            help="Stream receiving the logged alerts that allows to aggregate alerts"
-                            name="aggregation_stream">
-                        <Select placeholder="Select the stream for the aggregation"
-                                options={formattedStreams}
-                                matchProp="value"
-                                value={nextConfiguration.aggregation_stream}
-                                onChange={_onAggregationStreamSelect} />
-                    </Input>
                     <Input
                         id="field_alert_id"
                         type="text"

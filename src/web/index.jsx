@@ -31,7 +31,7 @@ export { DEFAULT_BODY_TEMPLATE } from 'components/LoggingAlertConfig';
 
 const metadata = {
   name: packageJson.name
-}
+};
 
 PluginStore.register(new PluginManifest(metadata, {
   systemConfigurations: [

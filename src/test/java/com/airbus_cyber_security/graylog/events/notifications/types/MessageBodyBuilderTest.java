@@ -66,7 +66,7 @@ public class MessageBodyBuilderTest {
 
     @Test
     public void testGetAlertIdentifierWithoutAlert() {
-        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(null);
+        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString())).thenReturn(null);
         MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
 
         LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
@@ -79,7 +79,7 @@ public class MessageBodyBuilderTest {
 
     @Test
     public void testGetAlertIdentifierWithExistingAlert() {
-        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString(), anyString())).thenReturn(EVENT_ID_1);
+        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString())).thenReturn(EVENT_ID_1);
         MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
 
         LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
@@ -92,7 +92,6 @@ public class MessageBodyBuilderTest {
 
     private static LoggingAlertConfig buildLoggingAlertConfig() {
         return LoggingAlertConfig.builder()
-                .accessAggregationStream(AGGREGATION_STREAM)
                 .accessFieldAlertId(ALERT_ID_FIELD)
                 .accessSeparator("|")
                 .accessLogBody("")

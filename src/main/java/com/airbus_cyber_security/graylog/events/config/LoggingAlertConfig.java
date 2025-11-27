@@ -77,7 +77,6 @@ public abstract class LoggingAlertConfig {
     public static LoggingAlertConfig create(
             @JsonProperty("separator") String separator,
             @JsonProperty("log_body") String logBody,
-            @JsonProperty("aggregation_stream") String aggregationStream,
             @JsonProperty("aggregation_time") int aggregationTime,
             @JsonProperty("limit_overflow") int limitOverflow,
             @JsonProperty("field_alert_id") String fieldAlertId,
@@ -86,7 +85,6 @@ public abstract class LoggingAlertConfig {
         return builder()
                 .accessSeparator(separator)
                 .accessLogBody(logBody)
-                .accessAggregationStream(aggregationStream)
                 .accessAggregationTime(aggregationTime)
                 .accessLimitOverflow(limitOverflow)
                 .accessFieldAlertId(fieldAlertId)
@@ -99,7 +97,6 @@ public abstract class LoggingAlertConfig {
         return builder()
                 .accessSeparator(" | ")
                 .accessLogBody(BODY_TEMPLATE)
-                .accessAggregationStream(DEFAULT_STREAM_ID)
                 .accessAggregationTime(0)
                 .accessLimitOverflow(0)
                 .accessFieldAlertId(FIELD_ALERT_ID)
@@ -111,7 +108,6 @@ public abstract class LoggingAlertConfig {
     public static Builder builder() {
         return new AutoValue_LoggingAlertConfig.Builder();
     }
-
 
     public abstract Builder toBuilder();
 
