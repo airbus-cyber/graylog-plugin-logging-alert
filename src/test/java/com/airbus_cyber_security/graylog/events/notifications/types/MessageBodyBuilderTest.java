@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
-import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.graylog.events.event.EventDto;
@@ -40,6 +40,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+
 @RunWith(MockitoJUnitRunner.class)
 public class MessageBodyBuilderTest {
 
@@ -49,6 +53,9 @@ public class MessageBodyBuilderTest {
     private static final String NOTIFICATION_ID = "notificationId-0";
 
     @Mock
+    private MessagesSearches messagesSearches;
+
+    @Mock
     private ObjectMapper objectMapper;
 
     @Mock
@@ -56,24 +63,26 @@ public class MessageBodyBuilderTest {
 
     @Test
     public void testGetAlertIdentifierWithoutAlert() {
-        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, notificationService);
+        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString())).thenReturn(null);
+        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
 
         EventNotificationContext context = buildEventNotificationContext();
 
-        String result = messageBodyBuilder.getAlertIdentifier(context);
+        String result = messageBodyBuilder.getAlertIdentifier(1, context);
 
         Assert.assertTrue(result.startsWith(EVENT_ID));
     }
 
-    private static LoggingAlertConfig buildLoggingAlertConfig() {
-        return LoggingAlertConfig.builder()
-                .accessSeparator("|")
-                .accessLogBody("")
-                .accessAggregationTime(60)
-                .accessLimitOverflow(500)
-                .accessAlertTag("AlertLogging")
-                .accessOverflowTag("OverflowAlertTag")
-                .build();
+    @Test
+    public void testGetAlertIdentifierWithExistingAlert() {
+        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString())).thenReturn(EVENT_ID_1);
+        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
+
+        EventNotificationContext context = buildEventNotificationContext();
+
+        String result = messageBodyBuilder.getAlertIdentifier(1, context);
+
+        Assert.assertTrue(result.startsWith(EVENT_ID_1));
     }
 
     private static EventNotificationContext buildEventNotificationContext() {

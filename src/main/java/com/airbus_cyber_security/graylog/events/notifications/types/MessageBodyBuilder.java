@@ -17,6 +17,7 @@
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floreysoft.jmte.Engine;
 import com.google.common.collect.ImmutableList;
@@ -42,6 +43,8 @@ public class MessageBodyBuilder {
 
     private final Engine templateEngine;
 
+    private final MessagesSearches searches;
+
     private final ObjectMapper objectMapper;
 
     private final MessagesURLBuilder messagesURLBuilder;
@@ -49,15 +52,16 @@ public class MessageBodyBuilder {
     private final DBNotificationService notificationService;
 
     @Inject
-    public MessageBodyBuilder(ObjectMapper objectMapper, DBNotificationService notificationService) {
+    public MessageBodyBuilder(ObjectMapper objectMapper, MessagesSearches searches, DBNotificationService notificationService) {
         this.templateEngine = new Engine();
         this.objectMapper = objectMapper;
+        this.searches = searches;
         this.notificationService = notificationService;
         this.messagesURLBuilder = new MessagesURLBuilder();
     }
 
     // package-protected
-    String getAlertIdentifier(EventNotificationContext context) {
+    String getAlertIdentifier(int aggregationTime, EventNotificationContext context) {
         String key = generateKeyFromGroupBy(context.event().groupByFields());
 
         String events_definition_id = "";
@@ -66,7 +70,16 @@ public class MessageBodyBuilder {
         }
         String suffix = "-" + getHashFromString(events_definition_id + "-" + key);
 
-        return context.event().id() + suffix;
+        String loggingAlertID = null;
+
+        if (aggregationTime > 0) {
+            loggingAlertID = this.searches.getAggregationAlertIdentifier(aggregationTime, suffix);
+        }
+
+        if (loggingAlertID == null || loggingAlertID.isEmpty()) {
+            loggingAlertID = context.event().id() + suffix;
+        }
+        return loggingAlertID;
     }
 
     private String getHashFromString(String value) {
@@ -80,7 +93,7 @@ public class MessageBodyBuilder {
 
     private LoggingAlertFields buildLoggingAlertFields(EventNotificationContext context, LoggingNotificationConfig config, DateTime date) {
         String messagesUrl = this.messagesURLBuilder.buildMessagesUrl(context, date);
-        String loggingAlertID = getAlertIdentifier(context);
+        String loggingAlertID = getAlertIdentifier(config.aggregationTime(), context);
         String severity = getSeverityFromContext(context);
         String notifTitle = getNotificationTitleFromContext(context);
 
@@ -125,7 +138,7 @@ public class MessageBodyBuilder {
     }
 
     public String buildMessageBodyForBacklog(String logTemplate, EventNotificationContext context, LoggingNotificationConfig config, DateTime date, ImmutableList<MessageSummary> backlog) {
-        String identifier = this.getAlertIdentifier(context);
+        String identifier = this.getAlertIdentifier(config.aggregationTime(), context);
         String severity = getSeverityFromContext(context);
         String notifTitle = getNotificationTitleFromContext(context);
 
