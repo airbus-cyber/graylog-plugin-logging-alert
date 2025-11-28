@@ -39,7 +39,6 @@ export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "${end}";
 
 const DEFAULT_CONFIG = {
-    field_alert_id: 'id',
     separator: ' | ',
     log_body: DEFAULT_BODY_TEMPLATE,
     alert_tag: 'LoggingAlert',
@@ -120,12 +119,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                 </dd>
             </dl>
             <dl className="deflist">
-                <dt>Alert ID Field: </dt>
-                <dd>
-                    {_displayOptionalConfigurationValue(config.field_alert_id)}
-                </dd>
-            </dl>
-            <dl className="deflist">
                 <dt>Overflow Limit: </dt>
                 <dd>
                     {_displayOptionalConfigurationValue(config.limit_overflow)}
@@ -184,15 +177,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                         help="The default number of minutes to aggregate alerts by logging alerts with the same alert id when adding a new notification"
                         value={nextConfiguration.aggregation_time}
                         onChange={_onUpdate('aggregation_time')}
-                    />
-                    <Input
-                        id="field_alert_id"
-                        type="text"
-                        label="Alert ID Field"
-                        name="field_alert_id"
-                        help="Field that should be checked to get the alert id in the messages of the Alerts Stream"
-                        value={nextConfiguration.field_alert_id}
-                        onChange={_onUpdate('field_alert_id')}
                     />
                     <Input
                         id="limit-overflow"

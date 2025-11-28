@@ -23,8 +23,6 @@ import com.google.auto.value.AutoValue;
 
 import jakarta.annotation.Nullable;
 
-import static org.graylog2.plugin.streams.Stream.DEFAULT_STREAM_ID;
-
 /**
  * This is the general configuration of the plugin (see System/Configurations)
  * It is probably linked to the IHM, just by the configuration in the web index.jsx.
@@ -54,6 +52,7 @@ public abstract class LoggingAlertConfig {
     @JsonProperty("log_body")
     public abstract String accessLogBody();
 
+    // Note: do not remove this field : Backward compatibility
     @JsonProperty("aggregation_stream")
     @Nullable
     public abstract String accessAggregationStream();
@@ -64,7 +63,9 @@ public abstract class LoggingAlertConfig {
     @JsonProperty("limit_overflow")
     public abstract int accessLimitOverflow();
 
+    // Note: do not remove this field : Backward compatibility
     @JsonProperty("field_alert_id")
+    @Nullable
     public abstract String accessFieldAlertId();
 
     @JsonProperty("alert_tag")
@@ -79,7 +80,6 @@ public abstract class LoggingAlertConfig {
             @JsonProperty("log_body") String logBody,
             @JsonProperty("aggregation_time") int aggregationTime,
             @JsonProperty("limit_overflow") int limitOverflow,
-            @JsonProperty("field_alert_id") String fieldAlertId,
             @JsonProperty("alert_tag") String alertTag,
             @JsonProperty("overflow_tag") String overflowTag){
         return builder()
@@ -87,7 +87,6 @@ public abstract class LoggingAlertConfig {
                 .accessLogBody(logBody)
                 .accessAggregationTime(aggregationTime)
                 .accessLimitOverflow(limitOverflow)
-                .accessFieldAlertId(fieldAlertId)
                 .accessAlertTag(alertTag)
                 .accessOverflowTag(overflowTag)
                 .build();
@@ -99,7 +98,6 @@ public abstract class LoggingAlertConfig {
                 .accessLogBody(BODY_TEMPLATE)
                 .accessAggregationTime(0)
                 .accessLimitOverflow(0)
-                .accessFieldAlertId(FIELD_ALERT_ID)
                 .accessAlertTag("LoggingAlert")
                 .accessOverflowTag("LoggingOverflow")
                 .build();

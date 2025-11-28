@@ -18,7 +18,6 @@
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.events.storage.MessagesSearches;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.graylog.events.event.EventDto;
@@ -41,22 +40,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.anyInt;
-
 @RunWith(MockitoJUnitRunner.class)
 public class MessageBodyBuilderTest {
 
-    private static final String AGGREGATION_STREAM = "aggregationStream-0";
-    private static final String ALERT_ID_FIELD = "alert_id";
     private static final String EVENT_DEFINITION_ID = "eventDefinitionId-0";
     private static final String EVENT_ID = "eventId-0";
     private static final String EVENT_ID_1 = "eventId-1";
     private static final String NOTIFICATION_ID = "notificationId-0";
-
-    @Mock
-    private MessagesSearches messagesSearches;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -66,33 +56,17 @@ public class MessageBodyBuilderTest {
 
     @Test
     public void testGetAlertIdentifierWithoutAlert() {
-        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString())).thenReturn(null);
-        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
+        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, notificationService);
 
-        LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
         EventNotificationContext context = buildEventNotificationContext();
 
-        String result = messageBodyBuilder.getAlertIdentifier(1, generalConfig, context);
+        String result = messageBodyBuilder.getAlertIdentifier(context);
 
         Assert.assertTrue(result.startsWith(EVENT_ID));
     }
 
-    @Test
-    public void testGetAlertIdentifierWithExistingAlert() {
-        when(messagesSearches.getAggregationAlertIdentifier(anyInt(), anyString(), anyString())).thenReturn(EVENT_ID_1);
-        MessageBodyBuilder messageBodyBuilder = new MessageBodyBuilder(objectMapper, messagesSearches, notificationService);
-
-        LoggingAlertConfig generalConfig = buildLoggingAlertConfig();
-        EventNotificationContext context = buildEventNotificationContext();
-
-        String result = messageBodyBuilder.getAlertIdentifier(1, generalConfig, context);
-
-        Assert.assertTrue(result.startsWith(EVENT_ID_1));
-    }
-
     private static LoggingAlertConfig buildLoggingAlertConfig() {
         return LoggingAlertConfig.builder()
-                .accessFieldAlertId(ALERT_ID_FIELD)
                 .accessSeparator("|")
                 .accessLogBody("")
                 .accessAggregationTime(60)
