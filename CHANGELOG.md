@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.6](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.5...6.1.6)
+### Changes
+* Remove Aggregation Stream ([issue #53](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/53))
+
+
 ## [6.1.5](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.4...6.1.5)
 ### Bug Fixes
 * Fix logging_alert.messages_url, remove spaces ([issue #57](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/57))
