@@ -77,10 +77,7 @@ Some plugin-specific fields values can be added to the log content.
 
 The parameter **Single message** allow you to send only one notification by alert
 
-![](images/edit_notification2.png)
-
-You can optionally add any **Comment** about the configuration of the notification.
-
+You can optionally add a **Comment** about the configuration of the notification.
 
 Make sure you also configured alert conditions for the stream so that the alerts are actually triggered.
 
@@ -88,7 +85,7 @@ Make sure you also configured alert conditions for the stream so that the alerts
 
 Click on **Configure** in the **System / Configurations** section to update the plugin configuration.
  
-In the popup that occurs, you can configure the default value of the parameters that are set when adding a new notification: **Default Alert Severity**, **Default Log Content**.
+In the popup that occurs, you can configure the **Default Log Content** of the parameters that are set when adding a new notification.
 
 You can define a **Line Break Substitution** of the log content in order to help parsing log fields and their values. Thus a separator can be inserted between the fields of the log content.
 
