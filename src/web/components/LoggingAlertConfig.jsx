@@ -28,6 +28,7 @@ import IfPermitted from 'components/common/IfPermitted';
 
 export const DEFAULT_BODY_TEMPLATE = "type: alert"  + "\n" +
     "id: ${logging_alert.id}"  + "\n" +
+    "aggregation_id: ${event.fields.aggregation_id}"  + "\n" +
     "severity: ${logging_alert.severity}" + "\n" +
     "app: graylog"  + "\n" +
     "subject: ${event_definition_title}" + "\n" +
@@ -94,7 +95,7 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
         <div>
             <h3>Logging Alert Notification Configuration</h3>
 
-            <p>
+            <p style={{textAlign: "justify"}}>
                 Base configuration for all plugins the Logging Alert Notification module is providing. Note
                 that some parameters will be stored in MongoDB without encryption.
                 Graylog users with required permissions will be able to read them in
@@ -110,12 +111,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                 <dt>Line Break Substitution: </dt>
                 <dd>
                     {_displayOptionalConfigurationValue(config.separator)}
-                </dd>
-            </dl>
-            <dl className="deflist">
-                <dt>Aggregation Time Range: </dt>
-                <dd>
-                    {_displayOptionalConfigurationValue(config.aggregation_time)}
                 </dd>
             </dl>
             <dl className="deflist">
@@ -168,15 +163,6 @@ const LoggingAlertConfig = ({ config = DEFAULT_CONFIG, updateConfig }) => {
                         name="separator"
                         value={nextConfiguration.separator}
                         onChange={_onUpdate('separator')}
-                    />
-                    <Input
-                        id="aggregation-time"
-                        type="number"
-                        label="Default Aggregation Time Range"
-                        name="aggregation_time"
-                        help="The default number of minutes to aggregate alerts by logging alerts with the same alert id when adding a new notification"
-                        value={nextConfiguration.aggregation_time}
-                        onChange={_onUpdate('aggregation_time')}
                     />
                     <Input
                         id="limit-overflow"

@@ -48,15 +48,11 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     public static final String TYPE_NAME = "logging-alert-notification";
 
     private static final String FIELD_LOG_BODY = "log_body";
-    private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
 
     @JsonProperty(FIELD_LOG_BODY)
     public abstract String logBody();
-
-    @JsonProperty(FIELD_AGGREGATION_TIME)
-    public abstract int aggregationTime();
 
     @JsonProperty(FIELD_ALERT_TAG)
     public abstract String alertTag();
@@ -95,15 +91,12 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
             return new AutoValue_LoggingNotificationConfig.Builder()
                     .type(TYPE_NAME)
                     .logBody(LoggingAlertConfig.BODY_TEMPLATE)
-                    .aggregationTime(0)
                     .alertTag("LoggingAlert")
                     .singleMessage(false);
         }
 
         @JsonProperty(FIELD_LOG_BODY)
         public abstract Builder logBody(String logBody);
-        @JsonProperty(FIELD_AGGREGATION_TIME)
-        public abstract Builder aggregationTime(int aggregationTime);
         @JsonProperty(FIELD_ALERT_TAG)
         public abstract Builder alertTag(String alertTag);
         @JsonProperty(FIELD_SINGLE_MESSAGE)
@@ -116,7 +109,6 @@ public abstract class LoggingNotificationConfig implements EventNotificationConf
     public EventNotificationConfigEntity toContentPackEntity(EntityDescriptorIds entityDescriptorIds) {
         return LoggingNotificationConfigEntity.builder()
                 .logBody(ValueReference.of(logBody()))
-                .aggregationTime(aggregationTime())
                 .alertTag(ValueReference.of(alertTag()))
                 .singleMessage(singleMessage())
                 .build();

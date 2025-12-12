@@ -19,7 +19,6 @@ import PropTypes from 'prop-types';
 
 import { ControlLabel, FormGroup, HelpBlock } from 'components/bootstrap';
 import lodash from 'lodash';
-import { Select, MultiSelect } from 'components/common';
 // TODO this works, but should rather load the SourceCodeEditor from the index (it will then use lazy-loading)
 //      => import { SourceCodeEditor } from 'components/common';
 //      however, it doesn't work, since the graylog server does not serve the js file corresponding to the SourceCodeEditor
@@ -27,12 +26,9 @@ import SourceCodeEditor from 'components/common/SourceCodeEditor';
 import { Input } from 'components/bootstrap';
 import FormsUtils from 'util/FormsUtils';
 import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
-import {DEFAULT_BODY_TEMPLATE} from '../LoggingAlertConfig'
-
+import { DEFAULT_BODY_TEMPLATE } from '../LoggingAlertConfig';
 import connect from 'stores/connect';
-
 import { defaultCompare } from 'logic/DefaultCompare';
-
 const LOGGING_ALERT_CONFIG = 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig';
 
 
@@ -89,18 +85,18 @@ class LoggingAlertForm extends React.Component {
     handleFieldsChange = (key) => {
   	    return nextValue => {
   		    this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
-	    }
+	    };
     };
 
     getAlertConfig = (configuration) => {
   	    if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
-		    if (this.props.config.log_body === undefined){
+		    if (this.props.config.log_body === undefined) {
 			    this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
 		    }
-		    if (this.props.config.aggregation_time === undefined){
+		    if (this.props.config.aggregation_time === undefined) {
 			    this.propagateChange('aggregation_time', configuration[LOGGING_ALERT_CONFIG].aggregation_time);
 		    }
-		    if (this.props.config.alert_tag === undefined){
+		    if (this.props.config.alert_tag === undefined) {
 			    this.propagateChange('alert_tag', configuration[LOGGING_ALERT_CONFIG].alert_tag);
 		    }
   		    return configuration[LOGGING_ALERT_CONFIG];
@@ -134,15 +130,6 @@ class LoggingAlertForm extends React.Component {
                     </HelpBlock>
                 </FormGroup>
 
-	            <ControlLabel>Aggregation Time Range <small className="text-muted">(Optional)</small></ControlLabel>
-                <Input
-                    id="aggregation_time"
-                    type="number"
-                    name="aggregation_time"
-                    help="Aggregate alerts received in the given number of minutes. If some Group by Fields have been configured in the Event Definition they will also be used to aggregate alerts"
-                    value={config.aggregation_time === undefined? alertConfig.aggregation_time : config.aggregation_time}
-                    onChange={this.handleChange}
-                />
 	            <ControlLabel>Alert Tag <small className="text-muted">(Optional)</small></ControlLabel>
                 <Input
                     id="alert_tag"

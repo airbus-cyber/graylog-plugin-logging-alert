@@ -26,18 +26,6 @@ import { adminUser } from 'fixtures/users';
 
 import LoggingAlertConfig from './LoggingAlertConfig';
 
-jest.mock('views/stores/StreamsStore', () => ({
-    StreamsStore: {
-        listen: jest.fn(() => () => {}),
-        getInitialState: () => ({
-            streams: [
-                { title: 'Stream 1', id: 'stream-id-1' },
-            ],
-        })
-    }
-}));
-
-
 describe('<LoggingAlertConfig>', () => {
   it('should display the button with the correct color (issue 33)', async () => {
     // Note: CurrentUserContext.Provider is necessary for the IfPermitted tag

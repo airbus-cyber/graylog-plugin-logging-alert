@@ -54,7 +54,7 @@ public class MessagesURLBuilder {
             }
             result.append(stream);
         }
-        return MSGS_URL_STREAM + result.toString();
+        return MSGS_URL_STREAM + result;
     }
 
     private String buildSearchQuery(Optional<EventDefinitionDto> eventDefinitionOpt, Map<String, String> groupByFields) {

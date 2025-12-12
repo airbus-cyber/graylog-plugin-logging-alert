@@ -7,7 +7,7 @@ STREAM_ALL_MESSAGES = "000000000000000000000001"
 _AUTH = ('admin', 'admin')
 _HEADERS = {'X-Requested-By': 'test-program'}
 
-_DEFAULT_LOG_BODY = 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}'
+_DEFAULT_LOG_BODY = 'type: alert\nid: ${logging_alert.id}\naggregation_id: ${event.fields.aggregation_id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}'
 
 
 class RestApi:
@@ -48,7 +48,6 @@ class RestApi:
         'config': {
                 'log_body': log_body,
                 'single_notification': single_message,
-                'aggregation_time': 10,
                 'type': 'logging-alert-notification'
             },
             'description': description,
@@ -156,9 +155,7 @@ class RestApi:
 
     def update_plugin_configuration(self, aggregation_stream=None):
         plugin_configuration = {
-            'aggregation_time': '10',
             'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
             'log_body': _DEFAULT_LOG_BODY,
             'separator': ' | ',
             'overflow_tag': 'LoggingOverflow'

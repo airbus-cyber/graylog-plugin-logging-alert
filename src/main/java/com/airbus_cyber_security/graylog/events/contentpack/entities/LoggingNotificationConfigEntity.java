@@ -37,15 +37,11 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
     public static final String TYPE_NAME = "logging-alert-notification";
 
     private static final String FIELD_LOG_BODY = "log_body";
-    private static final String FIELD_AGGREGATION_TIME = "aggregation_time";
     private static final String FIELD_ALERT_TAG = "alert_tag";
     private static final String FIELD_SINGLE_MESSAGE = "single_notification";
     
     @JsonProperty(FIELD_LOG_BODY)
     public abstract ValueReference logBody();
-    
-    @JsonProperty(FIELD_AGGREGATION_TIME)
-    public abstract int aggregationTime();
     
     @JsonProperty(FIELD_ALERT_TAG)
     public abstract ValueReference alertTag();
@@ -69,8 +65,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 
         @JsonProperty(FIELD_LOG_BODY)
         public abstract Builder logBody(ValueReference logBody);
-        @JsonProperty(FIELD_AGGREGATION_TIME)
-        public abstract Builder aggregationTime(int aggregationTime);
         @JsonProperty(FIELD_ALERT_TAG)
         public abstract Builder alertTag(ValueReference alertTag);
         @JsonProperty(FIELD_SINGLE_MESSAGE)
@@ -84,7 +78,6 @@ public abstract class LoggingNotificationConfigEntity implements EventNotificati
 			Map<EntityDescriptor, Object> nativeEntities) {
 		return LoggingNotificationConfig.builder()
 				.logBody(logBody().asString(parameters))
-				.aggregationTime(aggregationTime())
 				.alertTag(alertTag().asString(parameters))
                 .singleMessage(singleMessage())
 				.build();

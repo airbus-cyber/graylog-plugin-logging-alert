@@ -39,7 +39,6 @@ public class LoggingNotificationConfigTest {
                 .description("")
                 .config(LoggingNotificationConfig.Builder.create()
                         .logBody("")
-                        .aggregationTime(0)
                         .alertTag("")
                         .build())
                 .build();
@@ -51,7 +50,6 @@ public class LoggingNotificationConfigTest {
                 .description("Logging alert")
                 .config(LoggingNotificationConfig.Builder.create()
                         .logBody("body test ")
-                        .aggregationTime(0)
                         .alertTag("alert_tag_test")
                         .build())
                 .build();

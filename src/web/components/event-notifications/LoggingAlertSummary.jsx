@@ -44,10 +44,6 @@ class LoggingAlertSummary extends React.Component {
                   </Well>
               </tr>
               <tr>
-                <td>Aggregation Time Range:</td>
-                <td>{notification.config.aggregation_time}</td>
-              </tr>
-              <tr>
                 <td>Alert Tag:</td>
                 <td>{notification.config.alert_tag}</td>
               </tr>

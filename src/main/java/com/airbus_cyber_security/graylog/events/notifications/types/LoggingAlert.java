@@ -83,12 +83,12 @@ public class LoggingAlert implements EventNotification {
         Collection<String> listMessagesToLog = new ArrayList<>();
         if (backlog.isEmpty() || config.singleMessage()) {
             LOGGER.debug("Add log to list message for empty backlog or single message...");
-            String messageToLog = this.messageBodyBuilder.buildMessageBodyForBacklog(logTemplate, context, config, date, backlog);
+            String messageToLog = this.messageBodyBuilder.buildMessageBodyForBacklog(logTemplate, context, date, backlog);
             listMessagesToLog.add(messageToLog);
         } else {
             LOGGER.debug("Add log to list message for backlog...");
             for (MessageSummary message: backlog) {
-                String messageToLog = this.messageBodyBuilder.buildMessageBodyForMessage(logTemplate, context, config, date, message);
+                String messageToLog = this.messageBodyBuilder.buildMessageBodyForMessage(logTemplate, context, date, message);
                 listMessagesToLog.add(messageToLog);
             }
         }

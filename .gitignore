@@ -12,6 +12,7 @@
 /validation/server/venv/
 /validation/end_to_end/__pycache__/
 /validation/end_to_end/venv/
+/validation/test-results/
 
 # IDE
 .idea

@@ -103,33 +103,6 @@ class Test(TestCase):
         # TODO should be 200 instead of 202!!
         self.assertEqual(202, status_code)
 
-    # Seems like this test may sometimes block?
-    def test_aggregation_should_reuse_the_notification_identifier(self):
-        stream_input_identifier = self._subject.create_stream_with_rule('input', 'stream', 'input')
-        stream_log_identifier = self._subject.create_stream_with_rule('log', 'stream', 'log')
-        self._subject.create_stream_with_rule('pop', 'stream', 'pop')
-        self._subject.update_plugin_configuration(stream_log_identifier)
-        notification_definition_identifier = self._subject.create_notification()
-        self._subject.create_event_definition(notification_definition_identifier, streams=[stream_input_identifier], period=_PERIOD)
-
-        with self._subject.create_gelf_input() as gelf_inputs:
-            self._subject.start_logs_capture()
-            gelf_inputs.send({'_stream': 'input'})
-            time.sleep(_PERIOD)
-
-            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier1 = self._parse_notification_identifier(self._wait_until_notification())
-
-            self._subject.start_logs_capture()
-            gelf_inputs.send({'_id': notification_identifier1, '_stream': 'log'})
-            gelf_inputs.send({'_stream': 'input'})
-            time.sleep(_PERIOD)
-
-            gelf_inputs.send({'short_message': 'pop', '_stream': 'pop'})
-            notification_identifier2 = self._parse_notification_identifier(self._wait_until_notification())
-
-            self.assertEqual(notification_identifier2, notification_identifier1)
-
     def test_aggregation_should_not_reuse_identifier_from_different_event_definition(self):
         stream_input1_identifier = self._subject.create_stream_with_rule('input1', 'stream', 'input1')
         stream_input2_identifier = self._subject.create_stream_with_rule('input2', 'stream', 'input2')

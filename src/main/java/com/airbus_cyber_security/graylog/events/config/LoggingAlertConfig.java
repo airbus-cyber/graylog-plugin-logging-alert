@@ -18,6 +18,7 @@ package com.airbus_cyber_security.graylog.events.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 
@@ -29,6 +30,7 @@ import jakarta.annotation.Nullable;
  */
 @JsonAutoDetect
 @AutoValue
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class LoggingAlertConfig {
 
     private static final String FIELD_ALERT_ID = "id";
@@ -36,6 +38,7 @@ public abstract class LoggingAlertConfig {
     public static final String BODY_TEMPLATE =
                     "type: alert" + SEPARATOR_TEMPLATE +
                     FIELD_ALERT_ID + ": ${logging_alert.id}"  + SEPARATOR_TEMPLATE +
+                    "aggregation_id: ${event.fields.aggregation_id}" + SEPARATOR_TEMPLATE +
                     "severity: ${logging_alert.severity}" + SEPARATOR_TEMPLATE +
                     "app: graylog" + SEPARATOR_TEMPLATE +
                     "subject: ${event_definition_title}" + SEPARATOR_TEMPLATE +
@@ -57,8 +60,10 @@ public abstract class LoggingAlertConfig {
     @Nullable
     public abstract String accessAggregationStream();
 
+    // Note: do not remove this field : Backward compatibility
     @JsonProperty("aggregation_time")
-    public abstract int accessAggregationTime();
+    @Nullable
+    public abstract Integer accessAggregationTime();
 
     @JsonProperty("limit_overflow")
     public abstract int accessLimitOverflow();
@@ -78,14 +83,12 @@ public abstract class LoggingAlertConfig {
     public static LoggingAlertConfig create(
             @JsonProperty("separator") String separator,
             @JsonProperty("log_body") String logBody,
-            @JsonProperty("aggregation_time") int aggregationTime,
             @JsonProperty("limit_overflow") int limitOverflow,
             @JsonProperty("alert_tag") String alertTag,
             @JsonProperty("overflow_tag") String overflowTag){
         return builder()
                 .accessSeparator(separator)
                 .accessLogBody(logBody)
-                .accessAggregationTime(aggregationTime)
                 .accessLimitOverflow(limitOverflow)
                 .accessAlertTag(alertTag)
                 .accessOverflowTag(overflowTag)
@@ -96,7 +99,6 @@ public abstract class LoggingAlertConfig {
         return builder()
                 .accessSeparator(" | ")
                 .accessLogBody(BODY_TEMPLATE)
-                .accessAggregationTime(0)
                 .accessLimitOverflow(0)
                 .accessAlertTag("LoggingAlert")
                 .accessOverflowTag("LoggingOverflow")
