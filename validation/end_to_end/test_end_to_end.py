@@ -1,5 +1,6 @@
 from pytest import fixture
 from graylog.driver import Driver
+import re
 
 from playwright.sync_api import Page, expect
 
@@ -60,5 +61,5 @@ def test_plugin_logging_alert_configuration_cancel_button_should_close_popup_iss
 def test_plugin_logging_alert_configuration_window_close_should_close_popup_issue_50(page: Page):
     _go_to_plugin_configuration(page)
     page.get_by_role('button', name='Edit configuration').click()
-    page.get_by_text("×Close").click()
+    page.get_by_label('Update Logging Alert').get_by_role('button').filter(has_text=re.compile(r'^$')).click()
     expect(page.get_by_text('Update Logging Alert Notification Configuration')).not_to_be_attached()
