@@ -28,41 +28,25 @@ import FormsUtils from 'util/FormsUtils';
 import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
 import { DEFAULT_BODY_TEMPLATE } from '../LoggingAlertConfig';
 import connect from 'stores/connect';
-import { defaultCompare } from 'logic/DefaultCompare';
+import type { EventNotification } from 'stores/event-notifications/EventNotificationsStore';
 const LOGGING_ALERT_CONFIG = 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig';
 
+type Props = {
+    config: EventNotification['config'];
+    validation: { errors: { [key: string]: Array<string> } };
+    onChange: (newConfig: EventNotification['config']) => void;
+    setIsSubmitEnabled: (enabled: boolean) => void;
+    configurationsStore: typeof ConfigurationsStore;
+};
 
-class LoggingAlertForm extends React.Component {
-    // Memoize function to only format fields when they change. Use joined fieldNames as cache key.
-    formatFields = lodash.memoize(
-        (fieldTypes) => {
-            return fieldTypes
-                .sort((ftA, ftB) => defaultCompare(ftA.name, ftB.name))
-                .map((fieldType) => {
-                    return {
-                        label: `${fieldType.name} – ${fieldType.value.type.type}`,
-                        value: fieldType.name,
-                    };
-                }
-            );
-        },
-        (fieldTypes) => fieldTypes.map((ft) => ft.name).join('-'),
-    );
+class LoggingAlertForm extends React.Component<Props>  {
 
-	static propTypes = {
-        config: PropTypes.object.isRequired,
-        validation: PropTypes.object.isRequired,
-        onChange: PropTypes.func.isRequired,
-  	    allFieldTypes: PropTypes.array.isRequired,
-    };
-
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
         this.state = {};
     }
 
 	componentDidMount() {
-        // TODO add a test when ConfigurationsActions is misstyped into ConfigurationActions
 		ConfigurationsActions.list(LOGGING_ALERT_CONFIG);
 	}
   
@@ -93,9 +77,6 @@ class LoggingAlertForm extends React.Component {
 		    if (this.props.config.log_body === undefined) {
 			    this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
 		    }
-		    if (this.props.config.aggregation_time === undefined) {
-			    this.propagateChange('aggregation_time', configuration[LOGGING_ALERT_CONFIG].aggregation_time);
-		    }
 		    if (this.props.config.alert_tag === undefined) {
 			    this.propagateChange('alert_tag', configuration[LOGGING_ALERT_CONFIG].alert_tag);
 		    }
@@ -104,15 +85,13 @@ class LoggingAlertForm extends React.Component {
   		    return {
 			    log_body: DEFAULT_BODY_TEMPLATE,
 			    alert_tag: 'LoggingAlert',
-			    aggregation_time: 0,
 			    single_notification: false,
 		    }
 	    }
     };
     
     render() {
-        const { config, validation, allFieldTypes } = this.props;
-        const formattedFields = this.formatFields(allFieldTypes);
+        const { config, validation } = this.props;
 
         const alertConfig = this.getAlertConfig(this.props.configurationsStore.configuration);
 
@@ -158,7 +137,6 @@ class LoggingAlertForm extends React.Component {
     }
 }
 
-// TODO rather than connect, should maybe use useStore (see graylog components/common/URLWhiteListFormModal.tsx)
 export default connect(LoggingAlertForm, {
     configurationsStore: ConfigurationsStore
 });

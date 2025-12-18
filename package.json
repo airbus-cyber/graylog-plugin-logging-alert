@@ -1,6 +1,6 @@
 {
   "name": "LoggingAlert",
-  "version": "6.1.7",
+  "version": "6.3.0",
   "description": "Graylog plugin LoggingAlert Web Interface",
   "repository": {
     "type": "git",
@@ -8,14 +8,14 @@
   },
   "scripts": {
     "build": "webpack --bail",
-    "test": "jest"
+    "test": "jest",
+    "generate:apidefs": "echo skipGenerateApiDefs"
   },
   "keywords": [
     "graylog"
   ],
   "author": "Airbus CyberSecurity",
   "license": "SSPL-1.0",
-  "dependencies": {},
   "devDependencies": {
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
     "urijs": "^1.19.11"
