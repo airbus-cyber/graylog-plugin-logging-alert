@@ -28,7 +28,7 @@
 
     <groupId>com.airbus-cyber-security.graylog</groupId>
     <artifactId>graylog-plugin-logging-alert</artifactId>
-    <version>6.1.7</version>
+    <version>6.1.8</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>Graylog ${project.artifactId} plugin.</description>

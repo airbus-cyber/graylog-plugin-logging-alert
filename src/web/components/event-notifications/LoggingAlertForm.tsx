@@ -28,109 +28,89 @@ import FormsUtils from 'util/FormsUtils';
 import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
 import { DEFAULT_BODY_TEMPLATE } from '../LoggingAlertConfig';
 import connect from 'stores/connect';
-import { defaultCompare } from 'logic/DefaultCompare';
+import type { EventNotification } from 'stores/event-notifications/EventNotificationsStore';
 const LOGGING_ALERT_CONFIG = 'com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig';
 
+type Props = {
+    config: EventNotification['config'];
+    validation: { errors: { [key: string]: Array<string> } };
+    onChange: (newConfig: EventNotification['config']) => void;
+    setIsSubmitEnabled: (enabled: boolean) => void;
+    configurationsStore: typeof ConfigurationsStore;
+};
 
-class LoggingAlertForm extends React.Component {
-    // Memoize function to only format fields when they change. Use joined fieldNames as cache key.
-    formatFields = lodash.memoize(
-        (fieldTypes) => {
-            return fieldTypes
-                .sort((ftA, ftB) => defaultCompare(ftA.name, ftB.name))
-                .map((fieldType) => {
-                    return {
-                        label: `${fieldType.name} – ${fieldType.value.type.type}`,
-                        value: fieldType.name,
-                    };
-                }
-            );
-        },
-        (fieldTypes) => fieldTypes.map((ft) => ft.name).join('-'),
-    );
+class LoggingAlertForm extends React.Component<Props>  {
 
-	static propTypes = {
-        config: PropTypes.object.isRequired,
-        validation: PropTypes.object.isRequired,
-        onChange: PropTypes.func.isRequired,
-  	    allFieldTypes: PropTypes.array.isRequired,
-    };
-
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
         this.state = {};
     }
 
-	componentDidMount() {
-        // TODO add a test when ConfigurationsActions is misstyped into ConfigurationActions
-		ConfigurationsActions.list(LOGGING_ALERT_CONFIG);
-	}
-  
+    componentDidMount() {
+        ConfigurationsActions.list(LOGGING_ALERT_CONFIG);
+    }
+
     propagateChange = (key, value) => {
-	    const { config, onChange } = this.props;
-	    const nextConfig = lodash.cloneDeep(config);
-	    nextConfig[key] = value;
-	    onChange(nextConfig);
+        const { config, onChange } = this.props;
+        const nextConfig = lodash.cloneDeep(config);
+        nextConfig[key] = value;
+        onChange(nextConfig);
     };
 
     handleChange = (event) => {
-	    const { name } = event.target;
-	    this.propagateChange(name, FormsUtils.getValueFromInput(event.target));
+        const { name } = event.target;
+        this.propagateChange(name, FormsUtils.getValueFromInput(event.target));
     };
 
     handleBodyTemplateChange = (nextValue) => {
-	    this.propagateChange('log_body', nextValue);
+        this.propagateChange('log_body', nextValue);
     };
 
     handleFieldsChange = (key) => {
-  	    return nextValue => {
-  		    this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
-	    };
+        return nextValue => {
+            this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
+        };
     };
 
     getAlertConfig = (configuration) => {
-  	    if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
-		    if (this.props.config.log_body === undefined) {
-			    this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
-		    }
-		    if (this.props.config.aggregation_time === undefined) {
-			    this.propagateChange('aggregation_time', configuration[LOGGING_ALERT_CONFIG].aggregation_time);
-		    }
-		    if (this.props.config.alert_tag === undefined) {
-			    this.propagateChange('alert_tag', configuration[LOGGING_ALERT_CONFIG].alert_tag);
-		    }
-  		    return configuration[LOGGING_ALERT_CONFIG];
-	    } else {
-  		    return {
-			    log_body: DEFAULT_BODY_TEMPLATE,
-			    alert_tag: 'LoggingAlert',
-			    aggregation_time: 0,
-			    single_notification: false,
-		    }
-	    }
+        if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
+            if (this.props.config.log_body === undefined) {
+                this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
+            }
+            if (this.props.config.alert_tag === undefined) {
+                this.propagateChange('alert_tag', configuration[LOGGING_ALERT_CONFIG].alert_tag);
+            }
+            return configuration[LOGGING_ALERT_CONFIG];
+        } else {
+            return {
+                log_body: DEFAULT_BODY_TEMPLATE,
+                alert_tag: 'LoggingAlert',
+                single_notification: false,
+            }
+        }
     };
-    
+
     render() {
-        const { config, validation, allFieldTypes } = this.props;
-        const formattedFields = this.formatFields(allFieldTypes);
+        const { config, validation } = this.props;
 
         const alertConfig = this.getAlertConfig(this.props.configurationsStore.configuration);
+        delete alertConfig['aggregation_time'];
 
         return (
             <React.Fragment>
                 <FormGroup controlId="log_body" validationState={validation.errors.log_body ? 'error' : null}>
                     <ControlLabel>Body Template</ControlLabel>
                     <SourceCodeEditor id="log_body"
-                        mode="text"
-                        theme="light"
-                        value={config.log_body? config.log_body : alertConfig.log_body}
-                        onChange={this.handleBodyTemplateChange} />
+                                      mode="text"
+                                      theme="light"
+                                      value={config.log_body? config.log_body : alertConfig.log_body}
+                                      onChange={this.handleBodyTemplateChange} />
                     <HelpBlock>
                         {lodash.get(validation, 'errors.log_body[0]', 'The template to generate the log content form')}
                     </HelpBlock>
                 </FormGroup>
 
-	            <ControlLabel>Alert Tag <small className="text-muted">(Optional)</small></ControlLabel>
+                <ControlLabel>Alert Tag <small className="text-muted">(Optional)</small></ControlLabel>
                 <Input
                     id="alert_tag"
                     type="text"
@@ -139,7 +119,7 @@ class LoggingAlertForm extends React.Component {
                     value={config.alert_tag? config.alert_tag : alertConfig.alert_tag}
                     onChange={this.handleChange}
                 />
-	            <div>
+                <div>
                     <Input
                         id="single_notification"
                         type="checkbox"
@@ -148,17 +128,16 @@ class LoggingAlertForm extends React.Component {
                         onChange={this.handleChange}
                         style={{position: 'absolute'}}
                     />
-                        <label style={{padding: '10px 20px'}}>Single Message <small className='text-muted'>(Optional)</small></label>
+                    <label style={{padding: '10px 20px'}}>Single Message <small className='text-muted'>(Optional)</small></label>
                     <HelpBlock>
-                      Check this box to send only one message by alert
+                        Check this box to send only one message by alert
                     </HelpBlock>
-	            </div>
-	        </React.Fragment>
+                </div>
+            </React.Fragment>
         );
     }
 }
 
-// TODO rather than connect, should maybe use useStore (see graylog components/common/URLWhiteListFormModal.tsx)
 export default connect(LoggingAlertForm, {
     configurationsStore: ConfigurationsStore
 });

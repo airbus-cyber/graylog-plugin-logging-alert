@@ -17,34 +17,13 @@
 
 // sources of inspiration for this code: components/event-definitions/event-definition-form/field-value-providers/LookupTableFieldValueProviderFormContainer.tsx
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import { Spinner } from 'components/common';
+import type { EventNotificationTypes } from 'components/event-notifications/types';
 import LoggingAlertForm from './LoggingAlertForm';
-import useFieldTypes from 'views/logic/fieldtypes/useFieldTypes';
-import { ALL_MESSAGES_TIMERANGE } from 'views/Constants';
-
-type Props = {
-    config: {},
-    validation: {},
-    onChange: () => void,
-}
+type Props = React.ComponentProps<EventNotificationTypes['formComponent']>;
 
 const LoggingAlertFormContainer = (props: Props) => {
-    const { data: fieldTypes } = useFieldTypes([], ALL_MESSAGES_TIMERANGE);
-    const isLoading = !fieldTypes;
-
-    if (isLoading) {
-        return <Spinner text="Loading Logging Alert information..." />;
-    }
-    // TODO add a test when allFieldTypes is not passed down
-    return <LoggingAlertForm allFieldTypes={fieldTypes} {...props} />;
-}
-
-LoggingAlertFormContainer.propTypes = {
-    config: PropTypes.object.isRequired,
-    validation: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
+    return <LoggingAlertForm {...props} />;
 }
 
 export default LoggingAlertFormContainer;

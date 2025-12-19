@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.8](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.7...6.1.8)
+### Bug Fixes
+* Fix notification creation error ([issue #60](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/60))
+
+
 ## [6.1.7](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/6.1.6...6.1.7)
 ### Changes
 * Fully Remove Aggregation Feature ([issue #53](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/53))
