@@ -78,6 +78,7 @@ public class MessageBodyBuilder {
                 .eventDefinitionType(definitionDto.map(d -> d.config().type()).orElse(UNKNOWN))
                 .eventDefinitionTitle(definitionDto.map(EventDefinitionDto::title).orElse(UNKNOWN))
                 .eventDefinitionDescription(definitionDto.map(EventDefinitionDto::description).orElse(UNKNOWN))
+                .remediationSteps(definitionDto.map(EventDefinitionDto::remediationSteps).orElse(UNKNOWN))
                 .jobDefinitionId(jobTriggerDto.map(JobTriggerDto::jobDefinitionId).orElse(UNKNOWN))
                 .jobTriggerId(jobTriggerDto.map(JobTriggerDto::id).orElse(UNKNOWN))
                 .event(context.event())

@@ -45,13 +45,15 @@ class RestApi:
 
     def create_notification(self, single_message=False, log_body=_DEFAULT_LOG_BODY, description='', title='N'):
         notification_configuration = {
-        'config': {
-                'log_body': log_body,
-                'single_notification': single_message,
-                'type': 'logging-alert-notification'
-            },
-            'description': description,
-            'title': title
+            'entity': {
+                'config': {
+                    'log_body': log_body,
+                    'single_notification': single_message,
+                    'type': 'logging-alert-notification'
+                },
+                'description': description,
+                'title': title
+            }
         }
         response = self._post('events/notifications', notification_configuration)
         notification = response.json()
@@ -66,34 +68,37 @@ class RestApi:
         if streams is None:
             streams = []
         events_definition_configuration = {
-            'alert': True,
-            'config': {
-                'conditions': conditions,
-                'event_limit': 100,
-                'execute_every_ms': period*1000,
-                'filters': [],
-                'group_by': [],
-                'query': '',
-                'query_parameters': [],
-                'search_within_ms': period*1000,
-                'series': series,
-                'streams': streams,
-                'type': 'aggregation-v1'
+            'entity': {
+                'alert': True,
+                'config': {
+                    'conditions': conditions,
+                    'event_limit': 100,
+                    'execute_every_ms': period*1000,
+                    'filters': [],
+                    'group_by': [],
+                    'query': '',
+                    'query_parameters': [],
+                    'search_within_ms': period*1000,
+                    'series': series,
+                    'streams': streams,
+                    'type': 'aggregation-v1'
+                },
+                'description': '',
+                'field_spec': {},
+                'key_spec': [],
+                'notification_settings': {
+                    'backlog_size': backlog_size,
+                    'grace_period_ms': 0
+                },
+                'notifications': [{
+                    'notification_id': notification_identifier
+                }],
+                'priority': 2,
+                'title': 'E'
             },
-            'description': '',
-            'field_spec': {},
-            'key_spec': [],
-            'notification_settings': {
-                'backlog_size': backlog_size,
-                'grace_period_ms': 0
-            },
-            'notifications': [{
-                'notification_id': notification_identifier
-            }],
-            'priority': 2,
-            'title': 'E'
+            'share_request': {}
         }
-        self._post('events/definitions', events_definition_configuration)
+        self._post('events/definitions?schedule=true', events_definition_configuration)
 
     def gelf_input_is_running(self, identifier):
         response = self._get('system/inputstates/')
@@ -135,10 +140,12 @@ class RestApi:
         response = self._get('system/indices/index_sets')
         default_index_set_identifier = response.json()['index_sets'][0]['id']
         stream = {
-            'description': title,
-            'index_set_id': default_index_set_identifier,
-            'remove_matches_from_default_stream': False,
-            'title': title
+            'entity': {
+                'description': title,
+                'index_set_id': default_index_set_identifier,
+                'remove_matches_from_default_stream': False,
+                'title': title},
+            'share_request': {}
         }
         response = self._post('streams', stream)
         stream_identifier = response.json()['stream_id']
