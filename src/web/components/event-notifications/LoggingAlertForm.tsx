@@ -14,9 +14,8 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-import React from 'react';
-import PropTypes from 'prop-types';
 
+import React from 'react';
 import { ControlLabel, FormGroup, HelpBlock } from 'components/bootstrap';
 import lodash from 'lodash';
 // TODO this works, but should rather load the SourceCodeEditor from the index (it will then use lazy-loading)
@@ -46,50 +45,50 @@ class LoggingAlertForm extends React.Component<Props>  {
         this.state = {};
     }
 
-    componentDidMount() {
+	componentDidMount() {
         ConfigurationsActions.list(LOGGING_ALERT_CONFIG);
-    }
-
+	}
+  
     propagateChange = (key, value) => {
-        const { config, onChange } = this.props;
-        const nextConfig = lodash.cloneDeep(config);
-        nextConfig[key] = value;
-        onChange(nextConfig);
+	    const { config, onChange } = this.props;
+	    const nextConfig = lodash.cloneDeep(config);
+	    nextConfig[key] = value;
+	    onChange(nextConfig);
     };
 
     handleChange = (event) => {
-        const { name } = event.target;
-        this.propagateChange(name, FormsUtils.getValueFromInput(event.target));
+	    const { name } = event.target;
+	    this.propagateChange(name, FormsUtils.getValueFromInput(event.target));
     };
 
     handleBodyTemplateChange = (nextValue) => {
-        this.propagateChange('log_body', nextValue);
+	    this.propagateChange('log_body', nextValue);
     };
 
     handleFieldsChange = (key) => {
-        return nextValue => {
-            this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
-        };
+  	    return nextValue => {
+  		    this.propagateChange(key, nextValue === '' ? [] : nextValue.split(','));
+	    };
     };
 
     getAlertConfig = (configuration) => {
-        if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
-            if (this.props.config.log_body === undefined) {
-                this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
-            }
-            if (this.props.config.alert_tag === undefined) {
-                this.propagateChange('alert_tag', configuration[LOGGING_ALERT_CONFIG].alert_tag);
-            }
-            return configuration[LOGGING_ALERT_CONFIG];
-        } else {
-            return {
-                log_body: DEFAULT_BODY_TEMPLATE,
-                alert_tag: 'LoggingAlert',
-                single_notification: false,
-            }
-        }
+  	    if (configuration && configuration[LOGGING_ALERT_CONFIG]) {
+		    if (this.props.config.log_body === undefined) {
+			    this.handleBodyTemplateChange(configuration[LOGGING_ALERT_CONFIG].log_body);
+		    }
+		    if (this.props.config.alert_tag === undefined) {
+			    this.propagateChange('alert_tag', configuration[LOGGING_ALERT_CONFIG].alert_tag);
+		    }
+  		    return configuration[LOGGING_ALERT_CONFIG];
+	    } else {
+  		    return {
+			    log_body: DEFAULT_BODY_TEMPLATE,
+			    alert_tag: 'LoggingAlert',
+			    single_notification: false,
+		    }
+	    }
     };
-
+    
     render() {
         const { config, validation } = this.props;
 
@@ -100,17 +99,18 @@ class LoggingAlertForm extends React.Component<Props>  {
             <React.Fragment>
                 <FormGroup controlId="log_body" validationState={validation.errors.log_body ? 'error' : null}>
                     <ControlLabel>Body Template</ControlLabel>
-                    <SourceCodeEditor id="log_body"
-                                      mode="text"
-                                      theme="light"
-                                      value={config.log_body? config.log_body : alertConfig.log_body}
-                                      onChange={this.handleBodyTemplateChange} />
+                    <SourceCodeEditor
+                        id="log_body"
+                        mode="text"
+                        theme="light"
+                        value={config.log_body? config.log_body : alertConfig.log_body}
+                        onChange={this.handleBodyTemplateChange} />
                     <HelpBlock>
                         {lodash.get(validation, 'errors.log_body[0]', 'The template to generate the log content form')}
                     </HelpBlock>
                 </FormGroup>
 
-                <ControlLabel>Alert Tag <small className="text-muted">(Optional)</small></ControlLabel>
+	            <ControlLabel>Alert Tag <small className="text-muted">(Optional)</small></ControlLabel>
                 <Input
                     id="alert_tag"
                     type="text"
@@ -119,7 +119,7 @@ class LoggingAlertForm extends React.Component<Props>  {
                     value={config.alert_tag? config.alert_tag : alertConfig.alert_tag}
                     onChange={this.handleChange}
                 />
-                <div>
+	            <div>
                     <Input
                         id="single_notification"
                         type="checkbox"
@@ -132,8 +132,8 @@ class LoggingAlertForm extends React.Component<Props>  {
                     <HelpBlock>
                         Check this box to send only one message by alert
                     </HelpBlock>
-                </div>
-            </React.Fragment>
+	            </div>
+	        </React.Fragment>
         );
     }
 }
