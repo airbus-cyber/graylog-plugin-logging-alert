@@ -16,22 +16,13 @@
  */
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import org.graylog.events.notifications.NotificationDto;
 import org.graylog2.plugin.rest.ValidationResult;
-import org.junit.Test;
-import org.junit.Rule;
-import org.junit.Assert;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-
-import java.util.HashSet;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LoggingNotificationConfigTest {
-
-    @Rule
-    public final MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private NotificationDto getEmptyLoggingAlertNotification() {
         return NotificationDto.builder()
@@ -59,7 +50,7 @@ public class LoggingNotificationConfigTest {
     public void testValidateWithEmptyConfig() {
         final NotificationDto invalidNotification = getEmptyLoggingAlertNotification();
         final ValidationResult validationResult = invalidNotification.validate();
-        Assert.assertTrue(validationResult.failed());
+        Assertions.assertTrue(validationResult.failed());
     }
 
     @Test

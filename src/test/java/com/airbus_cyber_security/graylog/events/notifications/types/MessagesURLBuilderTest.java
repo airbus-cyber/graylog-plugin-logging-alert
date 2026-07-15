@@ -19,12 +19,12 @@
 // * org.graylog.events.notifications.NotificationTestData.NotificationTestData
 package com.airbus_cyber_security.graylog.events.notifications.types;
 
+import java.util.Collections;
+
 import org.graylog.events.event.EventDto;
+import org.graylog.events.event.EventOriginContext;
 import org.graylog.events.notifications.EventNotificationConfig;
 import org.graylog.events.notifications.EventNotificationContext;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
@@ -32,14 +32,15 @@ import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.scheduler.JobSchedule;
 import org.graylog.scheduler.JobTriggerDto;
 import org.graylog2.plugin.Tools;
-import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.graylog2.plugin.streams.Stream;
-import org.graylog.events.event.EventOriginContext;
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 public class MessagesURLBuilderTest {
 
@@ -50,7 +51,7 @@ public class MessagesURLBuilderTest {
     private static final String TEST_NOTIFICATION_ID = "NotificationTestId";
     private static final String TEST_SEARCH_QUERY = "src: x";
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.subject = new MessagesURLBuilder();
         this.dummyTime = DateTime.parse("2023-06-21T14:43:25Z");
@@ -182,7 +183,7 @@ public class MessagesURLBuilderTest {
         EventNotificationContext context = dummyContextBuilder(true).event(event).build();
         String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
 
-        Assert.assertFalse(messageUrl.contains("&q="));
+        Assertions.assertFalse(messageUrl.contains("&q="));
     }
 
     @Test
@@ -190,7 +191,7 @@ public class MessagesURLBuilderTest {
         EventDto event = dummyEventBuilder().timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder(false).event(event).build();
         String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
-        Assert.assertTrue(messageUrl.contains(TEST_SEARCH_QUERY));
+        Assertions.assertTrue(messageUrl.contains(TEST_SEARCH_QUERY));
     }
 
     @Test
@@ -200,7 +201,7 @@ public class MessagesURLBuilderTest {
         EventDto event = dummyEventBuilder().groupByFields(ImmutableMap.of("user", "x")).timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder(false).event(event).build();
         String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
-        Assert.assertTrue(messageUrl.contains(expectedValue));
+        Assertions.assertTrue(messageUrl.contains(expectedValue));
     }
 
     @Test
@@ -210,6 +211,6 @@ public class MessagesURLBuilderTest {
         EventDto event = dummyEventBuilder().groupByFields(ImmutableMap.of("user", "(Empty Value)")).timerangeStart(this.dummyTime).build();
         EventNotificationContext context = dummyContextBuilder(false).event(event).build();
         String messageUrl = this.subject.buildMessagesUrl(context, this.dummyTime);
-        Assert.assertTrue(messageUrl.contains(expectedValue));
+        Assertions.assertTrue(messageUrl.contains(expectedValue));
     }
 }
