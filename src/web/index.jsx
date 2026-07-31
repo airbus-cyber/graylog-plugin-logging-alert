@@ -47,7 +47,8 @@ PluginStore.register(new PluginManifest(metadata, {
       displayName: 'Logging Alert Notification',
       formComponent: LoggingAlertFormContainer,
       summaryComponent: LoggingAlertSummary,
-      detailsComponent: LoggingAlertNotificationDetails
+      detailsComponent: LoggingAlertNotificationDetails,
+      useCondition: () => true,
     }
   ],
 }));
